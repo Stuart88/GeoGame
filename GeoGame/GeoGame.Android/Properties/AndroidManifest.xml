@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionCode="1" android:versionName="1.0" package="com.stuartaitken.geogame" android:installLocation="auto">
+	<uses-sdk android:minSdkVersion="21" android:targetSdkVersion="30" />
+  
+  <!-- Google Maps for Android v2 requires OpenGL ES v2 -->
+    <uses-feature android:glEsVersion="0x00020000" android:required="true" />
+
+    <!-- Necessary for apps that target Android 9.0 or higher -->
+
+    <!-- Permission to receive remote notifications from Google Play Services -->
+    <!-- Notice here that we have the package name of our application as a prefix on the permissions. -->
+    <uses-permission android:name="com.stuartaitken.geogame.permission.MAPS_RECEIVE" />
+    <permission android:name="com.stuartaitken.geogame.permission.MAPS_RECEIVE" android:protectionLevel="signature" />
+  
+	<application android:label="GeoGame.Android" android:theme="@style/MainTheme">
+    <uses-library android:name="org.apache.http.legacy" android:required="false" />
+		<meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="AIzaSyBTwLG3LmNZ9aKAWoQIKs1823hqFjFjX34" />
+		<meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
+	</application>
+  
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+</manifest>
