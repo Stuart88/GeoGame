@@ -102,7 +102,7 @@ namespace GeoGame.Views
             {
                 MapType = MapType.Street,
                 HasScrollEnabled = true,
-                HasZoomEnabled = false,
+                HasZoomEnabled = true,
                 IsShowingUser = false,
                 TrafficEnabled = false,
                 MoveToLastRegionOnLayoutChange = false,
