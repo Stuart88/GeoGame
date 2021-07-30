@@ -1,4 +1,5 @@
 ﻿using GeoGame.Data;
+using GeoGame.Interfaces;
 using GeoGame.Models.Geo;
 using GeoGame.Models.Mapping;
 using GeoGame.ViewModels;
@@ -12,7 +13,7 @@ using Xamarin.Forms.Xaml;
 namespace GeoGame.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class MainMap : ContentPage
+    public partial class MainMap : ContentPage, IMessageService
     {
         #region Fields
 
@@ -26,6 +27,7 @@ namespace GeoGame.Views
         {
             this.BindingContext = new MainMapViewModel();
             InitializeComponent();
+            SubscribeToMessages();
             InitMap();
         }
 
@@ -113,6 +115,14 @@ namespace GeoGame.Views
             this.MapContentArea.Content = this.Map;
 
             this.GetCountryData();
+        }
+
+        private void SubscribeToMessages()
+        {
+            MessagingCenter.Subscribe<IMessageService, (Country, List<PopulatedPlace>)>(this, Data.MessagingCenterMessages.OpenCountryBattle, async (sender, data) =>
+            {
+                await Navigation.PushModalAsync(new CountryBattle(data.Item1, data.Item2));
+            });
         }
 
         private async void Map_MapClicked(object sender, MapClickedEventArgs e)

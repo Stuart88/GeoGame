@@ -19,7 +19,7 @@ using Xamarin.Forms.Maps.Android;
 
 namespace GeoGame.Droid.CustomRenderers
 {
-    public class CustomMapRenderer : MapRenderer, GoogleMap.IInfoWindowAdapter, IMapMethods
+    public class CustomMapRenderer : MapRenderer, GoogleMap.IInfoWindowAdapter, IMapMethods, IMessageService
     {
         #region Constructors
 
@@ -31,7 +31,14 @@ namespace GeoGame.Droid.CustomRenderers
 
         #region Properties
 
-        private List<Circle> PopulaedPlaceMarkers { get; set; } = new List<Circle>();
+        /// <summary>
+        /// Populated places cache, data can be reused when going to battle page
+        /// </summary>
+        private List<(Circle marker, PopulatedPlace place)> PopulatedPlaceMarkers { get; set; } = new List<(Circle, PopulatedPlace)>();
+
+        /// <summary>
+        /// Ppolygons cache for reuse
+        /// </summary>
         private List<Android.Gms.Maps.Model.Polygon> SelectedPolygons { get; set; } = new List<Android.Gms.Maps.Model.Polygon>();
         private Marker ShowingMarker { get; set; }
 
@@ -147,11 +154,12 @@ namespace GeoGame.Droid.CustomRenderers
             ////So now filter only for places in the given polyong some countries are made up of more than one polygon
             //places = places.Where(p => poly.Points)
 
-            foreach (var m in this.PopulaedPlaceMarkers)
+            foreach (var m in this.PopulatedPlaceMarkers.ToList())
             {
-                m.Remove();
+                m.marker.Remove();
+                this.PopulatedPlaceMarkers.Remove(m);
             }
-            this.PopulaedPlaceMarkers.Clear();
+            this.PopulatedPlaceMarkers.Clear();
             foreach (var p in places)
             {
                 CircleOptions c = new CircleOptions();
@@ -163,7 +171,7 @@ namespace GeoGame.Droid.CustomRenderers
                 c.InvokeZIndex(1000);//Need this to ensure Z-index higher than values wich are used for country IDs
                 Circle added = NativeMap.AddCircle(c);
 
-                this.PopulaedPlaceMarkers.Add(added);
+                this.PopulatedPlaceMarkers.Add((added, p));
             }
         }
 
@@ -291,13 +299,16 @@ namespace GeoGame.Droid.CustomRenderers
             //infoMarker.SetIcon(null);
             Marker tempMarker = NativeMap.AddMarker(infoMarker);
             tempMarker.ShowInfoWindow();
+            
             this.ShowingMarker = tempMarker;
         }
 
         private void OnInfoWindowClick(object sender, GoogleMap.InfoWindowClickEventArgs e)
         {
-            //e.Marker.Remove();
-            //this.ShowingMarker?.Remove();
+            Country country = this.CountryPolygons.First(p => this.SelectedPolygons.Any(poly => poly.ZIndex == p.Item1.Id)).Item1;
+            List<PopulatedPlace> places = this.PopulatedPlaceMarkers.Select(p => p.place).ToList(); 
+            
+            MessagingCenter.Send<IMessageService, (Country, List<PopulatedPlace>)>(this, Data.MessagingCenterMessages.OpenCountryBattle, (country, places));
         }
 
         private bool PointInVisibleRegion(VisibleRegion v, LatLng c)
