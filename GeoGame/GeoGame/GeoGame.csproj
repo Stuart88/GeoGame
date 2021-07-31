@@ -8,6 +8,23 @@
 
   <ItemGroup>
     <None Remove="App.xaml.cs~RF4e1ebeb.TMP" />
+    <None Remove="Resources\Sprites\carrotShip.png" />
+    <None Remove="Resources\Sprites\shipBlaster.png" />
+    <None Remove="Resources\Sprites\shipCentre.png" />
+    <None Remove="Resources\Sprites\shipLeft.png" />
+    <None Remove="Resources\Sprites\shipLeftMax.png" />
+    <None Remove="Resources\Sprites\shipRight.png" />
+    <None Remove="Resources\Sprites\shipRightMax.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Sprites\carrotShip.png" />
+    <EmbeddedResource Include="Resources\Sprites\shipBlaster.png" />
+    <EmbeddedResource Include="Resources\Sprites\shipCentre.png" />
+    <EmbeddedResource Include="Resources\Sprites\shipLeft.png" />
+    <EmbeddedResource Include="Resources\Sprites\shipLeftMax.png" />
+    <EmbeddedResource Include="Resources\Sprites\shipRight.png" />
+    <EmbeddedResource Include="Resources\Sprites\shipRightMax.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,6 +39,10 @@
 
   <ItemGroup>
     <Folder Include="Services\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Sprites\carrotShip.png" />
   </ItemGroup>
 
   <ItemGroup>

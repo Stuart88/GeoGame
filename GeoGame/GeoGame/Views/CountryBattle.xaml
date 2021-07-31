@@ -4,15 +4,24 @@
              xmlns:forms="clr-namespace:SkiaSharp.Views.Forms;assembly=SkiaSharp.Views.Forms"
              x:Class="GeoGame.Views.CountryBattle">
     <ContentPage.Content>
-        <Grid>
+        <Grid x:Name="canvasGrid">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Label x:Name="countryNameLabel" HorizontalOptions="Start" VerticalOptions="Start" Margin="20,0" Grid.Row="0"/>
-            <Label x:Name="fpsLabel" HorizontalOptions="Start" VerticalOptions="Start" Margin="20,0" Grid.Row="1"/>
-            <forms:SKCanvasView x:Name="canvasView" Grid.Row="2" PaintSurface="OnPainting" />
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" x:Name="countryNameLabel" HorizontalOptions="Start" VerticalOptions="Start" Margin="20,0"/>
+            <Label Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" x:Name="fpsLabel" HorizontalOptions="Start" VerticalOptions="Start" Margin="20,0"/>
+            <forms:SKCanvasView Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" x:Name="canvasView" PaintSurface="OnPainting" />
+            <Button Grid.Row="3" Grid.Column="0" Text="◀" FontSize="20" x:Name="LeftButton" Pressed="LeftButton_Pressed" Released="LeftRightButton_Released"/>
+            <Button Grid.Row="3" Grid.Column="1" Text=" - " x:Name="MiddleButton" Clicked="MiddleButton_Pressed"/>
+            <Button Grid.Row="3" Grid.Column="2" Text="▶" FontSize="20" x:Name="RightButton" Pressed="RightButton_Pressed" Released="LeftRightButton_Released"/>
         </Grid>
     </ContentPage.Content>
 </ContentPage>
