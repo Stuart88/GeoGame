@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <None Remove="App.xaml.cs~RF4e1ebeb.TMP" />
+    <None Remove="Resources\Backgrounds\Stars\starsMid.png" />
+    <None Remove="Resources\Backgrounds\Stars\starsSmall.png" />
     <None Remove="Resources\Music\Battle\1.mp3" />
     <None Remove="Resources\Music\Battle\10.mp3" />
     <None Remove="Resources\Music\Battle\11.mp3" />
@@ -42,6 +44,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resources\Backgrounds\Stars\starsMid.png" />
+    <EmbeddedResource Include="Resources\Backgrounds\Stars\starsSmall.png" />
     <EmbeddedResource Include="Resources\Music\Battle\1.mp3" />
     <EmbeddedResource Include="Resources\Music\Battle\10.mp3" />
     <EmbeddedResource Include="Resources\Music\Battle\11.mp3" />

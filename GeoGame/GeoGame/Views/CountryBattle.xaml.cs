@@ -1,4 +1,5 @@
-﻿using GeoGame.Models.Battles;
+﻿using GeoGame.Extensions;
+using GeoGame.Models.Battles;
 using GeoGame.Models.Geo;
 using Plugin.SimpleAudioPlayer;
 using SkiaSharp;
@@ -36,15 +37,23 @@ namespace GeoGame.Views
         public CountryBattle(Country country, List<PopulatedPlace> places)
         {
             InitializeComponent();
+            
             this.Country = country;
             this.Places = places;
             this.IsSmallCountry = this.Country.Population < this.PopulationScaler;
+            
             countryNameLabel.Text = $"Fighting {this.Country.Name}!";
         }
 
         #endregion Constructors
 
         #region Properties
+        private SKBitmap StarsSmall { get; set; } = BitmapExtensions.LoadBitmapResource(typeof(Enemy), "GeoGame.Resources.Backgrounds.Stars.starsSmall.png");
+        private SKBitmap StarsMid { get; set; } = BitmapExtensions.LoadBitmapResource(typeof(Enemy), "GeoGame.Resources.Backgrounds.Stars.starsMid.png");
+
+        private SKRect StarsSmallSrcRect { get; set; }
+        private SKRect StarsMidSrcRect { get; set; }
+        private SKRect ParalaxDestRect { get; set; }
 
         public ISimpleAudioPlayer BattleMusic { get; set; } = CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
         private Country Country { get; set; }
@@ -118,6 +127,20 @@ namespace GeoGame.Views
 
         private void DrawObjects(SKCanvas canvas, SKPaint skPaint)
         {
+            
+            // Need to do this here cos ScreenRation remains as Nan is initialised too early.
+            if(this.ScreenRatio == 0 || this.ScreenRatio == float.NaN)
+            {
+                this.ScreenRatio = canvasView.CanvasSize.Width / canvasView.CanvasSize.Height;
+                this.StarsSmallSrcRect = new SKRect(0, 0, this.StarsSmall.Width / 2 * this.ScreenRatio, this.StarsSmall.Height / 2);
+                this.StarsMidSrcRect = new SKRect(0, 0, this.StarsMid.Width / 2 * this.ScreenRatio, this.StarsMid.Height / 2);
+                this.ParalaxDestRect = new SKRect(0, 0, canvasView.CanvasSize.Width, canvasView.CanvasSize.Height);
+            }
+            
+            canvas.DrawBitmap(this.StarsMid, this.StarsMidSrcRect, this.ParalaxDestRect, skPaint);
+            canvas.DrawBitmap(this.StarsSmall, this.StarsSmallSrcRect, this.ParalaxDestRect, skPaint);
+
+
             this.Player.Draw(ref canvas, skPaint, canvasView.CanvasSize);
 
             foreach (var en in this.Enemies.Where(e => e.Active && !e.IsDead))
@@ -171,6 +194,11 @@ namespace GeoGame.Views
                 this.Enemies.Add(e);
             }
         }
+
+        private float ScreenRatio { get; set; }
+
+        private float StarsSmallShift { get; set; }
+        private float StarsMidShift { get; set; }
 
         private void InitGame()
         {
@@ -267,6 +295,21 @@ namespace GeoGame.Views
             this.Player.Direction = SpriteDirection.Centre;
         }
 
+        private void DoStarsParallax(float dt)
+        {
+            this.StarsSmallSrcRect = new SKRect(0, this.StarsSmall.Height / 2 - this.StarsSmallShift, this.StarsSmall.Width / 2 * this.ScreenRatio, this.StarsSmall.Height - this.StarsSmallShift);
+            this.StarsMidSrcRect = new SKRect(0, this.StarsMid.Height / 2 - this.StarsMidShift, this.StarsMid.Width / 2 * this.ScreenRatio, this.StarsMid.Height - this.StarsMidShift);
+
+
+            this.StarsSmallShift += 90 * dt;
+            if (this.StarsSmallShift > this.StarsSmall.Height / 2)
+                this.StarsSmallShift = 0;
+
+            this.StarsMidShift += 80 * dt;
+            if (this.StarsMidShift > this.StarsMid.Height / 2)
+                this.StarsMidShift = 0;
+        }
+
         private bool TimerLoop()
         {
             if (!this._objectsReady)  // Can't run any logic until game objects ready! (player, enemies etc)
@@ -274,6 +317,9 @@ namespace GeoGame.Views
 
             // Get the elapsed time from the stopwatch because the 1/30 timer interval is not accurate and can be off by 2 ms
             float dt = (float)_stopWatch.Elapsed.TotalSeconds;
+
+            //Move paralax source
+            DoStarsParallax(dt);
 
             FireWeapons(dt);
 
