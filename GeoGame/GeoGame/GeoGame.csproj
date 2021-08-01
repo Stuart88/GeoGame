@@ -9,6 +9,8 @@
   <ItemGroup>
     <None Remove="App.xaml.cs~RF4e1ebeb.TMP" />
     <None Remove="Resources\Sprites\carrotShip.png" />
+    <None Remove="Resources\Sprites\enemyBlaster.png" />
+    <None Remove="Resources\Sprites\enemySprites.png" />
     <None Remove="Resources\Sprites\shipBlaster.png" />
     <None Remove="Resources\Sprites\shipCentre.png" />
     <None Remove="Resources\Sprites\shipLeft.png" />
@@ -19,6 +21,8 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\Sprites\carrotShip.png" />
+    <EmbeddedResource Include="Resources\Sprites\enemyBlaster.png" />
+    <EmbeddedResource Include="Resources\Sprites\enemySprites.png" />
     <EmbeddedResource Include="Resources\Sprites\shipBlaster.png" />
     <EmbeddedResource Include="Resources\Sprites\shipCentre.png" />
     <EmbeddedResource Include="Resources\Sprites\shipLeft.png" />

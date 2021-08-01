@@ -1,56 +1,49 @@
 ﻿using GeoGame.Extensions;
 using SkiaSharp;
+using SkiaSharp.Views.Forms;
 using System;
 using Xamarin.Forms;
 using static GeoGame.Data.BattlesData;
 
 namespace GeoGame.Models.Battles
 {
-    public class Player
+    public class Player : MovingObjectBase
     {
         #region Constructors
 
         public Player()
         {
+            this.Width = 30f;
+            this.Height = 70f;
+            this.MainSprite  = BitmapExtensions.LoadBitmapResource(typeof(Player), "GeoGame.Resources.Sprites.shipCentre.png");
         }
 
         #endregion Constructors
 
         #region Properties
 
-        public float BaseVelX { get; set; }
-        public float BaseVelY { get; set; }
-        public float VelX { get; set; }
-        public float VelY { get; set; }
         public SpriteDirection Direction { get; set; } = SpriteDirection.Centre;
-        public float Height { get; set; } = 70f;
-        public float PosX { get; set; }
-        public float PosY { get; set; }
-        public SKBitmap ShipCentre { get; set; } = BitmapExtensions.LoadBitmapResource(typeof(Player), "GeoGame.Resources.Sprites.shipCentre.png");
         public SKBitmap ShipLeft { get; set; } = BitmapExtensions.LoadBitmapResource(typeof(Player), "GeoGame.Resources.Sprites.shipLeft.png");
         public SKBitmap ShipLeftMax { get; set; } = BitmapExtensions.LoadBitmapResource(typeof(Player), "GeoGame.Resources.Sprites.shipLeftMax.png");
         public SKBitmap ShipRight { get; set; } = BitmapExtensions.LoadBitmapResource(typeof(Player), "GeoGame.Resources.Sprites.shipRight.png");
         public SKBitmap ShipRightMax { get; set; } = BitmapExtensions.LoadBitmapResource(typeof(Player), "GeoGame.Resources.Sprites.shipRightMax.png");
-        public SKBitmap SpriteSheet { get; set; }
-        public WeaponBase Weapon { get; set; }
-        public float Width { get; set; } = 30f;
 
+        public bool MovingRight { get; set; }
+        public bool MovingLeft { get; set; }
         #endregion Properties
+
+        public float Accel { get; set; } = 400;
+        public float BaseAccel { get; set; } = 400;
+        private float Jerk { get; set; } = 500;
 
         #region Methods
 
         public void ChangeWeapon(WeaponBase weapon)
         {
-            this.Weapon.IsActive = false; // Stop device timer (stop firing)
             this.Weapon = weapon;
-            Device.StartTimer(TimeSpan.FromMilliseconds(this.Weapon.FireRate), () =>
-            {
-                this.Weapon.FireWeapon();
-                return this.Weapon.IsActive;
-            });
         }
 
-        public void DrawPlayer(ref SKCanvas canvas, SKPaint skPaint, SKSize canvasSize)
+        public override void Draw(ref SKCanvas canvas, SKPaint skPaint, SKSize canvasSize)
         {
             //this.PosX = this.PosX;
             this.PosY = canvasSize.Height * (1 - 0.01f);
@@ -60,7 +53,7 @@ namespace GeoGame.Models.Battles
             switch (this.Direction)
             {
                 case SpriteDirection.Centre:
-                    canvas.DrawBitmap(this.ShipCentre, drawRect, skPaint);
+                    canvas.DrawBitmap(this.MainSprite, drawRect, skPaint);
                     break;
 
                 case SpriteDirection.Left:
@@ -89,6 +82,48 @@ namespace GeoGame.Models.Battles
                 if (b.Fired)
                     canvas.DrawBitmap(b.Sprite, b.PosX, b.PosY);
             }
+        }
+
+        public override void Move(float dt, SKCanvasView canvasView)
+        {
+            if (!this.MovingLeft && !this.MovingRight)
+                return;
+
+            SpriteDirection direction = this.MovingLeft ? SpriteDirection.Left : SpriteDirection.Right;
+            float vMax = 1500;
+            this.Accel += dt * this.Jerk; // increasing acceleration. For nicer and more noticable increase in speed while moving left/right
+
+            if (direction == SpriteDirection.Left && this.MovingLeft)
+            {
+                if (Math.Abs(this.VelX) < vMax)
+                    this.VelX -= dt * this.Jerk;
+
+                if (this.PosX > 0)
+                {
+                    this.PosX += dt * this.VelX;
+                }
+                else
+                {
+                    this.VelX = 0;
+                    this.MovingLeft = false;
+                }
+            }
+            else if (direction == SpriteDirection.Right && this.MovingRight)
+            {
+                if (Math.Abs(this.VelX) < vMax)
+                    this.VelX += dt * this.Accel;
+
+                if (this.PosX + this.Width < canvasView.CanvasSize.Width)
+                {
+                    this.PosX += dt * this.VelX;
+                }
+                else
+                {
+                    this.VelX = 0;
+                    this.MovingRight = false;
+                }
+            }
+
         }
 
         #endregion Methods

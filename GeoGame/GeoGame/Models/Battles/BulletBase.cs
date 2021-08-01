@@ -10,14 +10,14 @@ namespace GeoGame.Models.Battles
         public BulletBase(WeaponBase weapon)
         {
             this.Weapon = weapon;
-            this.PosX = weapon.Player.PosX;
-            this.PosY = weapon.Player.PosY;
+            this.PosX = weapon.Parent.PosX;
+            this.PosY = weapon.Parent.PosY;
         }
         public float PosX { get; set; }
         public float PosY { get; set; }
         public float VelX { get; set; }
         public float VelY { get; set; }
-        public float HitDamage { get; set; }
+        public int HitDamage { get; set; }
         public bool Fired { get; set; }
         public WeaponBase Weapon { get; set; }
         public SKBitmap Sprite { get; set; }

@@ -4,10 +4,10 @@
     {
         #region Constructors
 
-        public Blaster(Player player) : base(player)
+        public Blaster(MovingObjectBase parent) : base(parent)
         {
-            this.BulletsAmount = 100;
-            this.FireRate = 0.100d;
+            this.BulletsAmount = parent.IsPlayer ? 100 : 20;
+            this.FireRate = parent.IsPlayer ? 0.100d : 1.000d;
 
             for (int i = 0; i < this.BulletsAmount; i++)
             {
@@ -17,11 +17,11 @@
 
         #endregion Constructors
 
-        #region Methods
+        #region Methods  
 
-        public override void FireWeapon()
+        public override void FireWeapon(float dt)
         {
-            base.FireWeapon();
+            base.FireWeapon(dt);
         }
 
         #endregion Methods

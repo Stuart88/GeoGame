@@ -11,10 +11,9 @@ namespace GeoGame.Models.Battles
 
         public double DeltaTime { get; set; } 
 
-        public WeaponBase(Player player)
+        public WeaponBase(MovingObjectBase parent)
         {
-            this.Player = player;
-            this.IsActive = true;
+            this.Parent = parent;
         }
 
         #endregion Constructors
@@ -32,25 +31,29 @@ namespace GeoGame.Models.Battles
         /// After how many seconds should the Fire method be called again (for automatic firing)
         /// </summary>
         public double FireRate { get; set; }
-
-        public bool IsActive { get; set; }
-        public Player Player { get; set; }
+        
+        public MovingObjectBase Parent { get; set; }
 
         #endregion Properties
 
         #region Methods
 
-        public virtual void FireWeapon()
+        public virtual void FireWeapon(float dt)
         {
-            this.DeltaTime = 0;
-
-            var toFire = this.Bullets.FirstOrDefault(b => !b.Fired);
-
-            if (toFire != null)
+            this.DeltaTime += dt;
+            
+            if (this.DeltaTime >= this.FireRate)
             {
-                toFire.PosX = this.Player.PosX + this.Player.ShipCentre.Width / 2;
-                toFire.PosY = this.Player.PosY +  - this.Player.Height;
-                toFire.Fired = true;
+                this.DeltaTime = 0;
+
+                var toFire = this.Bullets.FirstOrDefault(b => !b.Fired);
+
+                if (toFire != null)
+                {
+                    toFire.PosX = this.Parent.PosX + this.Parent.MainSprite.Width / 2;
+                    toFire.PosY = this.Parent.PosY + (this.Parent.IsPlayer ? - this.Parent.Height : this.Parent.Height);
+                    toFire.Fired = true;
+                }
             }
         }
 

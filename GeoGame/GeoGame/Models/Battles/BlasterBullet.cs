@@ -9,8 +9,10 @@ namespace GeoGame.Models.Battles
         public BlasterBullet(WeaponBase weapon) : base(weapon)
         {
             this.FireAngle = 0;
-            this.VelY = 20f;
-            this.Sprite = BitmapExtensions.LoadBitmapResource(typeof(BlasterBullet), "GeoGame.Resources.Sprites.shipBlaster.png");
+            this.VelY =  weapon.Parent.IsPlayer ? -20f : 20f;
+            this.Sprite = weapon.Parent.IsPlayer
+                ? BitmapExtensions.LoadBitmapResource(typeof(BlasterBullet), "GeoGame.Resources.Sprites.shipBlaster.png")
+                : BitmapExtensions.LoadBitmapResource(typeof(BlasterBullet), "GeoGame.Resources.Sprites.enemyBlaster.png");
         }
 
         #endregion Constructors
@@ -19,7 +21,7 @@ namespace GeoGame.Models.Battles
 
         public override void Move()
         {
-            this.PosY -= VelY; // Bottom of screen is max, and top of screen is 0
+            this.PosY += VelY;
         }
 
         #endregion Methods
