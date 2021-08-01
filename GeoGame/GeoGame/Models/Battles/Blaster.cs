@@ -7,7 +7,7 @@
         public Blaster(MovingObjectBase parent) : base(parent)
         {
             this.BulletsAmount = parent.IsPlayer ? 100 : 20;
-            this.FireRate = parent.IsPlayer ? 0.100d : 1.000d;
+            this.FireRate = parent.IsPlayer ? 0.200d : 1.000d;
 
             for (int i = 0; i < this.BulletsAmount; i++)
             {

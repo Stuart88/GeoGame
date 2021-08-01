@@ -12,7 +12,10 @@ namespace GeoGame.Models.Battles
         public Enemy()
         {
             this.SpriteSheet = BitmapExtensions.LoadBitmapResource(typeof(Enemy), "GeoGame.Resources.Sprites.enemySprites.png");
+            this.HitSpriteSheet = BitmapExtensions.LoadBitmapResource(typeof(Enemy), "GeoGame.Resources.Sprites.enemySpritesHit.png");
             this.MainSprite = new SKBitmap();
+            this.HitSprite = new SKBitmap();
+
             this.Weapon = new Blaster(this);
             
         }
@@ -36,6 +39,7 @@ namespace GeoGame.Models.Battles
             var subsetRect = new SKRectI(i * spriteW, j * spriteH, spriteW * (i + 1), spriteH *(j + 1));
 
             this.SpriteSheet.ExtractSubset(this.MainSprite, subsetRect);
+            this.HitSpriteSheet.ExtractSubset(this.HitSprite, subsetRect);
         }
 
         public override void Draw(ref SKCanvas canvas, SKPaint skPaint, SKSize canvasSize)
@@ -43,7 +47,15 @@ namespace GeoGame.Models.Battles
 
             SKRect drawRect = new SKRect(this.PosX, this.PosY - this.Height, this.PosX + this.Width, this.PosY);
 
-            canvas.DrawBitmap(this.MainSprite, drawRect, skPaint);
+            if (this.HitByBullet)
+            {
+                canvas.DrawBitmap(this.HitSprite, drawRect, skPaint);
+                this.HitByBullet = false;
+            }
+            else
+            {
+                canvas.DrawBitmap(this.MainSprite, drawRect, skPaint);
+            }
 
             //Draw bullets
 

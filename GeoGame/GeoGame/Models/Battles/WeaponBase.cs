@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using Xamarin.Forms;
 
 namespace GeoGame.Models.Battles
 {
@@ -9,12 +7,12 @@ namespace GeoGame.Models.Battles
     {
         #region Constructors
 
-        public double DeltaTime { get; set; } 
-
         public WeaponBase(MovingObjectBase parent)
         {
             this.Parent = parent;
         }
+
+        public double DeltaTime { get; set; }
 
         #endregion Constructors
 
@@ -31,7 +29,7 @@ namespace GeoGame.Models.Battles
         /// After how many seconds should the Fire method be called again (for automatic firing)
         /// </summary>
         public double FireRate { get; set; }
-        
+
         public MovingObjectBase Parent { get; set; }
 
         #endregion Properties
@@ -41,7 +39,7 @@ namespace GeoGame.Models.Battles
         public virtual void FireWeapon(float dt)
         {
             this.DeltaTime += dt;
-            
+
             if (this.DeltaTime >= this.FireRate)
             {
                 this.DeltaTime = 0;
@@ -51,7 +49,7 @@ namespace GeoGame.Models.Battles
                 if (toFire != null)
                 {
                     toFire.PosX = this.Parent.PosX + this.Parent.MainSprite.Width / 2;
-                    toFire.PosY = this.Parent.PosY + (this.Parent.IsPlayer ? - this.Parent.Height : this.Parent.Height);
+                    toFire.PosY = this.Parent.PosY + (this.Parent.IsPlayer ? -this.Parent.MainSprite.Height : 0);
                     toFire.Fired = true;
                 }
             }

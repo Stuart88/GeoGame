@@ -37,6 +37,7 @@ namespace GeoGame.Views
             InitializeComponent();
             this.Country = country;
             this.Places = places;
+            this.IsSmallCountry = this.Country.Population < this.PopulationScaler;
 
             countryNameLabel.Text = $"Fighting {this.Country.Name}!";
         }
@@ -47,6 +48,7 @@ namespace GeoGame.Views
 
         private Country Country { get; set; }
         private List<Enemy> Enemies { get; set; }
+        private bool GameWon { get; set; }
         private List<PopulatedPlace> Places { get; set; }
         private Player Player { get; set; }
 
@@ -68,12 +70,49 @@ namespace GeoGame.Views
             base.OnDisappearing();
         }
 
+        private void CheckCollisions()
+        {
+            foreach (var e in this.Enemies.Where(i => i.Active))
+            {
+                foreach (var b in this.Player.Weapon.Bullets.Where(i => i.Fired))
+                    e.CheckCollisionWithBullet(b);
+
+                foreach (var b in e.Weapon.Bullets.Where(i => i.Fired))
+                    this.Player.CheckCollisionWithBullet(b);
+            }
+
+            // Now check if any new enemies need to be added, if 
+
+            int activeEnemiesCount = this.Enemies.Where(e => e.Active).Count();
+
+            if (activeEnemiesCount < this.MaxActiveEnemies)
+            {
+                //Get next available non-dead enemy
+                var toActivate = this.Enemies.FirstOrDefault(e => !e.IsDead && !e.Active);
+
+                if (toActivate != null)
+                {
+                    toActivate.Active = true;
+                    activeEnemiesCount++; // need to increment this so the check below does need show 0 too early
+                }
+            }
+
+            if(activeEnemiesCount == 0)
+            {
+                this.GameWon = true;
+                this._pageActive = false;
+                _ = DisplayAlert("Game Over", "You win!", "OK");
+            }
+        }
+
         private void DrawObjects(SKCanvas canvas, SKPaint skPaint)
         {
             this.Player.Draw(ref canvas, skPaint, canvasView.CanvasSize);
 
             foreach (var en in this.Enemies.Where(e => e.Active && !e.IsDead))
                 en.Draw(ref canvas, skPaint, canvasView.CanvasSize);
+
+           
         }
 
         private void FireWeapons(float dt)
@@ -82,7 +121,7 @@ namespace GeoGame.Views
 
             foreach (var e in this.Enemies.Where(e => e.Active && !e.IsDead))
             {
-                e.Weapon.FireWeapon(dt + dt * (-1 + 2 *(float)_rand.NextDouble()) ); // Add a +/- 1dt variation, so all enemies don't fire in unison
+                e.Weapon.FireWeapon(dt + dt * (-1 + 2 * (float)_rand.NextDouble())); // Add a +/- 1dt variation, so all enemies don't fire in unison
             }
         }
 
@@ -97,31 +136,37 @@ namespace GeoGame.Views
             _pageActive = true;
         }
 
+        private int PopulationScaler { get; } = 1000000;
+
+        private bool IsSmallCountry { get; }
+        private int EnemyCount { get; set; }
+
         private void InitEnemies()
         {
             this.Enemies = new List<Enemy>();
 
-            int enemyCount = this.Country.Population < 1000000 ? 1 : this.Country.Population / 1000000; // e.g. UK will have 64, China will have 1379.
+            this.EnemyCount = this.IsSmallCountry ? 1 : this.Country.Population / this.PopulationScaler; // e.g. UK will have 64, China will have 1379.
 
-            this.MaxActiveEnemies = (enemyCount / 4) >= 50 ? 50 : (enemyCount / 4);
+            this.MaxActiveEnemies = (this.EnemyCount / 4) >= 50 ? 50 : (this.EnemyCount / 4);
             if (this.MaxActiveEnemies == 0)
                 this.MaxActiveEnemies = 1;
 
-            
+            this.PopulationKillIncrementSize = this.Country.Population / this.EnemyCount;
+
             int activesAdded = 0;
 
-            for (int i = 0; i < enemyCount; i++)
+            for (int i = 0; i < this.EnemyCount; i++)
             {
                 Enemy e = new Enemy();
                 e.Width = canvasView.CanvasSize.Width / 15;
-                e.Health = 10;
+                e.Health = 40;
                 e.Height = e.Width * 1.5f;
                 e.BaseVelX = 200; // Not currently used
                 e.BaseVelY = 40;  // Not currently used
-                e.VelX = _rand.Next(150,251);
+                e.VelX = _rand.Next(150, 251);
                 e.VelY = _rand.Next(35, 45);
                 e.PosX = _rand.Next(0, (int)(canvasView.CanvasSize.Width - e.Width));
-                e.PosY = _rand.Next((int)- e.Height - 20, (int)-e.Height); // off top of screen
+                e.PosY = _rand.Next((int)-e.Height - 20, (int)-e.Height); // off top of screen
 
                 e.Weapon = new Blaster(e);
 
@@ -137,6 +182,7 @@ namespace GeoGame.Views
         private void InitPlayer()
         {
             this.Player = new Player();
+            this.Player.MaxHealth = 100;
             this.Player.Health = 100;
             this.Player.Width = canvasView.CanvasSize.Width / 15;
             this.Player.Height = this.Player.Width * 2f;
@@ -217,31 +263,46 @@ namespace GeoGame.Views
 
             MoveObjects(dt);
 
-            // Calculate current fps
-            var fps = dt > 0 ? 1.0 / dt : 0;
+            CheckCollisions();
 
-            // When the fps is too low reduce the load by skipping the frame
-            if (fps < _fpsWanted / 2)
-                return _pageActive;
-
-            // Calculate an averaged fps
-            _fpsAverage += fps;
-            _fpsCount++;
-
-            if (_fpsCount == 20)
-            {
-                fps = _fpsAverage / _fpsCount;
-                //fpsLabel.Text = fps.ToString("N3", CultureInfo.InvariantCulture);
-
-                _fpsCount = 0;
-                _fpsAverage = 0.0;
-            }
+            UpdateScreenInformation();
 
             // Trigger the redrawing of the view
             canvasView.InvalidateSurface();
 
             return _pageActive;
         }
+
+        /// <summary>
+        /// Update labels, health, progress bar, etc
+        /// </summary>
+        private void UpdateScreenInformation()
+        {
+            // Progress bar starts full then progresses down to 0
+            int deadCount = this.Enemies.Count(e => e.IsDead);
+
+            double killsProgress = deadCount == this.EnemyCount
+                ? 0
+                : ((double)(this.Country.Population - (deadCount * this.PopulationKillIncrementSize)) / this.Country.Population);
+
+            //Device.BeginInvokeOnMainThread(async () =>
+            //{
+            //});
+            
+            BattleStateProgress.ProgressTo(killsProgress, 100, Easing.CubicInOut);
+
+            double healthBarProgress = (double)this.Player.Health / this.Player.MaxHealth;
+            HealthBar.ProgressTo(healthBarProgress, 200, Easing.CubicInOut);
+
+            if (healthBarProgress >= 0.5)
+                HealthBar.ProgressColor = Color.LawnGreen;
+            else if(healthBarProgress >= 0.2)
+                HealthBar.ProgressColor = Color.OrangeRed;
+            else
+                HealthBar.ProgressColor = Color.Red;
+        }
+
+        private int PopulationKillIncrementSize { get; set; }
 
         #endregion Methods
     }

@@ -12,6 +12,7 @@ namespace GeoGame.Models.Battles
             this.Weapon = weapon;
             this.PosX = weapon.Parent.PosX;
             this.PosY = weapon.Parent.PosY;
+            this.HitDamage = 10; // general value. Reassign elsewhere if needed
         }
         public float PosX { get; set; }
         public float PosY { get; set; }
