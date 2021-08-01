@@ -8,6 +8,27 @@
 
   <ItemGroup>
     <None Remove="App.xaml.cs~RF4e1ebeb.TMP" />
+    <None Remove="Resources\Music\Battle\1.mp3" />
+    <None Remove="Resources\Music\Battle\10.mp3" />
+    <None Remove="Resources\Music\Battle\11.mp3" />
+    <None Remove="Resources\Music\Battle\12.mp3" />
+    <None Remove="Resources\Music\Battle\13.mp3" />
+    <None Remove="Resources\Music\Battle\14.mp3" />
+    <None Remove="Resources\Music\Battle\15.mp3" />
+    <None Remove="Resources\Music\Battle\2.mp3" />
+    <None Remove="Resources\Music\Battle\3.mp3" />
+    <None Remove="Resources\Music\Battle\4.mp3" />
+    <None Remove="Resources\Music\Battle\5.mp3" />
+    <None Remove="Resources\Music\Battle\6.mp3" />
+    <None Remove="Resources\Music\Battle\7.mp3" />
+    <None Remove="Resources\Music\Battle\8.mp3" />
+    <None Remove="Resources\Music\Battle\9.mp3" />
+    <None Remove="Resources\Music\Map\1.mp3" />
+    <None Remove="Resources\Music\Map\2.mp3" />
+    <None Remove="Resources\Music\Map\3.mp3" />
+    <None Remove="Resources\Music\Map\4.mp3" />
+    <None Remove="Resources\Music\Map\5.mp3" />
+    <None Remove="Resources\Sounds\blasterBullet.wav" />
     <None Remove="Resources\Sprites\carrotShip.png" />
     <None Remove="Resources\Sprites\enemyBlaster.png" />
     <None Remove="Resources\Sprites\enemySprites.png" />
@@ -21,6 +42,27 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resources\Music\Battle\1.mp3" />
+    <EmbeddedResource Include="Resources\Music\Battle\10.mp3" />
+    <EmbeddedResource Include="Resources\Music\Battle\11.mp3" />
+    <EmbeddedResource Include="Resources\Music\Battle\12.mp3" />
+    <EmbeddedResource Include="Resources\Music\Battle\13.mp3" />
+    <EmbeddedResource Include="Resources\Music\Battle\14.mp3" />
+    <EmbeddedResource Include="Resources\Music\Battle\15.mp3" />
+    <EmbeddedResource Include="Resources\Music\Battle\2.mp3" />
+    <EmbeddedResource Include="Resources\Music\Battle\3.mp3" />
+    <EmbeddedResource Include="Resources\Music\Battle\4.mp3" />
+    <EmbeddedResource Include="Resources\Music\Battle\5.mp3" />
+    <EmbeddedResource Include="Resources\Music\Battle\6.mp3" />
+    <EmbeddedResource Include="Resources\Music\Battle\7.mp3" />
+    <EmbeddedResource Include="Resources\Music\Battle\8.mp3" />
+    <EmbeddedResource Include="Resources\Music\Battle\9.mp3" />
+    <EmbeddedResource Include="Resources\Music\Map\1.mp3" />
+    <EmbeddedResource Include="Resources\Music\Map\2.mp3" />
+    <EmbeddedResource Include="Resources\Music\Map\3.mp3" />
+    <EmbeddedResource Include="Resources\Music\Map\4.mp3" />
+    <EmbeddedResource Include="Resources\Music\Map\5.mp3" />
+    <EmbeddedResource Include="Resources\Sounds\blasterBullet.wav" />
     <EmbeddedResource Include="Resources\Sprites\carrotShip.png" />
     <EmbeddedResource Include="Resources\Sprites\enemyBlaster.png" />
     <EmbeddedResource Include="Resources\Sprites\enemySprites.png" />
@@ -38,6 +80,7 @@
     <PackageReference Include="SkiaSharp" Version="2.80.3" />
     <PackageReference Include="SkiaSharp.Views.Forms" Version="2.80.3" />
     <PackageReference Include="sqlite-net-pcl" Version="1.7.335" />
+    <PackageReference Include="Xam.Plugin.SimpleAudioPlayer" Version="1.5.0" />
     <PackageReference Include="Xamarin.Forms" Version="5.0.0.2083" />  
     <PackageReference Include="Xamarin.Essentials" Version="1.7.0" />  
     <PackageReference Include="Xamarin.Forms.Maps" Version="5.0.0.2083" />

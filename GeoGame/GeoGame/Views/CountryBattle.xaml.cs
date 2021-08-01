@@ -1,5 +1,6 @@
 ﻿using GeoGame.Models.Battles;
 using GeoGame.Models.Geo;
+using Plugin.SimpleAudioPlayer;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using System;
@@ -38,7 +39,6 @@ namespace GeoGame.Views
             this.Country = country;
             this.Places = places;
             this.IsSmallCountry = this.Country.Population < this.PopulationScaler;
-
             countryNameLabel.Text = $"Fighting {this.Country.Name}!";
         }
 
@@ -46,6 +46,7 @@ namespace GeoGame.Views
 
         #region Properties
 
+        public ISimpleAudioPlayer BattleMusic { get; set; } = CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
         private Country Country { get; set; }
         private List<Enemy> Enemies { get; set; }
         private bool GameWon { get; set; }
@@ -56,17 +57,27 @@ namespace GeoGame.Views
 
         #region Methods
 
+        private int EnemyCount { get; set; }
+
+        private bool IsSmallCountry { get; }
+
+        private int PopulationKillIncrementSize { get; set; }
+
+        private int PopulationScaler { get; } = 1000000;
+
         protected override void OnAppearing()
         {
             base.OnAppearing();
 
-            Init();
+            InitMusic();
+            
+            InitGame();
         }
 
         protected override void OnDisappearing()
         {
             _pageActive = false;
-
+            this.BattleMusic.Stop();
             base.OnDisappearing();
         }
 
@@ -81,7 +92,7 @@ namespace GeoGame.Views
                     this.Player.CheckCollisionWithBullet(b);
             }
 
-            // Now check if any new enemies need to be added, if 
+            // Now check if any new enemies need to be added, if
 
             int activeEnemiesCount = this.Enemies.Where(e => e.Active).Count();
 
@@ -97,7 +108,7 @@ namespace GeoGame.Views
                 }
             }
 
-            if(activeEnemiesCount == 0)
+            if (activeEnemiesCount == 0)
             {
                 this.GameWon = true;
                 this._pageActive = false;
@@ -111,8 +122,6 @@ namespace GeoGame.Views
 
             foreach (var en in this.Enemies.Where(e => e.Active && !e.IsDead))
                 en.Draw(ref canvas, skPaint, canvasView.CanvasSize);
-
-           
         }
 
         private void FireWeapons(float dt)
@@ -124,22 +133,6 @@ namespace GeoGame.Views
                 e.Weapon.FireWeapon(dt + dt * (-1 + 2 * (float)_rand.NextDouble())); // Add a +/- 1dt variation, so all enemies don't fire in unison
             }
         }
-
-        private void Init()
-        {
-            var ms = 1000.0 / _fpsWanted;
-            var ts = TimeSpan.FromMilliseconds(ms);
-
-            // Create a timer that triggers roughly every 1/30 seconds
-            Device.StartTimer(ts, TimerLoop);
-
-            _pageActive = true;
-        }
-
-        private int PopulationScaler { get; } = 1000000;
-
-        private bool IsSmallCountry { get; }
-        private int EnemyCount { get; set; }
 
         private void InitEnemies()
         {
@@ -158,9 +151,9 @@ namespace GeoGame.Views
             for (int i = 0; i < this.EnemyCount; i++)
             {
                 Enemy e = new Enemy();
-                e.Width = canvasView.CanvasSize.Width / 15;
+                e.Width = canvasView.CanvasSize.Width / 10;
+                e.Height = e.Width;
                 e.Health = 40;
-                e.Height = e.Width * 1.5f;
                 e.BaseVelX = 200; // Not currently used
                 e.BaseVelY = 40;  // Not currently used
                 e.VelX = _rand.Next(150, 251);
@@ -177,6 +170,25 @@ namespace GeoGame.Views
 
                 this.Enemies.Add(e);
             }
+        }
+
+        private void InitGame()
+        {
+            var ms = 1000.0 / _fpsWanted;
+            var ts = TimeSpan.FromMilliseconds(ms);
+
+            // Create a timer that triggers roughly every 1/30 seconds
+            Device.StartTimer(ts, TimerLoop);
+
+            _pageActive = true;
+        }
+
+        private void InitMusic()
+        {
+            int availableTracksCount = 15;
+            int songNum = this.Country.Id % availableTracksCount + 1; // Modulus ranges from 0 - 14
+            this.BattleMusic.Load(Helpers.Functions.GetStreamFromFile($"Resources.Music.Battle.{songNum}.mp3"));
+            this.BattleMusic.Play();
         }
 
         private void InitPlayer()
@@ -196,14 +208,6 @@ namespace GeoGame.Views
             this.Player.MovingLeft = true;
             this.Player.VelX = -this.Player.BaseVelX;
             this.Player.Direction = Data.BattlesData.SpriteDirection.LeftMax;
-        }
-
-        private void RightButton_Released(object sender, EventArgs e)
-        {
-            this.Player.MovingRight = false;
-            this.Player.AccelRight = this.Player.BaseAccelRight;
-            this.Player.VelX = 0;
-            this.Player.Direction = SpriteDirection.Centre;
         }
 
         private void LeftButton_Released(object sender, EventArgs e)
@@ -255,6 +259,14 @@ namespace GeoGame.Views
             this.Player.Direction = SpriteDirection.RightMax;
         }
 
+        private void RightButton_Released(object sender, EventArgs e)
+        {
+            this.Player.MovingRight = false;
+            this.Player.AccelRight = this.Player.BaseAccelRight;
+            this.Player.VelX = 0;
+            this.Player.Direction = SpriteDirection.Centre;
+        }
+
         private bool TimerLoop()
         {
             if (!this._objectsReady)  // Can't run any logic until game objects ready! (player, enemies etc)
@@ -291,7 +303,7 @@ namespace GeoGame.Views
             double killsProgress = deadCount == this.EnemyCount
                 ? 0
                 : ((double)(this.Country.Population - (deadCount * this.PopulationKillIncrementSize)) / this.Country.Population);
-            
+
             BattleStateProgress.ProgressTo(killsProgress, 100, Easing.CubicInOut);
 
             double healthBarProgress = (double)this.Player.Health / this.Player.MaxHealth;
@@ -299,13 +311,11 @@ namespace GeoGame.Views
 
             if (healthBarProgress >= 0.5)
                 HealthBar.ProgressColor = Color.LawnGreen;
-            else if(healthBarProgress >= 0.2)
+            else if (healthBarProgress >= 0.2)
                 HealthBar.ProgressColor = Color.OrangeRed;
             else
                 HealthBar.ProgressColor = Color.Red;
         }
-
-        private int PopulationKillIncrementSize { get; set; }
 
         #endregion Methods
     }

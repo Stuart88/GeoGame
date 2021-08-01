@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Plugin.SimpleAudioPlayer;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace GeoGame.Models.Battles
@@ -18,6 +19,7 @@ namespace GeoGame.Models.Battles
 
         #region Properties
 
+        public ISimpleAudioPlayer BulletFiredSound { get; set; } = CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
         public List<BulletBase> Bullets { get; set; } = new List<BulletBase>();
 
         /// <summary>
@@ -48,6 +50,9 @@ namespace GeoGame.Models.Battles
 
                 if (toFire != null)
                 {
+                    if (this.Parent.IsPlayer)
+                        this.BulletFiredSound.Play();
+
                     toFire.PosX = this.Parent.PosX + this.Parent.MainSprite.Width / 2;
                     toFire.PosY = this.Parent.PosY + (this.Parent.IsPlayer ? -this.Parent.MainSprite.Height : 0);
                     toFire.Fired = true;
