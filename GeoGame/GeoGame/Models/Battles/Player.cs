@@ -32,8 +32,10 @@ namespace GeoGame.Models.Battles
         public bool MovingLeft { get; set; }
         #endregion Properties
 
-        public float Accel { get; set; } = 400;
-        public float BaseAccel { get; set; } = 400;
+        public float AccelLeft { get; set; } = 400;
+        public float BaseAccelLeft { get; set; } = 400;
+        public float AccelRight { get; set; } = 400;
+        public float BaseAccelRight { get; set; } = 400;
         private float Jerk { get; set; } = 500;
 
         #region Methods
@@ -91,12 +93,13 @@ namespace GeoGame.Models.Battles
 
             SpriteDirection direction = this.MovingLeft ? SpriteDirection.Left : SpriteDirection.Right;
             float vMax = 1500;
-            this.Accel += dt * this.Jerk; // increasing acceleration. For nicer and more noticable increase in speed while moving left/right
 
             if (direction == SpriteDirection.Left && this.MovingLeft)
             {
+                this.AccelLeft += dt * this.Jerk; // increasing acceleration. For nicer and more noticable increase in speed while moving left/right
+                
                 if (Math.Abs(this.VelX) < vMax)
-                    this.VelX -= dt * this.Jerk;
+                    this.VelX -= dt * this.AccelLeft;
 
                 if (this.PosX > 0)
                 {
@@ -106,12 +109,15 @@ namespace GeoGame.Models.Battles
                 {
                     this.VelX = 0;
                     this.MovingLeft = false;
+                    this.AccelLeft = this.BaseAccelLeft;
                 }
             }
             else if (direction == SpriteDirection.Right && this.MovingRight)
             {
+                this.AccelRight += dt * this.Jerk; // increasing acceleration. For nicer and more noticable increase in speed while moving left/right
+                
                 if (Math.Abs(this.VelX) < vMax)
-                    this.VelX += dt * this.Accel;
+                    this.VelX += dt * this.AccelRight;
 
                 if (this.PosX + this.Width < canvasView.CanvasSize.Width)
                 {
@@ -121,6 +127,7 @@ namespace GeoGame.Models.Battles
                 {
                     this.VelX = 0;
                     this.MovingRight = false;
+                    this.AccelRight = this.BaseAccelRight;
                 }
             }
 

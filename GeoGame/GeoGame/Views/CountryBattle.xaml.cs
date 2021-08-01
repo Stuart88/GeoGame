@@ -198,11 +198,18 @@ namespace GeoGame.Views
             this.Player.Direction = Data.BattlesData.SpriteDirection.LeftMax;
         }
 
-        private void LeftRightButton_Released(object sender, EventArgs e)
+        private void RightButton_Released(object sender, EventArgs e)
         {
             this.Player.MovingRight = false;
+            this.Player.AccelRight = this.Player.BaseAccelRight;
+            this.Player.VelX = 0;
+            this.Player.Direction = SpriteDirection.Centre;
+        }
+
+        private void LeftButton_Released(object sender, EventArgs e)
+        {
             this.Player.MovingLeft = false;
-            this.Player.Accel = this.Player.BaseAccel;
+            this.Player.AccelLeft = this.Player.BaseAccelLeft;
             this.Player.VelX = 0;
             this.Player.Direction = SpriteDirection.Centre;
         }
@@ -284,10 +291,6 @@ namespace GeoGame.Views
             double killsProgress = deadCount == this.EnemyCount
                 ? 0
                 : ((double)(this.Country.Population - (deadCount * this.PopulationKillIncrementSize)) / this.Country.Population);
-
-            //Device.BeginInvokeOnMainThread(async () =>
-            //{
-            //});
             
             BattleStateProgress.ProgressTo(killsProgress, 100, Easing.CubicInOut);
 
