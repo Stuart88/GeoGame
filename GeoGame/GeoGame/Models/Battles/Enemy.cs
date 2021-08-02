@@ -68,21 +68,21 @@ namespace GeoGame.Models.Battles
             }
         }
 
-        public override void Move(float dt, SKCanvasView canvasView)
-        {
-            this.PosX += dt * this.VelX;
-            this.PosY += dt * this.VelY;
+        //public override void Move(float dt, SKCanvasView canvasView)
+        //{
+        //    //this.PosX += dt * this.VelX;
+        //    //this.PosY += dt * this.VelY;
 
-            if (this.PosX <= 0)
-            {
-                this.PosX = 1;
-                this.VelX = -this.VelX;
-            }
-            if(this.PosX >= canvasView.CanvasSize.Width - this.Width)
-            {
-                this.PosX = canvasView.CanvasSize.Width - this.Width - 1;
-                this.VelX = -this.VelX;
-            }
-        }
+        //    //if (this.PosX <= 0)
+        //    //{
+        //    //    this.PosX = 1;
+        //    //    this.VelX = -this.VelX;
+        //    //}
+        //    //if(this.PosX >= canvasView.CanvasSize.Width - this.Width)
+        //    //{
+        //    //    this.PosX = canvasView.CanvasSize.Width - this.Width - 1;
+        //    //    this.VelX = -this.VelX;
+        //    //}
+        //}
     }
 }

@@ -86,7 +86,7 @@ namespace GeoGame.Models.Battles
             }
         }
 
-        public override void Move(float dt, SKCanvasView canvasView)
+        public override void Move(float dt, float totalT, SKCanvasView canvasView)
         {
             if (!this.MovingLeft && !this.MovingRight)
                 return;

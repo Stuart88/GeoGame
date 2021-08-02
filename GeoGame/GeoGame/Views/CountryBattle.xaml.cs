@@ -1,4 +1,5 @@
 ﻿using GeoGame.Extensions;
+using GeoGame.Helpers;
 using GeoGame.Models.Battles;
 using GeoGame.Models.Geo;
 using Plugin.SimpleAudioPlayer;
@@ -21,6 +22,10 @@ namespace GeoGame.Views
 
         private const double _fpsWanted = 30.0;
         private readonly Stopwatch _stopWatch = new Stopwatch();
+        /// <summary>
+        /// Continuous timer. Useful for trig functions in object movement
+        /// </summary>
+        private readonly Stopwatch _totalTime = new Stopwatch();
         private SKColor _fillColor;
         private double _fpsAverage = 0.0;
         private int _fpsCount = 0;
@@ -41,7 +46,8 @@ namespace GeoGame.Views
             this.Country = country;
             this.Places = places;
             this.IsSmallCountry = this.Country.Population < this.PopulationScaler;
-            
+            _totalTime.Start();
+
             countryNameLabel.Text = $"Fighting {this.Country.Name}!";
         }
 
@@ -177,11 +183,14 @@ namespace GeoGame.Views
                 e.Width = canvasView.CanvasSize.Width / 10;
                 e.Height = e.Width;
                 e.Health = 40;
-                e.BaseVelX = 200; // Not currently used
-                e.BaseVelY = 40;  // Not currently used
+                e.BaseVelX = _rand.Next(50, 101);
+                e.DirectionSignX = _rand.RandomSign();
+                e.BaseVelY = 40;
+                e.OnMove += MovementFunctions.SinusoidalLeftRightFull;
                 e.VelX = _rand.Next(150, 251);
                 e.VelY = _rand.Next(35, 45);
                 e.PosX = _rand.Next(0, (int)(canvasView.CanvasSize.Width - e.Width));
+                e.BasePosX = e.PosX;
                 e.PosY = _rand.Next((int)-e.Height - 20, (int)-e.Height); // off top of screen
 
                 e.Weapon = new Blaster(e);
@@ -250,13 +259,13 @@ namespace GeoGame.Views
         {
         }
 
-        private void MoveObjects(float dt)
+        private void MoveObjects(float dt, float totalT)
         {
-            this.Player.Move(dt, canvasView);
+            this.Player.Move(dt, totalT, canvasView);
 
             foreach (var e in this.Enemies.Where(e => e.Active && !e.IsDead))
             {
-                e.Move(dt, canvasView);
+                e.Move(dt, totalT, canvasView);
             }
         }
 
@@ -326,7 +335,7 @@ namespace GeoGame.Views
             // Restart the time measurement for the next time this method is called
             _stopWatch.Restart();
 
-            MoveObjects(dt);
+            MoveObjects(dt, (float)_totalTime.Elapsed.TotalSeconds);
 
             CheckCollisions();
 

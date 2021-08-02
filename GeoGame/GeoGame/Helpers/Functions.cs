@@ -14,5 +14,16 @@ namespace GeoGame.Helpers
             var stream = assembly.GetManifestResourceStream("GeoGame." + filename);
             return stream;
         }
+
+        private static int[] PlusMinusVals = new int[2] { -1, 1 };
+
+        /// <summary>
+        /// Returns random value of +/- 1
+        /// </summary>
+        /// <returns></returns>
+        public static int RandomSign(this Random r)
+        {
+            return PlusMinusVals[r.Next(0, 2)];
+        }
     }
 }
