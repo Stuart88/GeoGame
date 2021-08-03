@@ -231,6 +231,9 @@ namespace GeoGame.Views
             MessagingCenter.Subscribe<IMessageService, Country>(this, Data.MessagingCenterMessages.WonCountryBattle, async (sender, country) =>
             {
                 await Navigation.PopModalAsync();
+
+                if (Game.GameData.CountriesDefeatedIds.Contains(country.Id)) // This was a replay battle. Don't need to do anything here.
+                    return;
                 
                 Game.GameData.CountriesDefeatedIds.Add(country.Id);
                 Game.SaveGame();

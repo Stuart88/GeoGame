@@ -210,6 +210,7 @@ namespace GeoGame.Views
                 e.Width = canvasView.CanvasSize.Width / 10;
                 e.Height = e.Width;
                 e.Health = 40;
+                e.MaxHealth = e.Health;
                 e.BaseVelX = _rand.Next(50, 101);
                 e.DirectionSignX = _rand.RandomSign();
                 e.BaseVelY = 40;
