@@ -11,8 +11,8 @@ namespace GeoGame.Models.Battles
     {
         public Enemy()
         {
-            this.SpriteSheet = BitmapExtensions.LoadBitmapResource(typeof(Enemy), "GeoGame.Resources.Sprites.enemySprites.png");
-            this.HitSpriteSheet = BitmapExtensions.LoadBitmapResource(typeof(Enemy), "GeoGame.Resources.Sprites.enemySpritesHit.png");
+            this.SpriteSheet = Sprites.EnemySpriteSheet;
+            this.HitSpriteSheet = Sprites.EnemyHitSpriteSheet;
             this.MainSprite = new SKBitmap();
             this.HitSprite = new SKBitmap();
 

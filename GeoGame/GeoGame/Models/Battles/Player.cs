@@ -15,7 +15,7 @@ namespace GeoGame.Models.Battles
         {
             this.Width = 30f;
             this.Height = 70f;
-            this.MainSprite  = BitmapExtensions.LoadBitmapResource(typeof(Player), "GeoGame.Resources.Sprites.shipCentre.png");
+            this.MainSprite  = Sprites.PlayerSpriteCentre;
         }
 
         #endregion Constructors
@@ -23,10 +23,10 @@ namespace GeoGame.Models.Battles
         #region Properties
 
         public SpriteDirection Direction { get; set; } = SpriteDirection.Centre;
-        public SKBitmap ShipLeft { get; set; } = BitmapExtensions.LoadBitmapResource(typeof(Player), "GeoGame.Resources.Sprites.shipLeft.png");
-        public SKBitmap ShipLeftMax { get; set; } = BitmapExtensions.LoadBitmapResource(typeof(Player), "GeoGame.Resources.Sprites.shipLeftMax.png");
-        public SKBitmap ShipRight { get; set; } = BitmapExtensions.LoadBitmapResource(typeof(Player), "GeoGame.Resources.Sprites.shipRight.png");
-        public SKBitmap ShipRightMax { get; set; } = BitmapExtensions.LoadBitmapResource(typeof(Player), "GeoGame.Resources.Sprites.shipRightMax.png");
+        public SKBitmap ShipLeft { get; set; } = Sprites.PlayerSpriteLeft;
+        public SKBitmap ShipLeftMax { get; set; } = Sprites.PlayerSpriteMaxLeft;
+        public SKBitmap ShipRight { get; set; } = Sprites.PlayerSpriteRight;
+        public SKBitmap ShipRightMax { get; set; } = Sprites.PlayerSpriteMaxRight;
 
         public bool MovingRight { get; set; }
         public bool MovingLeft { get; set; }

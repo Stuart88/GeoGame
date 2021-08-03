@@ -13,7 +13,7 @@
             }
 
             this.BulletsAmount = parent.IsPlayer ? 100 : 20;
-            this.FireRate = parent.IsPlayer ? 0.150d : 1.500d;
+            this.FireRate = parent.IsPlayer ? 0.100d : 1.500d;
 
             for (int i = 0; i < this.BulletsAmount; i++)
             {
