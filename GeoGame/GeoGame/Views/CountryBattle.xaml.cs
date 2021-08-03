@@ -22,10 +22,12 @@ namespace GeoGame.Views
 
         private const double _fpsWanted = 30.0;
         private readonly Stopwatch _stopWatch = new Stopwatch();
+
         /// <summary>
         /// Continuous timer. Useful for trig functions in object movement
         /// </summary>
         private readonly Stopwatch _totalTime = new Stopwatch();
+
         private SKColor _fillColor;
         private double _fpsAverage = 0.0;
         private int _fpsCount = 0;
@@ -42,7 +44,7 @@ namespace GeoGame.Views
         public CountryBattle(Country country, List<PopulatedPlace> places)
         {
             InitializeComponent();
-            
+
             this.Country = country;
             this.Places = places;
             this.IsSmallCountry = this.Country.Population < this.PopulationScaler;
@@ -54,19 +56,18 @@ namespace GeoGame.Views
         #endregion Constructors
 
         #region Properties
-        private SKBitmap StarsSmall { get; set; } = BitmapExtensions.LoadBitmapResource(typeof(Enemy), "GeoGame.Resources.Backgrounds.Stars.starsSmall.png");
-        private SKBitmap StarsMid { get; set; } = BitmapExtensions.LoadBitmapResource(typeof(Enemy), "GeoGame.Resources.Backgrounds.Stars.starsMid.png");
-
-        private SKRect StarsSmallSrcRect { get; set; }
-        private SKRect StarsMidSrcRect { get; set; }
-        private SKRect ParalaxDestRect { get; set; }
 
         public ISimpleAudioPlayer BattleMusic { get; set; } = CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
         private Country Country { get; set; }
         private List<Enemy> Enemies { get; set; }
         private bool GameWon { get; set; }
+        private SKRect ParalaxDestRect { get; set; }
         private List<PopulatedPlace> Places { get; set; }
         private Player Player { get; set; }
+        private SKBitmap StarsMid { get; set; } = BitmapExtensions.LoadBitmapResource(typeof(Enemy), "GeoGame.Resources.Backgrounds.Stars.starsMid.png");
+        private SKRect StarsMidSrcRect { get; set; }
+        private SKBitmap StarsSmall { get; set; } = BitmapExtensions.LoadBitmapResource(typeof(Enemy), "GeoGame.Resources.Backgrounds.Stars.starsSmall.png");
+        private SKRect StarsSmallSrcRect { get; set; }
 
         #endregion Properties
 
@@ -80,12 +81,18 @@ namespace GeoGame.Views
 
         private int PopulationScaler { get; } = 1000000;
 
+        private float ScreenRatio { get; set; }
+
+        private float StarsMidShift { get; set; }
+
+        private float StarsSmallShift { get; set; }
+
         protected override void OnAppearing()
         {
             base.OnAppearing();
 
             InitMusic();
-            
+
             InitGame();
         }
 
@@ -131,26 +138,42 @@ namespace GeoGame.Views
             }
         }
 
+        private void DoStarsParallax(float dt)
+        {
+            this.StarsSmallSrcRect = new SKRect(0, this.StarsSmall.Height / 2 - this.StarsSmallShift, this.StarsSmall.Width / 2 * this.ScreenRatio, this.StarsSmall.Height - this.StarsSmallShift);
+            this.StarsMidSrcRect = new SKRect(0, this.StarsMid.Height / 2 - this.StarsMidShift, this.StarsMid.Width / 2 * this.ScreenRatio, this.StarsMid.Height - this.StarsMidShift);
+
+            this.StarsSmallShift += 90 * dt;
+            if (this.StarsSmallShift > this.StarsSmall.Height / 2)
+                this.StarsSmallShift = 0;
+
+            this.StarsMidShift += 80 * dt;
+            if (this.StarsMidShift > this.StarsMid.Height / 2)
+                this.StarsMidShift = 0;
+        }
+
         private void DrawObjects(SKCanvas canvas, SKPaint skPaint)
         {
-            
             // Need to do this here cos ScreenRation remains as Nan is initialised too early.
-            if(this.ScreenRatio == 0 || this.ScreenRatio == float.NaN)
+            if (this.ScreenRatio == 0 || this.ScreenRatio == float.NaN)
             {
                 this.ScreenRatio = canvasView.CanvasSize.Width / canvasView.CanvasSize.Height;
                 this.StarsSmallSrcRect = new SKRect(0, 0, this.StarsSmall.Width / 2 * this.ScreenRatio, this.StarsSmall.Height / 2);
                 this.StarsMidSrcRect = new SKRect(0, 0, this.StarsMid.Width / 2 * this.ScreenRatio, this.StarsMid.Height / 2);
                 this.ParalaxDestRect = new SKRect(0, 0, canvasView.CanvasSize.Width, canvasView.CanvasSize.Height);
             }
-            
+
             canvas.DrawBitmap(this.StarsMid, this.StarsMidSrcRect, this.ParalaxDestRect, skPaint);
             canvas.DrawBitmap(this.StarsSmall, this.StarsSmallSrcRect, this.ParalaxDestRect, skPaint);
 
+            this.Player.Draw(ref canvas, canvasView.CanvasSize);
+            this.Player.DrawBullets(ref canvas, canvasView.CanvasSize);
 
-            this.Player.Draw(ref canvas, skPaint, canvasView.CanvasSize);
-
-            foreach (var en in this.Enemies.Where(e => e.Active && !e.IsDead))
-                en.Draw(ref canvas, skPaint, canvasView.CanvasSize);
+            foreach (var en in this.Enemies)
+            {
+                en.Draw(ref canvas, canvasView.CanvasSize);
+                en.DrawBullets(ref canvas, canvasView.CanvasSize);
+            }
         }
 
         private void FireWeapons(float dt)
@@ -204,11 +227,6 @@ namespace GeoGame.Views
             }
         }
 
-        private float ScreenRatio { get; set; }
-
-        private float StarsSmallShift { get; set; }
-        private float StarsMidShift { get; set; }
-
         private void InitGame()
         {
             var ms = 1000.0 / _fpsWanted;
@@ -236,6 +254,7 @@ namespace GeoGame.Views
             this.Player.Width = canvasView.CanvasSize.Width / 15;
             this.Player.Height = this.Player.Width * 2f;
             this.Player.PosX = (canvasView.CanvasSize.Width - this.Player.Width) / 2;
+            this.Player.PosY = canvasView.CanvasSize.Height * (1 - 0.01f);
             this.Player.Weapon = new Blaster(this.Player);
             this.Player.BaseVelX = 500;
         }
@@ -302,21 +321,6 @@ namespace GeoGame.Views
             this.Player.AccelRight = this.Player.BaseAccelRight;
             this.Player.VelX = 0;
             this.Player.Direction = SpriteDirection.Centre;
-        }
-
-        private void DoStarsParallax(float dt)
-        {
-            this.StarsSmallSrcRect = new SKRect(0, this.StarsSmall.Height / 2 - this.StarsSmallShift, this.StarsSmall.Width / 2 * this.ScreenRatio, this.StarsSmall.Height - this.StarsSmallShift);
-            this.StarsMidSrcRect = new SKRect(0, this.StarsMid.Height / 2 - this.StarsMidShift, this.StarsMid.Width / 2 * this.ScreenRatio, this.StarsMid.Height - this.StarsMidShift);
-
-
-            this.StarsSmallShift += 90 * dt;
-            if (this.StarsSmallShift > this.StarsSmall.Height / 2)
-                this.StarsSmallShift = 0;
-
-            this.StarsMidShift += 80 * dt;
-            if (this.StarsMidShift > this.StarsMid.Height / 2)
-                this.StarsMidShift = 0;
         }
 
         private bool TimerLoop()

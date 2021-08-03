@@ -1,5 +1,6 @@
 ﻿using SkiaSharp;
 using SkiaSharp.Views.Forms;
+using System.Linq;
 
 namespace GeoGame.Models.Battles
 {
@@ -91,7 +92,17 @@ namespace GeoGame.Models.Battles
             }
         }
 
-        public abstract void Draw(ref SKCanvas canvas, SKPaint skPaint, SKSize canvasSize);
+        public abstract void Draw(ref SKCanvas canvas, SKSize canvasSize);
+        public virtual void DrawBullets(ref SKCanvas canvas, SKSize canvasSize)
+        {
+            foreach (var b in this.Weapon.Bullets.Where(b => b.Fired))
+            {
+                b.Move();
+                b.CheckStillInView(canvasSize);
+                if (b.Fired)
+                    canvas.DrawBitmap(b.Sprite, b.PosX, b.PosY);
+            }
+        }
 
         public virtual void Move(float dt, float totalT, SKCanvasView canvasView)
         {

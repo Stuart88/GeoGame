@@ -1,8 +1,6 @@
-﻿using GeoGame.Extensions;
-using SkiaSharp;
+﻿using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using System;
-using Xamarin.Forms;
 using static GeoGame.Data.BattlesData;
 
 namespace GeoGame.Models.Battles
@@ -15,7 +13,7 @@ namespace GeoGame.Models.Battles
         {
             this.Width = 30f;
             this.Height = 70f;
-            this.MainSprite  = Sprites.PlayerSpriteCentre;
+            this.MainSprite = Sprites.PlayerSpriteCentre;
         }
 
         #endregion Constructors
@@ -23,18 +21,18 @@ namespace GeoGame.Models.Battles
         #region Properties
 
         public SpriteDirection Direction { get; set; } = SpriteDirection.Centre;
+        public bool MovingLeft { get; set; }
+        public bool MovingRight { get; set; }
         public SKBitmap ShipLeft { get; set; } = Sprites.PlayerSpriteLeft;
         public SKBitmap ShipLeftMax { get; set; } = Sprites.PlayerSpriteMaxLeft;
         public SKBitmap ShipRight { get; set; } = Sprites.PlayerSpriteRight;
         public SKBitmap ShipRightMax { get; set; } = Sprites.PlayerSpriteMaxRight;
 
-        public bool MovingRight { get; set; }
-        public bool MovingLeft { get; set; }
         #endregion Properties
 
         public float AccelLeft { get; set; } = 400;
-        public float BaseAccelLeft { get; set; } = 400;
         public float AccelRight { get; set; } = 400;
+        public float BaseAccelLeft { get; set; } = 400;
         public float BaseAccelRight { get; set; } = 400;
         private float Jerk { get; set; } = 500;
 
@@ -45,44 +43,31 @@ namespace GeoGame.Models.Battles
             this.Weapon = weapon;
         }
 
-        public override void Draw(ref SKCanvas canvas, SKPaint skPaint, SKSize canvasSize)
+        public override void Draw(ref SKCanvas canvas, SKSize canvasSize)
         {
-            //this.PosX = this.PosX;
-            this.PosY = canvasSize.Height * (1 - 0.01f);
-
             SKRect drawRect = new SKRect(this.PosX, this.PosY - this.Height, this.PosX + this.Width, this.PosY);
 
             switch (this.Direction)
             {
                 case SpriteDirection.Centre:
-                    canvas.DrawBitmap(this.MainSprite, drawRect, skPaint);
+                    canvas.DrawBitmap(this.MainSprite, drawRect);
                     break;
 
                 case SpriteDirection.Left:
-                    canvas.DrawBitmap(this.ShipLeft, drawRect, skPaint);
+                    canvas.DrawBitmap(this.ShipLeft, drawRect);
                     break;
 
                 case SpriteDirection.Right:
-                    canvas.DrawBitmap(this.ShipRight, drawRect, skPaint);
+                    canvas.DrawBitmap(this.ShipRight, drawRect);
                     break;
 
                 case SpriteDirection.LeftMax:
-                    canvas.DrawBitmap(this.ShipLeftMax, drawRect, skPaint);
+                    canvas.DrawBitmap(this.ShipLeftMax, drawRect);
                     break;
 
                 case SpriteDirection.RightMax:
-                    canvas.DrawBitmap(this.ShipRightMax, drawRect, skPaint);
+                    canvas.DrawBitmap(this.ShipRightMax, drawRect);
                     break;
-            }
-
-            //Draw bullets
-
-            foreach (var b in this.Weapon.Bullets)
-            {
-                b.Move();
-                b.CheckStillInView(canvasSize);
-                if (b.Fired)
-                    canvas.DrawBitmap(b.Sprite, b.PosX, b.PosY);
             }
         }
 
@@ -97,7 +82,7 @@ namespace GeoGame.Models.Battles
             if (direction == SpriteDirection.Left && this.MovingLeft)
             {
                 this.AccelLeft += dt * this.Jerk; // increasing acceleration. For nicer and more noticable increase in speed while moving left/right
-                
+
                 if (Math.Abs(this.VelX) < vMax)
                     this.VelX -= dt * this.AccelLeft;
 
@@ -115,7 +100,7 @@ namespace GeoGame.Models.Battles
             else if (direction == SpriteDirection.Right && this.MovingRight)
             {
                 this.AccelRight += dt * this.Jerk; // increasing acceleration. For nicer and more noticable increase in speed while moving left/right
-                
+
                 if (Math.Abs(this.VelX) < vMax)
                     this.VelX += dt * this.AccelRight;
 
@@ -130,7 +115,6 @@ namespace GeoGame.Models.Battles
                     this.AccelRight = this.BaseAccelRight;
                 }
             }
-
         }
 
         #endregion Methods

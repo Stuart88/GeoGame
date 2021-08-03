@@ -1,14 +1,12 @@
-﻿using GeoGame.Extensions;
-using SkiaSharp;
-using SkiaSharp.Views.Forms;
+﻿using SkiaSharp;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace GeoGame.Models.Battles
 {
     public class Enemy : MovingObjectBase
     {
+        #region Constructors
+
         public Enemy()
         {
             this.SpriteSheet = Sprites.EnemySpriteSheet;
@@ -17,8 +15,11 @@ namespace GeoGame.Models.Battles
             this.HitSprite = new SKBitmap();
 
             this.Weapon = new Blaster(this);
-            
         }
+
+        #endregion Constructors
+
+        #region Methods
 
         /// <summary>
         /// Assigns sprite from 10x10 sprite sheet
@@ -32,57 +33,31 @@ namespace GeoGame.Models.Battles
 
             int w = this.SpriteSheet.Width;
             int h = this.SpriteSheet.Height;
-            
+
             int spriteW = w / 10;
             int spriteH = h / 10;
 
-            var subsetRect = new SKRectI(i * spriteW, j * spriteH, spriteW * (i + 1), spriteH *(j + 1));
+            var subsetRect = new SKRectI(i * spriteW, j * spriteH, spriteW * (i + 1), spriteH * (j + 1));
 
             this.SpriteSheet.ExtractSubset(this.MainSprite, subsetRect);
             this.HitSpriteSheet.ExtractSubset(this.HitSprite, subsetRect);
         }
 
-        public override void Draw(ref SKCanvas canvas, SKPaint skPaint, SKSize canvasSize)
+        public override void Draw(ref SKCanvas canvas, SKSize canvasSize)
         {
-
             SKRect drawRect = new SKRect(this.PosX, this.PosY - this.Height, this.PosX + this.Width, this.PosY);
 
-            if (this.HitByBullet)
+            if (this.Active && !this.IsDead && !this.HitByBullet)
             {
-                canvas.DrawBitmap(this.HitSprite, drawRect, skPaint);
+                canvas.DrawBitmap(this.MainSprite, drawRect);
+            }
+            else if (this.HitByBullet)
+            {
+                canvas.DrawBitmap(this.HitSprite, drawRect);
                 this.HitByBullet = false;
-            }
-            else
-            {
-                canvas.DrawBitmap(this.MainSprite, drawRect, skPaint);
-            }
-
-            //Draw bullets
-
-            foreach (var b in this.Weapon.Bullets)
-            {
-                b.Move();
-                b.CheckStillInView(canvasSize);
-                if (b.Fired)
-                    canvas.DrawBitmap(b.Sprite, b.PosX, b.PosY);
             }
         }
 
-        //public override void Move(float dt, SKCanvasView canvasView)
-        //{
-        //    //this.PosX += dt * this.VelX;
-        //    //this.PosY += dt * this.VelY;
-
-        //    //if (this.PosX <= 0)
-        //    //{
-        //    //    this.PosX = 1;
-        //    //    this.VelX = -this.VelX;
-        //    //}
-        //    //if(this.PosX >= canvasView.CanvasSize.Width - this.Width)
-        //    //{
-        //    //    this.PosX = canvasView.CanvasSize.Width - this.Width - 1;
-        //    //    this.VelX = -this.VelX;
-        //    //}
-        //}
+        #endregion Methods
     }
 }
