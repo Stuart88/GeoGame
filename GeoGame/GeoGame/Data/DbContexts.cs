@@ -31,7 +31,7 @@ namespace GeoGame.Data
 
         public Task<List<Country>> GetAllCountries()
         {
-            return CountriesDb.QueryAsync<Country>("SELECT ogc_fid, admin, name_en, name_long, continent, region_un, subregion, pop_est, GEOMETRY FROM countriessmall");
+            return CountriesDb.QueryAsync<Country>("SELECT ogc_fid, admin, name_en, name_long, continent, region_un, subregion, pop_est, GEOMETRY FROM countriessmall ORDER BY pop_est ASC");
         }
 
         public async Task<Country> GetCountry(int id)

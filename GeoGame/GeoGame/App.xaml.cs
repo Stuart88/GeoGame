@@ -12,6 +12,8 @@ namespace GeoGame
         {
             InitializeComponent();
 
+            Data.Game.LoadGame();
+
             MainPage = new AppShell();
         }
 

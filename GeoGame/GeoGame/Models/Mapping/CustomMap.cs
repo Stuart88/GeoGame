@@ -7,7 +7,7 @@ namespace GeoGame.Models.Mapping
 {
     public class CustomMap : Map
     {
-        public CustomMap(MapSpan region) : base(region)
+        public CustomMap() : base()
         {
 
         }

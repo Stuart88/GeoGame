@@ -1,10 +1,10 @@
 ﻿namespace GeoGame.Models.Battles
 {
-    public class Blaster : WeaponBase
+    public class SlowBlaster : WeaponBase
     {
         #region Constructors
 
-        public Blaster(MovingObjectBase parent) : base(parent)
+        public SlowBlaster(MovingObjectBase parent) : base(parent)
         {
             if (this.Parent.IsPlayer)
             {
@@ -12,12 +12,12 @@
                 this.BulletFiredSound.Volume = 0.1;
             }
 
-            this.BulletsAmount = parent.IsPlayer ? 100 : 20;
-            this.FireRate = parent.IsPlayer ? 0.100d : 1.00d;
+            this.BulletsAmount = parent.IsPlayer ? 20 : 10;
+            this.FireRate = parent.IsPlayer ? 0.400d : 1.500d;
 
             for (int i = 0; i < this.BulletsAmount; i++)
             {
-                this.Bullets.Add(new BlasterBullet(this));
+                this.Bullets.Add(new SlowBlasterBullet(this));
             }
         }
 

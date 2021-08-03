@@ -255,7 +255,7 @@ namespace GeoGame.Views
             this.Player.Height = this.Player.Width * 2f;
             this.Player.PosX = (canvasView.CanvasSize.Width - this.Player.Width) / 2;
             this.Player.PosY = canvasView.CanvasSize.Height * (1 - 0.01f);
-            this.Player.Weapon = new Blaster(this.Player);
+            this.Player.Weapon = new SlowBlaster(this.Player);
             this.Player.BaseVelX = 500;
         }
 
