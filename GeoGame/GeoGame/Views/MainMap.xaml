@@ -4,10 +4,38 @@
              xmlns:maps="clr-namespace:Xamarin.Forms.Maps;assembly=Xamarin.Forms.Maps"
              x:Class="GeoGame.Views.MainMap"
              x:Name="Page">
-    <AbsoluteLayout VerticalOptions="Fill">
-        <ContentView x:Name="MapContentArea" AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0,0,1,1">
-            <!-- ... -->
-        </ContentView>
-        <ActivityIndicator x:Name="LoadingSpinner"  AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds=".5,.5,-1,-1" />
+    <AbsoluteLayout VerticalOptions="Fill" >
+        <Grid AbsoluteLayout.LayoutFlags="All" AbsoluteLayout.LayoutBounds="0,0,1,1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+            <ContentView x:Name="MapContentArea" Grid.Row="0"/>
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Label x:Name="SelectedCountryLabel" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="{Binding SelectedCountry.Name, Mode=OneWay}" TextColor="Black"/>
+                <Label x:Name="PopulationLabel" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Population: " TextColor="Black"/>
+                            <Span Text="{Binding SelectedCountry.Population, Mode=OneWay}" TextColor="Black"/>
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <Button x:Name="PreviousCountryBtn" Grid.Row="2" Grid.Column="0" Text="Prev" Clicked="PreviousCountryBtn_Clicked"/>
+                <Button x:Name="BeginBattleBtn" Grid.Row="2" Grid.Column="1" Text="FIGHT!" Clicked="BeginBattleBtn_Clicked"/>
+                <Button x:Name="NextCountryBtn" Grid.Row="2" Grid.Column="2" Text="Next" Clicked="NextCountryBtn_Clicked"/>
+            </Grid>
+        </Grid>
+            <ActivityIndicator x:Name="LoadingSpinner"  AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds=".5,.5,-1,-1" />
     </AbsoluteLayout>
 </ContentPage>

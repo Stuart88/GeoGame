@@ -1,5 +1,6 @@
 ﻿using GeoGame.Extensions;
 using GeoGame.Helpers;
+using GeoGame.Interfaces;
 using GeoGame.Models.Battles;
 using GeoGame.Models.Geo;
 using Plugin.SimpleAudioPlayer;
@@ -16,7 +17,7 @@ using static GeoGame.Data.BattlesData;
 namespace GeoGame.Views
 {
     [XamlCompilation(XamlCompilationOptions.Compile)]
-    public partial class CountryBattle : ContentPage
+    public partial class CountryBattle : ContentPage, IMessageService
     {
         #region Fields
 
@@ -41,12 +42,11 @@ namespace GeoGame.Views
 
         #region Constructors
 
-        public CountryBattle(Country country, List<PopulatedPlace> places)
+        public CountryBattle(Country country)
         {
             InitializeComponent();
 
             this.Country = country;
-            this.Places = places;
             this.IsSmallCountry = this.Country.Population < this.PopulationScaler;
             _totalTime.Start();
 
@@ -62,7 +62,6 @@ namespace GeoGame.Views
         private List<Enemy> Enemies { get; set; }
         private bool GameWon { get; set; }
         private SKRect ParalaxDestRect { get; set; }
-        private List<PopulatedPlace> Places { get; set; }
         private Player Player { get; set; }
         private SKBitmap StarsMid { get; set; } = BitmapExtensions.LoadBitmapResource(typeof(Enemy), "GeoGame.Resources.Backgrounds.Stars.starsMid.png");
         private SKRect StarsMidSrcRect { get; set; }
@@ -134,8 +133,13 @@ namespace GeoGame.Views
             {
                 this.GameWon = true;
                 this._pageActive = false;
-                _ = DisplayAlert("Game Over", "You win!", "OK");
+                this.OnGameWon();
             }
+        }
+
+        private void OnGameWon()
+        {
+            MessagingCenter.Send<IMessageService, Country>(this, Data.MessagingCenterMessages.WonCountryBattle, this.Country);
         }
 
         private void DoStarsParallax(float dt)
@@ -225,6 +229,8 @@ namespace GeoGame.Views
 
                 this.Enemies.Add(e);
             }
+
+            this.MaxEnemyHealth = this.Enemies.Sum(e => e.MaxHealth);
         }
 
         private void InitGame()
@@ -351,19 +357,16 @@ namespace GeoGame.Views
             return _pageActive;
         }
 
+        public int MaxEnemyHealth { get; set; }
+
         /// <summary>
         /// Update labels, health, progress bar, etc
         /// </summary>
         private void UpdateScreenInformation()
         {
             // Progress bar starts full then progresses down to 0
-            int deadCount = this.Enemies.Count(e => e.IsDead);
-
-            double killsProgress = deadCount == this.EnemyCount
-                ? 0
-                : ((double)(this.Country.Population - (deadCount * this.PopulationKillIncrementSize)) / this.Country.Population);
-
-            BattleStateProgress.ProgressTo(killsProgress, 100, Easing.CubicInOut);
+            int remainingEnemyHealth = this.Enemies.Sum(e => e.Health);
+            BattleStateProgress.ProgressTo((double)remainingEnemyHealth / this.MaxEnemyHealth, 100, Easing.CubicInOut);
 
             double healthBarProgress = (double)this.Player.Health / this.Player.MaxHealth;
             HealthBar.ProgressTo(healthBarProgress, 200, Easing.CubicInOut);

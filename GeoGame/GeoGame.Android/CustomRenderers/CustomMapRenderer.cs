@@ -140,8 +140,8 @@ namespace GeoGame.Droid.CustomRenderers
             NativeMap.InfoWindowClick += OnInfoWindowClick;
             NativeMap.SetInfoWindowAdapter(this);
             NativeMap.MapClick += NativeMap_MapClick;
-            NativeMap.PolygonClick += NativeMap_PolygonClick;
-            NativeMap.MapLongClick += NativeMap_MapLongClick;
+            //NativeMap.PolygonClick += NativeMap_PolygonClick;
+            //NativeMap.MapLongClick += NativeMap_MapLongClick;
         }
 
         private async void AddPopulatedPlacesForCountry(Country country)
@@ -308,7 +308,7 @@ namespace GeoGame.Droid.CustomRenderers
             Country country = this.CountryPolygons.First(p => this.SelectedPolygons.Any(poly => poly.ZIndex == p.Item1.Id)).Item1;
             List<PopulatedPlace> places = this.PopulatedPlaceMarkers.Select(p => p.place).ToList(); 
             
-            MessagingCenter.Send<IMessageService, (Country, List<PopulatedPlace>)>(this, Data.MessagingCenterMessages.OpenCountryBattle, (country, places));
+            MessagingCenter.Send<IMessageService, Country>(this, Data.MessagingCenterMessages.OpenCountryBattle, country);
         }
 
         private bool PointInVisibleRegion(VisibleRegion v, LatLng c)

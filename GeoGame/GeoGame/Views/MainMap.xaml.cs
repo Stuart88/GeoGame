@@ -34,6 +34,8 @@ namespace GeoGame.Views
             InitMap();
         }
 
+        private MainMapViewModel GetViewModel => (MainMapViewModel)this.BindingContext;
+
         protected override void OnAppearing()
         {
             this.Music.Play();
@@ -59,6 +61,7 @@ namespace GeoGame.Views
         public ISimpleAudioPlayer Music { get; set; } = CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
         private DbContexts Contexts { get; set; }
         private List<Country> Countries { get; set; }
+        //private Country SelectedCountry { get; set; }
         private CustomMap Map { get; set; }
 
         #endregion Properties
@@ -100,22 +103,27 @@ namespace GeoGame.Views
                 this.Contexts = await DbContexts.Instance;
                 this.Countries = await this.Contexts.GetAllCountries();
 
-                foreach (var c in this.Countries)
+                foreach (Country c in this.Countries)
                 {
                     DrawGeometries(c, c.Geometry);
                 }
 
                 // Get country the player is currently on
 
-                var currentCountry = this.Countries.FirstOrDefault(c => !Game.GameData.CountriesDefeatedIds.Contains(c.Id));
+                this.GetViewModel.SelectedCountry = GetNextCountryToBattle();
 
                 this.Map.Opacity = 1;
 
-                PanMapToCountry(currentCountry);
+                PanMapToCountry(this.GetViewModel.SelectedCountry);
 
 
                 this.HideSpinner();
             }));
+        }
+
+        private Country GetNextCountryToBattle()
+        {
+            return this.Countries.FirstOrDefault(c => !Game.GameData.CountriesDefeatedIds.Contains(c.Id));
         }
 
         private void PanMapToCountry(Country c)
@@ -167,7 +175,7 @@ namespace GeoGame.Views
 
             for (int i = 0; i < g.NumGeometries; i++)
             {
-                var thisGeom = g.GetGeometryN(i);
+                NetTopologySuite.Geometries.Geometry thisGeom = g.GetGeometryN(i);
                 if (thisGeom.Area > area)
                     largestGeo = thisGeom;
             }
@@ -215,12 +223,76 @@ namespace GeoGame.Views
 
         private void SubscribeToMessages()
         {
-            MessagingCenter.Subscribe<IMessageService, (Country, List<PopulatedPlace>)>(this, Data.MessagingCenterMessages.OpenCountryBattle, async (sender, data) =>
+            MessagingCenter.Subscribe<IMessageService, Country>(this, Data.MessagingCenterMessages.OpenCountryBattle, async (sender, data) =>
             {
-                await Navigation.PushModalAsync(new CountryBattle(data.Item1, data.Item2));
+                await Navigation.PushModalAsync(new CountryBattle(data));
+            });
+
+            MessagingCenter.Subscribe<IMessageService, Country>(this, Data.MessagingCenterMessages.WonCountryBattle, async (sender, country) =>
+            {
+                await Navigation.PopModalAsync();
+                
+                Game.GameData.CountriesDefeatedIds.Add(country.Id);
+                Game.SaveGame();
+
+                Country nextCountry = GetNextCountryToBattle();
+
+                if(nextCountry == null)
+                {
+                    // GAME FINISHED?!
+                }
+                else
+                {
+                    this.GetViewModel.SelectedCountry = nextCountry;
+                    //this.UpdateLabels();
+                    this.PanMapToCountry(this.GetViewModel.SelectedCountry);
+                }
             });
         }
 
         #endregion Methods
+
+        private void PreviousCountryBtn_Clicked(object sender, EventArgs e)
+        {
+            int i = this.Countries.IndexOf(this.GetViewModel.SelectedCountry);
+
+            if (i == 0) // Already at start of list
+                return;
+
+            this.GetViewModel.SelectedCountry = this.Countries[i-1];
+
+            this.PanMapToCountry(this.GetViewModel.SelectedCountry);
+
+            //this.UpdateLabels();
+        }
+
+        private async void BeginBattleBtn_Clicked(object sender, EventArgs e)
+        {
+            await Navigation.PushModalAsync(new CountryBattle(this.GetViewModel.SelectedCountry));
+        }
+
+        private void UpdateLabels()
+        {
+            this.SelectedCountryLabel.Text = $"{this.GetViewModel.SelectedCountry.Name}";
+            this.PopulationLabel.Text = $"{this.GetViewModel.SelectedCountry.Population}";
+        }
+
+        private void NextCountryBtn_Clicked(object sender, EventArgs e)
+        {
+            if (!Game.GameData.CountriesDefeatedIds.Contains(this.GetViewModel.SelectedCountry.Id)) // If country not defeated, cannot go further
+                return;
+
+            int i = this.Countries.IndexOf(this.GetViewModel.SelectedCountry);
+            
+            if (i == this.Countries.Count - 1) // already at last country
+                return;
+
+            this.GetViewModel.SelectedCountry = this.Countries[i + 1];
+            //this.UpdateLabels();
+
+            this.PanMapToCountry(this.GetViewModel.SelectedCountry);
+
+
+        }
     }
 }

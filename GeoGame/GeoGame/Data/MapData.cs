@@ -25,13 +25,11 @@ namespace GeoGame.Data
                     GameData = JsonConvert.DeserializeObject<GameData>(jsonData);
                 }
             }
+           
         }
 
         public static void SaveGame()
         {
-            if (!File.Exists(SaveGameFile))
-                File.Create(SaveGameFile);
-
             string json = JsonConvert.SerializeObject(GameData);
 
             File.WriteAllText(SaveGameFile, json);
@@ -82,6 +80,7 @@ namespace GeoGame.Data
         #region Fields
 
         public static readonly string OpenCountryBattle = "OpenCountryBattle";
+        public static readonly string WonCountryBattle = "WonCountryBattle";
 
         #endregion Fields
     }
