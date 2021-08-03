@@ -128,6 +128,8 @@ namespace GeoGame.Views
 
         private void PanMapToCountry(Country c)
         {
+            MessagingCenter.Send<IMessageService, Country>(this, Data.MessagingCenterMessages.HighlightCountry, c);
+
             NetTopologySuite.Geometries.Geometry geom = GetLargestGeometry(c);
 
             Distance d = MaxDistanceAcrossCountry(geom.EnvelopeInternal);
@@ -221,7 +223,7 @@ namespace GeoGame.Views
             LoadingSpinner.IsRunning = true;
         }
 
-        private void SubscribeToMessages()
+        public void SubscribeToMessages()
         {
             MessagingCenter.Subscribe<IMessageService, Country>(this, Data.MessagingCenterMessages.OpenCountryBattle, async (sender, data) =>
             {

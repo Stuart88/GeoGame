@@ -10,6 +10,7 @@ using NetTopologySuite.Geometries;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Xamarin.Essentials;
 using Xamarin.Forms;
 using Xamarin.Forms.Maps.Android;
@@ -19,7 +20,7 @@ using Xamarin.Forms.Maps.Android;
 
 namespace GeoGame.Droid.CustomRenderers
 {
-    public class CustomMapRenderer : MapRenderer, GoogleMap.IInfoWindowAdapter, IMapMethods, IMessageService
+    public class CustomMapRenderer : MapRenderer, GoogleMap.IInfoWindowAdapter, IMessageService
     {
         #region Constructors
 
@@ -58,6 +59,15 @@ namespace GeoGame.Droid.CustomRenderers
         public Android.Views.View GetInfoWindow(Marker marker)
         {
             return null; // Default info window
+        }
+
+        public async void HighlightCountry(Country c)
+        {
+            if(this.CountryPolygons.Any(p => p.Item1.Id == c.Id))
+            {
+                var poly = this.CountryPolygons.FirstOrDefault(p => p.Item1.Id == c.Id);
+                await this.HighlightPolygon(poly.Item2);
+            }
         }
 
         public void SetMapTheme(Data.MapEnums.MapTheme theme)
@@ -142,6 +152,7 @@ namespace GeoGame.Droid.CustomRenderers
             NativeMap.MapClick += NativeMap_MapClick;
             //NativeMap.PolygonClick += NativeMap_PolygonClick;
             //NativeMap.MapLongClick += NativeMap_MapLongClick;
+            SubscribeToMessages();
         }
 
         private async void AddPopulatedPlacesForCountry(Country country)
@@ -240,23 +251,23 @@ namespace GeoGame.Droid.CustomRenderers
             this.SetMapTheme((Data.MapEnums.MapTheme)themeVal);
         }
 
-        private async void NativeMap_PolygonClick(object sender, GoogleMap.PolygonClickEventArgs e)
+        private async Task HighlightPolygon(Android.Gms.Maps.Model.Polygon p)
         {
-            if (this.SelectedPolygons.Any(p => e.Polygon.ZIndex == p.ZIndex))
+            if (this.SelectedPolygons.Any(poly => poly.ZIndex == p.ZIndex))
                 return; // Already selected.
 
             // Previously clicked polygons redraw with defaults
             if (this.SelectedPolygons.Count > 0)
             {
-                foreach (var p in this.SelectedPolygons.ToList())
+                foreach (var poly in this.SelectedPolygons.ToList())
                 {
-                    NativeMap.AddPolygon(ClonePolygonWithDefaults(p));
-                    p.Remove();
-                    this.SelectedPolygons.Remove(p);
+                    NativeMap.AddPolygon(ClonePolygonWithDefaults(poly));
+                    poly.Remove();
+                    this.SelectedPolygons.Remove(poly);
                 }
             }
 
-            int countryId = (int)e.Polygon.ZIndex;
+            int countryId = (int)p.ZIndex;
             var db = await Data.DbContexts.Instance;
             var country = await db.GetCountry(countryId);
 
@@ -274,33 +285,48 @@ namespace GeoGame.Droid.CustomRenderers
                 //Save this new polygon for later as it will need to be redrawn with defaults after another is clicked
                 this.CountryPolygons.Add((c.Item1, addedPoly));
             }
+        }
 
-            var v = NativeMap.Projection.VisibleRegion;
+        private async void NativeMap_PolygonClick(object sender, GoogleMap.PolygonClickEventArgs e)
+        {
+            await this.HighlightPolygon(e.Polygon);
+
+           
+
+            //var v = NativeMap.Projection.VisibleRegion;
 
             // get all country geometry points that are in the visible region
-            List<LatLng> visiblePoints = country.Geometry.Coordinates.Select(s => new LatLng(s.Y, s.X)).Where(c => PointInVisibleRegion(v, c)).ToList();
+            //List<LatLng> visiblePoints = country.Geometry.Coordinates.Select(s => new LatLng(s.Y, s.X)).Where(c => PointInVisibleRegion(v, c)).ToList();
 
             // Marker point will be the centre point of the visible region that the country is showing
-            LatLng centroid = GetPointsCentre(visiblePoints);
+            //LatLng centroid = GetPointsCentre(visiblePoints);
 
-            this.ShowingMarker?.Remove();
+            //this.ShowingMarker?.Remove();
 
             //Show populated places for clicked country
 
-            this.AddPopulatedPlacesForCountry(country);
+            //this.AddPopulatedPlacesForCountry(country);
 
             //Show info window for clicked country
 
-            var infoMarker = new MarkerOptions();
-            infoMarker.SetAlpha(0.0f);
-            infoMarker.SetTitle($"This area belongs to {country.NameOfficial}");
-            infoMarker.SetPosition(centroid);
-            infoMarker.Anchor(0, 0);
-            //infoMarker.SetIcon(null);
-            Marker tempMarker = NativeMap.AddMarker(infoMarker);
-            tempMarker.ShowInfoWindow();
+            //var infoMarker = new MarkerOptions();
+            //infoMarker.SetAlpha(0.0f);
+            //infoMarker.SetTitle($"This area belongs to {country.NameOfficial}");
+            //infoMarker.SetPosition(centroid);
+            //infoMarker.Anchor(0, 0);
+            ////infoMarker.SetIcon(null);
+            //Marker tempMarker = NativeMap.AddMarker(infoMarker);
+            //tempMarker.ShowInfoWindow();
             
-            this.ShowingMarker = tempMarker;
+            //this.ShowingMarker = tempMarker;
+        }
+
+        public void SubscribeToMessages()
+        {
+            MessagingCenter.Subscribe<IMessageService, Country>(this, Data.MessagingCenterMessages.HighlightCountry, (sender, c) =>
+            {
+                this.HighlightCountry(c);
+            });
         }
 
         private void OnInfoWindowClick(object sender, GoogleMap.InfoWindowClickEventArgs e)

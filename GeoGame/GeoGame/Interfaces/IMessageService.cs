@@ -6,6 +6,8 @@ namespace GeoGame.Interfaces
 {
     public interface IMessageService
     {
-        // Necessary for all areas sendng messaged to each other to have unified type
+        // Necessary for all areas sending messaged to each other to have unified type
+
+        void SubscribeToMessages();
     }
 }

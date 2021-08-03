@@ -81,6 +81,7 @@ namespace GeoGame.Data
 
         public static readonly string OpenCountryBattle = "OpenCountryBattle";
         public static readonly string WonCountryBattle = "WonCountryBattle";
+        public static readonly string HighlightCountry = "HighlightCountry";
 
         #endregion Fields
     }

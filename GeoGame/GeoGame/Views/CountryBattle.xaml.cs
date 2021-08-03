@@ -45,6 +45,7 @@ namespace GeoGame.Views
         public CountryBattle(Country country)
         {
             InitializeComponent();
+            SubscribeToMessages();
 
             this.Country = country;
             this.IsSmallCountry = this.Country.Population < this.PopulationScaler;
@@ -378,6 +379,11 @@ namespace GeoGame.Views
                 HealthBar.ProgressColor = Color.OrangeRed;
             else
                 HealthBar.ProgressColor = Color.Red;
+        }
+
+        public void SubscribeToMessages()
+        {
+            
         }
 
         #endregion Methods
