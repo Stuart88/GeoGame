@@ -76,8 +76,8 @@ namespace GeoGame.Models.Battles
 
         public void CheckCollisionWithBullet(BulletBase bullet)
         {
-            if (bullet.PosX >= this.PosX && bullet.PosX <= this.PosX + this.MainSprite.Width
-                && bullet.PosY >= this.PosY && bullet.PosY <= this.PosY + this.MainSprite.Height)
+            if (bullet.PosX >= this.PosX && bullet.PosX <= this.PosX + this.Width
+                && bullet.PosY <= this.PosY && bullet.PosY >= this.PosY - this.Height)
             {
                 this.Health -= bullet.HitDamage;
                 this.HitByBullet = true; // will draw hit sprite on next run
