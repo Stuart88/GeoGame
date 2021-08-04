@@ -28,6 +28,13 @@ namespace GeoGame.Models.Battles.Enemies
             }
         }
 
+        public float ResetPosYToTop()
+        {
+            this.PosY = this.Rand.Next((int)-this.Height - 20, (int)-this.Height); // off top of screen
+            this.BasePosY = this.PosY;
+            return this.PosY;
+        }
+
         
 
         #endregion Constructors

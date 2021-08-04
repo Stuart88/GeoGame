@@ -201,7 +201,7 @@ namespace GeoGame.Views
 
             for (int i = 0; i < this.EnemyCount; i++)
             {
-                OneHitShip e = new OneHitShip(Models.Enums.EnemyDifficulty.Easy, MovementFunctions.SinusoidalLeftRightLocal, canvasView);
+                OneHitShip e = new OneHitShip(Models.Enums.EnemyDifficulty.Easy, MovementFunctions.LocalisedCircle, canvasView);
 
                 if (activesAdded++ < this.MaxActiveEnemies)
                     e.Active = true;

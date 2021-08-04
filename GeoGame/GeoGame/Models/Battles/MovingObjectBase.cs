@@ -7,30 +7,33 @@ namespace GeoGame.Models.Battles
 {
     public abstract class MovingObjectBase
     {
+        #region Constructors
+
         public MovingObjectBase(Enums.EnemyDifficulty difficulty)
         {
             this.Difficulty = difficulty;
         }
 
-        #region Properties
-        public Models.Enums.EnemyDifficulty Difficulty { get; set; }
+        #endregion Constructors
+
+        #region Delegates
 
         public delegate void MoveAction(MovingObjectBase o, float dt, float totalT, SKCanvasView canvasView);
 
+        #endregion Delegates
+
+        #region Events
+
         public event MoveAction OnMove;
+
+        #endregion Events
+
+        #region Properties
 
         /// <summary>
         /// Object currently in game, 'on screen' (though sometimes might be slightly off screen!)
         /// </summary>
         public bool Active { get; set; }
-        /// <summary>
-        /// +/-1, useful for setting direction of movement
-        /// </summary>
-        public int DirectionSignX { get; set; }
-        /// <summary>
-        /// +/-1, useful for setting direction of movement
-        /// </summary>
-        public int DirectionSignY { get; set; }
 
         /// <summary>
         /// Useful for movement functions where original position is needed, e.g. in trig functions
@@ -40,6 +43,18 @@ namespace GeoGame.Models.Battles
         public float BasePosY { get; set; }
         public float BaseVelX { get; set; }
         public float BaseVelY { get; set; }
+        public Models.Enums.EnemyDifficulty Difficulty { get; set; }
+
+        /// <summary>
+        /// +/-1, useful for setting direction of movement
+        /// </summary>
+        public int DirectionSignX { get; set; }
+
+        /// <summary>
+        /// +/-1, useful for setting direction of movement
+        /// </summary>
+        public int DirectionSignY { get; set; }
+
         public int Health { get; set; }
 
         public float Height { get; set; }
@@ -101,6 +116,7 @@ namespace GeoGame.Models.Battles
         }
 
         public abstract void Draw(ref SKCanvas canvas, SKSize canvasSize);
+
         public virtual void DrawBullets(ref SKCanvas canvas, SKSize canvasSize)
         {
             foreach (var b in this.Weapon.Bullets.Where(b => b.Fired))
@@ -111,26 +127,27 @@ namespace GeoGame.Models.Battles
             }
         }
 
+        public virtual void Move(float dt, float totalT, SKCanvasView canvasView)
+        {
+            this.OnMove?.Invoke(this, dt, totalT, canvasView);
+
+            if (this is Enemies.EnemyBase e)
+            {
+                var s = canvasView.CanvasSize;
+
+                if (e.PosY - e.Height > s.Height)
+                {
+                    e.PosY = e.ResetPosYToTop();
+                }
+            }
+        }
+
         public virtual void MoveBullets(float dt, float totalT)
         {
             foreach (var b in this.Weapon.Bullets.Where(b => b.Fired))
             {
                 b.SetVxVy(dt, totalT);
                 b.Move(dt);
-            }
-        }
-
-        public virtual void Move(float dt, float totalT, SKCanvasView canvasView)
-        {
-            this.OnMove?.Invoke(this, dt, totalT, canvasView);
-
-            if(this is Enemies.EnemyBase)
-            {
-                var s = canvasView.CanvasSize;
-                if (this.PosY - this.Height > s.Height)
-                {
-                    this.PosY = this.BasePosY;
-                }
             }
         }
 

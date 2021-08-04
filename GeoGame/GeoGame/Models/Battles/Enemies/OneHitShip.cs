@@ -13,17 +13,20 @@ namespace GeoGame.Models.Battles.Enemies
         {
             this.Width = canvasView.CanvasSize.Width / 10;
             this.Height = this.Width;
+            
             this.Health = 1;
             this.MaxHealth = this.Health;
+
             this.DirectionSignX = this.Rand.RandomSign();
-            
+            this.DirectionSignY = this.Rand.RandomSign();
+
             this.BaseVelY = 40;
             this.BaseVelX = this.VelX; // VelX initialised via base constructor
 
             this.VelY = this.Rand.Next(35, 45);
             
             this.PosX = this.Rand.Next(0, (int)(canvasView.CanvasSize.Width - this.Width));
-            this.PosY = this.Rand.Next((int)-this.Height - 20, (int)-this.Height); // off top of screen
+            this.PosY = this.ResetPosYToTop();
             
             this.BasePosX = this.PosX;
             this.BasePosY = this.PosY;
