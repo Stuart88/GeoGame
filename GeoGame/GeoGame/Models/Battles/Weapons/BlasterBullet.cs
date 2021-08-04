@@ -6,6 +6,8 @@
 
         public BlasterBullet(WeaponBase weapon) : base(weapon)
         {
+            this.Width = weapon.Parent.Width / 4;
+            this.Height = this.Width;
             this.FireAngle = 0;
             this.Sprite = weapon.Parent.IsPlayer ? Sprites.PlayerBlasterSprite : Sprites.EnemyBlasterSprite;
         }
@@ -16,32 +18,34 @@
 
         public override void InitEasy()
         {
-            this.VelY = 20f;
+            this.VelY = 300f;
         }
 
         public override void InitInsane()
         {
-            this.VelY = 40f;
+            this.VelY = 400f;
         }
         public override void InitHard()
         {
-            this.VelY = 30f;
+            this.VelY = 500f;
         }
 
         public override void InitMedium()
         {
-            this.VelY = 25f;
+            this.VelY = 350f;
         }
 
         public override void InitPlayer()
         {
-            this.VelY = -30f;
+            this.VelY = -800f;
         }
 
-        public override void Move()
+        public override void SetVxVy(float dt, float totalT)
         {
-            this.PosY += VelY;
+            // plain linear motion
         }
+
+
 
         #endregion Methods
     }

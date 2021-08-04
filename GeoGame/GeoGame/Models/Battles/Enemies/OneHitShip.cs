@@ -18,8 +18,8 @@ namespace GeoGame.Models.Battles.Enemies
             this.DirectionSignX = this.Rand.RandomSign();
             
             this.BaseVelY = 40;
-            
-            this.VelX = this.Rand.Next(150, 251);
+            this.BaseVelX = this.VelX; // VelX initialised via base constructor
+
             this.VelY = this.Rand.Next(35, 45);
             
             this.PosX = this.Rand.Next(0, (int)(canvasView.CanvasSize.Width - this.Width));
@@ -36,14 +36,14 @@ namespace GeoGame.Models.Battles.Enemies
 
         public override void InitEasy()
         {
-            this.BaseVelX = this.Rand.Next(50, 101);
+            this.VelX = this.Rand.Next(50, 101);
 
             this.SpriteSheet = Sprites.EnemyHitSpriteSheetEasy;
             this.HitSpriteSheet = Sprites.EnemyHitSpriteSheetEasy;
         }
         public override void InitMedium()
         {
-            this.BaseVelX = this.Rand.Next(75, 126);
+            this.VelX = this.Rand.Next(75, 126);
 
             this.SpriteSheet = Sprites.EnemySpriteSheetMedium;
             this.HitSpriteSheet = Sprites.EnemyHitSpriteSheetMedium;
@@ -51,7 +51,7 @@ namespace GeoGame.Models.Battles.Enemies
 
         public override void InitHard()
         {
-            this.BaseVelX = this.Rand.Next(100, 151);
+            this.VelX = this.Rand.Next(100, 151);
 
             this.SpriteSheet = Sprites.EnemySpriteSheetHard;
             this.HitSpriteSheet = Sprites.EnemyHitSpriteSheetMedium;
@@ -59,7 +59,7 @@ namespace GeoGame.Models.Battles.Enemies
 
         public override void InitInsane()
         {
-            this.BaseVelX = this.Rand.Next(125, 176);
+            this.VelX = this.Rand.Next(125, 176);
 
             this.SpriteSheet = Sprites.EnemySpriteSheetInsane;
             this.HitSpriteSheet = Sprites.EnemyHitSpriteSheetInsane;

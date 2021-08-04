@@ -44,6 +44,8 @@ namespace GeoGame.Models.Battles.Weapons
         public SKBitmap Sprite { get; set; }
         public float VelX { get; set; }
         public float VelY { get; set; }
+        public float Width { get; set; }
+        public float Height { get; set; }
         public WeaponBase Weapon { get; set; }
 
         #endregion Properties
@@ -52,7 +54,7 @@ namespace GeoGame.Models.Battles.Weapons
 
         public void CheckStillInView(SKSize canvasSize)
         {
-            if (this.PosX < 0 || this.PosX > canvasSize.Width || this.PosY < 0 || this.PosY > canvasSize.Height)
+            if (this.PosX < 0 || this.PosX + this.Width > canvasSize.Width || this.PosY < 0 || this.PosY - this.Height > canvasSize.Height)
             {
                 this.Fired = false;
             }
@@ -68,7 +70,16 @@ namespace GeoGame.Models.Battles.Weapons
 
         public abstract void InitPlayer();
 
-        public abstract void Move();
+        /// <summary>
+        /// For bullets where Vx or Vy might have some function to vary movement from base values
+        /// </summary>
+        public abstract void SetVxVy(float dt, float totalT);
+
+        public void Move(float dt)
+        {
+            this.PosX += dt * this.VelX;
+            this.PosY += dt * this.VelY;
+        }
 
         #endregion Methods
     }

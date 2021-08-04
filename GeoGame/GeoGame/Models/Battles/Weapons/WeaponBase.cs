@@ -65,8 +65,8 @@ namespace GeoGame.Models.Battles.Weapons
                     if (this.Parent.IsPlayer)
                         this.BulletFiredSound.Play();
 
-                    toFire.PosX = this.Parent.PosX + this.Parent.MainSprite.Width / 2;
-                    toFire.PosY = this.Parent.PosY + (this.Parent.IsPlayer ? -this.Parent.MainSprite.Height : 0);
+                    toFire.PosX = this.Parent.PosX + this.Parent.Width / 2 - toFire.Width / 2;
+                    toFire.PosY = this.Parent.PosY + (this.Parent.IsPlayer ? -this.Parent.Height : 0);
                     toFire.Fired = true;
                 }
             }

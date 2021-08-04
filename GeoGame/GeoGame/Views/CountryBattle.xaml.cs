@@ -201,7 +201,7 @@ namespace GeoGame.Views
 
             for (int i = 0; i < this.EnemyCount; i++)
             {
-                OneHitShip e = new OneHitShip(Models.Enums.EnemyDifficulty.Easy, MovementFunctions.BasicLinear, canvasView);
+                OneHitShip e = new OneHitShip(Models.Enums.EnemyDifficulty.Easy, MovementFunctions.SinusoidalLeftRightLocal, canvasView);
 
                 if (activesAdded++ < this.MaxActiveEnemies)
                     e.Active = true;
@@ -266,10 +266,14 @@ namespace GeoGame.Views
         private void MoveObjects(float dt, float totalT)
         {
             this.Player.Move(dt, totalT, canvasView);
+            this.Player.MoveBullets(dt, totalT);
 
-            foreach (var e in this.Enemies.Where(e => e.Active && !e.IsDead))
+            foreach (var e in this.Enemies)
             {
-                e.Move(dt, totalT, canvasView);
+                if(e.Active && !e.IsDead)
+                    e.Move(dt, totalT, canvasView);
+                
+                e.MoveBullets(dt, totalT);
             }
         }
 

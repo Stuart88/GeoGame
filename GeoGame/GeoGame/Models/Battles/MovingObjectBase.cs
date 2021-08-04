@@ -65,7 +65,7 @@ namespace GeoGame.Models.Battles
         /// <summary>
         /// Useful for trig movement functions where phase is needed to ensure all movements stays relative to BasePosX (start pos)
         /// </summary>
-        public float SinePhaseX { get; set; }
+        public float? SinePhaseX { get; set; } = null;
 
         /// <summary>
         /// Useful for trig movement functions where phase is needed to ensure all movements stays relative to BasePosY (start pos)
@@ -84,8 +84,8 @@ namespace GeoGame.Models.Battles
 
         public void CheckCollisionWithBullet(BulletBase bullet)
         {
-            if (bullet.PosX >= this.PosX && bullet.PosX <= this.PosX + this.Width
-                && bullet.PosY <= this.PosY && bullet.PosY >= this.PosY - this.Height)
+            if (bullet.PosX + bullet.Width >= this.PosX && bullet.PosX <= this.PosX + this.Width
+                && bullet.PosY + bullet.Height <= this.PosY && bullet.PosY >= this.PosY - this.Height)
             {
                 this.Health -= bullet.HitDamage;
                 this.HitByBullet = true; // will draw hit sprite on next run
@@ -93,6 +93,7 @@ namespace GeoGame.Models.Battles
 
                 if (this.Health <= 0)
                 {
+                    this.Health = 0;
                     this.IsDead = true;
                     this.Active = false;
                 }
@@ -104,10 +105,18 @@ namespace GeoGame.Models.Battles
         {
             foreach (var b in this.Weapon.Bullets.Where(b => b.Fired))
             {
-                b.Move();
                 b.CheckStillInView(canvasSize);
                 if (b.Fired)
                     canvas.DrawBitmap(b.Sprite, b.PosX, b.PosY);
+            }
+        }
+
+        public virtual void MoveBullets(float dt, float totalT)
+        {
+            foreach (var b in this.Weapon.Bullets.Where(b => b.Fired))
+            {
+                b.SetVxVy(dt, totalT);
+                b.Move(dt);
             }
         }
 

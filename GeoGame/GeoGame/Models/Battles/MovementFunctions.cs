@@ -35,14 +35,37 @@ namespace GeoGame.Models.Battles
         {
             float w = canvasView.CanvasSize.Width - o.Width;
 
-            if(o.SinePhaseX == 0 || float.IsNaN(o.SinePhaseX))
+            if(!o.SinePhaseX.HasValue)
             {
                 o.SinePhaseX = (float)Math.Asin((2 * o.PosX / w) - 1);
             }
 
-            o.PosX = (1 +  (float)Math.Sin((o.DirectionSignX * totalT * Math.PI / 2) + o.SinePhaseX)) * w / 2;
+            o.PosX = (1 +  (float)Math.Sin((o.DirectionSignX * totalT * Math.PI / 2) + o.SinePhaseX.Value)) * w / 2;
             o.PosY += dt * o.VelY;
 
+        }
+
+        /// <summary>
+        /// Small sinusoidal motion localised around current X position
+        /// </summary>
+        /// <param name="o"></param>
+        /// <param name="dt"></param>
+        /// <param name="totalT"></param>
+        /// <param name="canvasView"></param>
+        public static void SinusoidalLeftRightLocal(MovingObjectBase o, float dt, float totalT, SKCanvasView canvasView)
+        {
+            var s = canvasView.CanvasSize;
+
+            float amplitude = s.Width / 6;
+
+            if (o.BasePosX + amplitude + o.Width > s.Width)
+                o.BasePosX = s.Width - amplitude - o.Width;
+
+            if (o.BasePosX - amplitude < 0)
+                o.BasePosX = amplitude;
+
+            o.PosX = o.BasePosX + amplitude * (float) Math.Sin(o.DirectionSignX * totalT * Math.PI / 2);
+            o.PosY += dt * o.VelY;
         }
     }
 }
