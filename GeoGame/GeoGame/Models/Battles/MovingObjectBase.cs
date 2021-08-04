@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using GeoGame.Models.Battles.Weapons;
+using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using System.Linq;
 
@@ -6,7 +7,13 @@ namespace GeoGame.Models.Battles
 {
     public abstract class MovingObjectBase
     {
+        public MovingObjectBase(Enums.EnemyDifficulty difficulty)
+        {
+            this.Difficulty = difficulty;
+        }
+
         #region Properties
+        public Models.Enums.EnemyDifficulty Difficulty { get; set; }
 
         public delegate void MoveAction(MovingObjectBase o, float dt, float totalT, SKCanvasView canvasView);
 
@@ -107,6 +114,15 @@ namespace GeoGame.Models.Battles
         public virtual void Move(float dt, float totalT, SKCanvasView canvasView)
         {
             this.OnMove?.Invoke(this, dt, totalT, canvasView);
+
+            if(this is Enemies.EnemyBase)
+            {
+                var s = canvasView.CanvasSize;
+                if (this.PosY - this.Height > s.Height)
+                {
+                    this.PosY = this.BasePosY;
+                }
+            }
         }
 
         #endregion Methods

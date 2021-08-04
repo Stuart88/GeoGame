@@ -1,7 +1,8 @@
 ﻿using GeoGame.Extensions;
-using GeoGame.Helpers;
 using GeoGame.Interfaces;
 using GeoGame.Models.Battles;
+using GeoGame.Models.Battles.Enemies;
+using GeoGame.Models.Battles.Weapons;
 using GeoGame.Models.Geo;
 using Plugin.SimpleAudioPlayer;
 using SkiaSharp;
@@ -36,7 +37,6 @@ namespace GeoGame.Views
         private bool _objectsReady = false;
         private bool _pageActive;
         private Random _rand = new Random();
-        private int MaxActiveEnemies { get; set; }
 
         #endregion Fields
 
@@ -59,33 +59,32 @@ namespace GeoGame.Views
         #region Properties
 
         public ISimpleAudioPlayer BattleMusic { get; set; } = CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
+        public int MaxEnemyHealth { get; set; }
         private Country Country { get; set; }
-        private List<Enemy> Enemies { get; set; }
+        private List<EnemyBase> Enemies { get; set; }
+        private int EnemyCount { get; set; }
         private bool GameWon { get; set; }
+        private bool IsSmallCountry { get; }
+        private int MaxActiveEnemies { get; set; }
         private SKRect ParalaxDestRect { get; set; }
         private Player Player { get; set; }
-        private SKBitmap StarsMid { get; set; } = BitmapExtensions.LoadBitmapResource(typeof(Enemy), "GeoGame.Resources.Backgrounds.Stars.starsMid.png");
+        private int PopulationKillIncrementSize { get; set; }
+        private int PopulationScaler { get; } = 1000000;
+        private float ScreenRatio { get; set; }
+        private SKBitmap StarsMid { get; set; } = BitmapExtensions.LoadBitmapResource(typeof(EnemyBase), "GeoGame.Resources.Backgrounds.Stars.starsMid.png");
+        private float StarsMidShift { get; set; }
         private SKRect StarsMidSrcRect { get; set; }
-        private SKBitmap StarsSmall { get; set; } = BitmapExtensions.LoadBitmapResource(typeof(Enemy), "GeoGame.Resources.Backgrounds.Stars.starsSmall.png");
+        private SKBitmap StarsSmall { get; set; } = BitmapExtensions.LoadBitmapResource(typeof(EnemyBase), "GeoGame.Resources.Backgrounds.Stars.starsSmall.png");
+        private float StarsSmallShift { get; set; }
         private SKRect StarsSmallSrcRect { get; set; }
 
         #endregion Properties
 
         #region Methods
 
-        private int EnemyCount { get; set; }
-
-        private bool IsSmallCountry { get; }
-
-        private int PopulationKillIncrementSize { get; set; }
-
-        private int PopulationScaler { get; } = 1000000;
-
-        private float ScreenRatio { get; set; }
-
-        private float StarsMidShift { get; set; }
-
-        private float StarsSmallShift { get; set; }
+        public void SubscribeToMessages()
+        {
+        }
 
         protected override void OnAppearing()
         {
@@ -138,11 +137,6 @@ namespace GeoGame.Views
             }
         }
 
-        private void OnGameWon()
-        {
-            MessagingCenter.Send<IMessageService, Country>(this, Data.MessagingCenterMessages.WonCountryBattle, this.Country);
-        }
-
         private void DoStarsParallax(float dt)
         {
             this.StarsSmallSrcRect = new SKRect(0, this.StarsSmall.Height / 2 - this.StarsSmallShift, this.StarsSmall.Width / 2 * this.ScreenRatio, this.StarsSmall.Height - this.StarsSmallShift);
@@ -193,7 +187,7 @@ namespace GeoGame.Views
 
         private void InitEnemies()
         {
-            this.Enemies = new List<Enemy>();
+            this.Enemies = new List<EnemyBase>();
 
             this.EnemyCount = this.IsSmallCountry ? 1 : this.Country.Population / this.PopulationScaler; // e.g. UK will have 64, China will have 1379.
 
@@ -207,27 +201,10 @@ namespace GeoGame.Views
 
             for (int i = 0; i < this.EnemyCount; i++)
             {
-                Enemy e = new Enemy();
-                e.Width = canvasView.CanvasSize.Width / 10;
-                e.Height = e.Width;
-                e.Health = 40;
-                e.MaxHealth = e.Health;
-                e.BaseVelX = _rand.Next(50, 101);
-                e.DirectionSignX = _rand.RandomSign();
-                e.BaseVelY = 40;
-                e.OnMove += MovementFunctions.SinusoidalLeftRightFull;
-                e.VelX = _rand.Next(150, 251);
-                e.VelY = _rand.Next(35, 45);
-                e.PosX = _rand.Next(0, (int)(canvasView.CanvasSize.Width - e.Width));
-                e.BasePosX = e.PosX;
-                e.PosY = _rand.Next((int)-e.Height - 20, (int)-e.Height); // off top of screen
-
-                e.Weapon = new Blaster(e);
+                OneHitShip e = new OneHitShip(Models.Enums.EnemyDifficulty.Easy, MovementFunctions.BasicLinear, canvasView);
 
                 if (activesAdded++ < this.MaxActiveEnemies)
                     e.Active = true;
-
-                e.AssignMainSprite(_rand.Next(0, 10), _rand.Next(0, 10));
 
                 this.Enemies.Add(e);
             }
@@ -296,6 +273,11 @@ namespace GeoGame.Views
             }
         }
 
+        private void OnGameWon()
+        {
+            MessagingCenter.Send<IMessageService, Country>(this, Data.MessagingCenterMessages.WonCountryBattle, this.Country);
+        }
+
         private void OnPainting(object sender, SKPaintSurfaceEventArgs e)
         {
             var surface = e.Surface;
@@ -359,8 +341,6 @@ namespace GeoGame.Views
             return _pageActive;
         }
 
-        public int MaxEnemyHealth { get; set; }
-
         /// <summary>
         /// Update labels, health, progress bar, etc
         /// </summary>
@@ -379,11 +359,6 @@ namespace GeoGame.Views
                 HealthBar.ProgressColor = Color.OrangeRed;
             else
                 HealthBar.ProgressColor = Color.Red;
-        }
-
-        public void SubscribeToMessages()
-        {
-            
         }
 
         #endregion Methods

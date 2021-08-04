@@ -1,21 +1,34 @@
-﻿using SkiaSharp;
+﻿using GeoGame.Interfaces;
+using SkiaSharp;
+using SkiaSharp.Views.Forms;
 using System;
 
-namespace GeoGame.Models.Battles
+namespace GeoGame.Models.Battles.Enemies
 {
-    public class Enemy : MovingObjectBase
+    public abstract class EnemyBase : MovingObjectBase, IDifficulty
     {
         #region Constructors
 
-        public Enemy()
+        public Random Rand { get; set; } = new Random();
+
+        public EnemyBase(Enums.EnemyDifficulty difficulty, MoveAction onMove, SKCanvasView canvasView) : base(difficulty)
         {
-            this.SpriteSheet = Sprites.EnemySpriteSheet;
-            this.HitSpriteSheet = Sprites.EnemyHitSpriteSheet;
             this.MainSprite = new SKBitmap();
             this.HitSprite = new SKBitmap();
-
-            this.Weapon = new Blaster(this);
+            
+            this.OnMove += onMove;
+            
+            switch (this.Difficulty)
+            {
+                case Enums.EnemyDifficulty.Easy: InitEasy(); break;
+                case Enums.EnemyDifficulty.Medium: InitMedium(); break;
+                case Enums.EnemyDifficulty.Hard: InitHard(); break;
+                case Enums.EnemyDifficulty.Insane: InitInsane(); break;
+                case Enums.EnemyDifficulty.IsPlayer: InitPlayer(); break;
+            }
         }
+
+        
 
         #endregion Constructors
 
@@ -56,6 +69,19 @@ namespace GeoGame.Models.Battles
                 canvas.DrawBitmap(this.HitSprite, drawRect);
                 this.HitByBullet = false;
             }
+        }
+
+        public abstract void InitEasy();
+
+        public abstract void InitHard();
+
+        public abstract void InitInsane();
+
+        public abstract void InitMedium();
+
+        public void InitPlayer()
+        {
+            //Just here for interface implementation...
         }
 
         #endregion Methods

@@ -1,19 +1,28 @@
-﻿using Plugin.SimpleAudioPlayer;
+﻿using GeoGame.Interfaces;
+using Plugin.SimpleAudioPlayer;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace GeoGame.Models.Battles
+namespace GeoGame.Models.Battles.Weapons
 {
-    public abstract class WeaponBase
+    public abstract class WeaponBase : IDifficulty
     {
         #region Constructors
 
         public WeaponBase(MovingObjectBase parent)
         {
             this.Parent = parent;
-        }
+            this.Difficulty = this.Parent.Difficulty;
 
-        public double DeltaTime { get; set; }
+            switch (this.Difficulty)
+            {
+                case Enums.EnemyDifficulty.Easy: InitEasy(); break;
+                case Enums.EnemyDifficulty.Medium: InitMedium(); break;
+                case Enums.EnemyDifficulty.Hard: InitHard(); break;
+                case Enums.EnemyDifficulty.Insane: InitInsane(); break;
+                case Enums.EnemyDifficulty.IsPlayer: InitPlayer(); break;
+            }
+        }
 
         #endregion Constructors
 
@@ -26,6 +35,9 @@ namespace GeoGame.Models.Battles
         /// Max amount of bullets that can appear on screen at one time
         /// </summary>
         public int BulletsAmount { get; set; }
+
+        public double DeltaTime { get; set; }
+        public Enums.EnemyDifficulty Difficulty { get; set; }
 
         /// <summary>
         /// After how many seconds should the Fire method be called again (for automatic firing)
@@ -59,6 +71,16 @@ namespace GeoGame.Models.Battles
                 }
             }
         }
+
+        public abstract void InitEasy();
+
+        public abstract void InitHard();
+
+        public abstract void InitInsane();
+
+        public abstract void InitMedium();
+
+        public abstract void InitPlayer();
 
         #endregion Methods
     }

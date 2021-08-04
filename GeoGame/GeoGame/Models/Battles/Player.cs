@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using GeoGame.Models.Battles.Weapons;
+using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using System;
 using static GeoGame.Data.BattlesData;
@@ -9,7 +10,7 @@ namespace GeoGame.Models.Battles
     {
         #region Constructors
 
-        public Player()
+        public Player() : base(Enums.EnemyDifficulty.IsPlayer) 
         {
             this.Width = 30f;
             this.Height = 70f;
