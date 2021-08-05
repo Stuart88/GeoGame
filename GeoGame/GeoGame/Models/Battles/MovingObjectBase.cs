@@ -127,9 +127,7 @@ namespace GeoGame.Models.Battles
         {
             foreach (var b in this.Weapon.Bullets.Where(b => b.Fired))
             {
-                b.CheckStillInView(canvasSize);
-                if (b.Fired)
-                    canvas.DrawBitmap(b.Sprite, b.PosX, b.PosY);
+                b.Draw(ref canvas, canvasSize);
             }
         }
 
@@ -150,12 +148,13 @@ namespace GeoGame.Models.Battles
             }
         }
 
-        public virtual void MoveBullets(float dt, float totalT)
+
+
+        public virtual void MoveBullets(float dt, float totalT, SKCanvasView canvasView)
         {
             foreach (var b in this.Weapon.Bullets.Where(b => b.Fired))
             {
-                b.SetVxVy(dt, totalT);
-                b.Move(dt);
+                b.OnMove?.Invoke(b, dt, totalT, canvasView);
             }
         }
 

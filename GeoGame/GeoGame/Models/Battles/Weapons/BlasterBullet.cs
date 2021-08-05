@@ -1,4 +1,6 @@
-﻿namespace GeoGame.Models.Battles.Weapons
+﻿using SkiaSharp;
+
+namespace GeoGame.Models.Battles.Weapons
 {
     public class BlasterBullet : BulletBase
     {
@@ -10,6 +12,7 @@
             this.Height = this.Width;
             this.FireAngle = 0;
             this.Sprite = weapon.Parent.IsPlayer ? Sprites.PlayerBlasterSprite : Sprites.EnemyBlasterSprite;
+            this.OnMove += BulletMovementFunctions.BasicStraightVertical;
         }
 
         #endregion Constructors
@@ -40,9 +43,11 @@
             this.VelY = -800f;
         }
 
-        public override void SetVxVy(float dt, float totalT)
+        public override void Draw(ref SKCanvas canvas, SKSize canvasSize)
         {
-            // plain linear motion
+            this.CheckStillInView(canvasSize);
+            if (this.Fired)
+                canvas.DrawBitmap(this.Sprite, this.PosX, this.PosY);
         }
 
 

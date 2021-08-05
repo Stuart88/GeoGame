@@ -7,7 +7,9 @@ namespace GeoGame.Models.Battles
 {
     public static class MovementFunctions
     {
-        public static void BasicLinear(MovingObjectBase o, float dt, float totalT, SKCanvasView canvasView)
+
+
+        public static void BasicLinearLeftRight(MovingObjectBase o, float dt, float totalT, SKCanvasView canvasView)
         {
             o.PosX += dt * o.VelX;
             o.PosY += dt * o.VelY;

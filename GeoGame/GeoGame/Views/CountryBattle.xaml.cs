@@ -266,14 +266,14 @@ namespace GeoGame.Views
         private void MoveObjects(float dt, float totalT)
         {
             this.Player.Move(dt, totalT, canvasView);
-            this.Player.MoveBullets(dt, totalT);
+            this.Player.MoveBullets(dt, totalT, canvasView);
 
             foreach (var e in this.Enemies)
             {
                 if(e.Active && !e.IsDead)
                     e.Move(dt, totalT, canvasView);
                 
-                e.MoveBullets(dt, totalT);
+                e.MoveBullets(dt, totalT, canvasView);
             }
         }
 
