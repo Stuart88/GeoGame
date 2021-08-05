@@ -28,7 +28,7 @@ namespace GeoGame.Models.Battles.Enemies
 
             this.Weapon = new SlowBlaster(this, onBulletMove, weaponType);
 
-            this.AssignMainSprite(9, 3);
+            this.AssignMainSprite(0, 0);
         }
 
         #endregion Constructors

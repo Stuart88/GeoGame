@@ -4,6 +4,7 @@ using GeoGame.Interfaces;
 using GeoGame.Models.Battles;
 using GeoGame.Models.Battles.Enemies;
 using GeoGame.Models.Battles.Weapons;
+using GeoGame.Models.Enums;
 using GeoGame.Models.Geo;
 using GeoGame.ViewModels;
 using Plugin.SimpleAudioPlayer;
@@ -44,12 +45,13 @@ namespace GeoGame.Views
 
         #region Constructors
 
-        public CountryBattle(Country country)
+        public CountryBattle(Country country, List<Country> allCountries)
         {
             this.BindingContext = new CountryBattleViewModel();
             InitializeComponent();
             SubscribeToMessages();
             this.Country = country;
+            this.AllCountries = allCountries;
             this.IsSmallCountry = this.Country.Population < this.PopulationScaler;
             _totalTime.Start();
 
@@ -59,6 +61,8 @@ namespace GeoGame.Views
         #endregion Constructors
 
         #region Properties
+
+        public List<Country> AllCountries { get; set; }
 
         public ISimpleAudioPlayer BattleMusic { get; set; } = CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
         public int MaxEnemyHealth { get; set; }
@@ -70,7 +74,6 @@ namespace GeoGame.Views
         private int MaxActiveEnemies { get; set; }
         private SKRect ParalaxDestRect { get; set; }
         private Player Player { get; set; }
-        private int PopulationKillIncrementSize { get; set; }
         private int PopulationScaler { get; } = 1000000;
         private float ScreenRatio { get; set; }
         private SKBitmap StarsMid { get; set; } = BitmapExtensions.LoadBitmapResource(typeof(EnemyBase), "GeoGame.Resources.Backgrounds.Stars.starsMid.png");
@@ -200,25 +203,58 @@ namespace GeoGame.Views
         {
             this.Enemies = new List<EnemyBase>();
 
-            this.EnemyCount = this.IsSmallCountry ? 1 : this.Country.Population / this.PopulationScaler; // e.g. UK will have 64, China will have 1379.
-
-            this.MaxActiveEnemies = (this.EnemyCount / 4) >= 50 ? 50 : (this.EnemyCount / 4);
-            if (this.MaxActiveEnemies == 0)
-                this.MaxActiveEnemies = 1;
-
-            this.PopulationKillIncrementSize = this.Country.Population / this.EnemyCount;
-
-            int activesAdded = 0;
-
-            for (int i = 0; i < this.EnemyCount; i++)
+            if(this.Country.Population <= 1000000)
             {
-                OneHitShip e = new OneHitShip(Models.Enums.EnemyDifficulty.Easy, MovementFunctions.LocalisedCircle, BulletMovementFunctions.BasicStraightVertical, WeaponsEnum.SlowBlaster, canvasView);
+                int smallCountriesCount = this.AllCountries.Count(c => c.Population <= 1000000);
 
-                if (activesAdded++ < this.MaxActiveEnemies)
-                    e.Active = true;
+                // There are about 20 small countries, so just add number of enemies based on index of country (i.e. 1 - 20 enemies)
+                this.EnemyCount = this.AllCountries.IndexOf(this.Country) + 1; // 
+                this.MaxActiveEnemies = 3;
+                int activesAdded = 0;
 
-                this.Enemies.Add(e);
+                for (int i = 0; i < this.EnemyCount; i++)
+                {
+                    EnemyBase e;
+                    if (i >= 0 && i <= 1)
+                    {
+                        e = new OneHitShip(Models.Enums.EnemyDifficulty.Easy, MovementFunctions.BasicLinearLeftRight, BulletMovementFunctions.BasicStraightVertical, WeaponsEnum.SlowBlaster, canvasView);
+                    }
+                    else if (i > 1 && i <= 3)
+                    {
+                        e = new OneHitShip(Models.Enums.EnemyDifficulty.Easy, MovementFunctions.SinusoidalLeftRightLocal, BulletMovementFunctions.BasicStraightVertical, WeaponsEnum.SlowBlaster, canvasView);
+                    }
+                    else if (i > 3 && i <= 5)
+                    {
+                        e = new OneHitShip(Models.Enums.EnemyDifficulty.Medium, MovementFunctions.SinusoidalLeftRightFull, BulletMovementFunctions.AlternateDiagonal, WeaponsEnum.SlowBlaster, canvasView);
+                    }
+                    else if(i > 5 && i <= 10)
+                    {
+                        e = new Drone(Models.Enums.EnemyDifficulty.Easy, MovementFunctions.BasicLinearLeftRight, BulletMovementFunctions.AlternateDiagonal, WeaponsEnum.FastBlaster, canvasView);
+                    }
+                    else if (i > 10 && i <= 15)
+                    {
+                        var cycledDifficulty = this.Enemies.Last().Difficulty.CycleNext<EnemyDifficulty>();
+                        e = new Drone(cycledDifficulty, MovementFunctions.SinusoidalLeftRightLocal, BulletMovementFunctions.BasicStraightVertical, WeaponsEnum.SlowBlaster, canvasView);
+                    }
+                    else if (i > 15 && i <= 20)
+                    {
+                        var cycledDifficulty = this.Enemies.Last().Difficulty.CycleNext<EnemyDifficulty>();
+                        e = new Drone(cycledDifficulty, MovementFunctions.SinusoidalLeftRightLocal, BulletMovementFunctions.BasicStraightVertical, WeaponsEnum.SlowBlaster, canvasView);
+                    }
+                    else
+                    {
+                        e = new Attacker(Models.Enums.EnemyDifficulty.Easy, MovementFunctions.SinusoidalLeftRightLocal, BulletMovementFunctions.HornetShot, WeaponsEnum.HornetBlaster, canvasView);
+                    }
+
+                    if (activesAdded++ < this.MaxActiveEnemies)
+                        e.Active = true;
+
+                    this.Enemies.Add(e);
+                }
+
+                this.Enemies.Shuffle();
             }
+
 
             this.MaxEnemyHealth = this.Enemies.Sum(e => e.MaxHealth);
         }

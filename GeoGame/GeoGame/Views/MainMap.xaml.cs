@@ -55,7 +55,7 @@ namespace GeoGame.Views
         {
             MessagingCenter.Subscribe<IMessageService, Country>(this, Data.MessagingCenterMessages.OpenCountryBattle, async (sender, data) =>
             {
-                await Navigation.PushModalAsync(new CountryBattle(data));
+                await Navigation.PushModalAsync(new CountryBattle(data, this.Countries));
             });
 
             MessagingCenter.Subscribe<IMessageService, Country>(this, Data.MessagingCenterMessages.WonCountryBattle, async (sender, country) =>
@@ -107,7 +107,7 @@ namespace GeoGame.Views
 
         private async void BeginBattleBtn_Clicked(object sender, EventArgs e)
         {
-            await Navigation.PushModalAsync(new CountryBattle(this.GetViewModel.SelectedCountry));
+            await Navigation.PushModalAsync(new CountryBattle(this.GetViewModel.SelectedCountry, this.Countries));
         }
 
         private void DrawGeometries(Country c, NetTopologySuite.Geometries.Geometry g)
@@ -238,8 +238,12 @@ namespace GeoGame.Views
 
         private void NextCountryBtn_Clicked(object sender, EventArgs e)
         {
+
+#if RELEASE
             if (!Game.GameData.CountriesDefeatedIds.Contains(this.GetViewModel.SelectedCountry.Id)) // If country not defeated, cannot go further
                 return;
+#endif
+
 
             int i = this.Countries.IndexOf(this.GetViewModel.SelectedCountry);
 
@@ -295,6 +299,6 @@ namespace GeoGame.Views
             this.PopulationLabel.Text = $"{this.GetViewModel.SelectedCountry.Population}";
         }
 
-        #endregion Methods
+#endregion Methods
     }
 }

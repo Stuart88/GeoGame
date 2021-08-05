@@ -27,7 +27,7 @@ namespace GeoGame.Models.Battles.Enemies
 
             this.Weapon = new Blaster(this, onBulletMove, weaponType);
 
-            this.AssignMainSprite(9, 3);
+            this.AssignMainSprite(3, 4);
         }
 
         #endregion Constructors
