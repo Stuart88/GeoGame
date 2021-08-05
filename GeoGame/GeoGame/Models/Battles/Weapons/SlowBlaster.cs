@@ -16,11 +16,6 @@
 
         #region Methods
 
-        public override void FireWeapon(float dt)
-        {
-            base.FireWeapon(dt);
-        }
-
         public override void InitEasy()
         {
             this.BulletsAmount = 10;

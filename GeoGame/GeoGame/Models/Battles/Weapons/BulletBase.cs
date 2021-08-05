@@ -96,14 +96,22 @@ namespace GeoGame.Models.Battles.Weapons
                 {
                     case WeaponsEnum.StarBlaster:
                         this.Sprite = Sprites.StarBlasterSprite;
+                        this.HitDamage = 5;
                         break;
 
                     case WeaponsEnum.HornetBlaster:
                         this.Sprite = Sprites.PlayerBeeBlasterSprite;
+                        this.HitDamage = 50;
                         break;
 
                     case WeaponsEnum.SlowBlaster:
                         this.Sprite = Sprites.SlowBlasterSprite;
+                        this.HitDamage = 10;
+                        break;
+
+                    case WeaponsEnum.FastBlaster:
+                        this.Sprite = Sprites.SlowBlasterSprite;
+                        this.HitDamage = 5;
                         break;
 
                     default:

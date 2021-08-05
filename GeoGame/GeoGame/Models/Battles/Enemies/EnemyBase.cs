@@ -67,13 +67,29 @@ namespace GeoGame.Models.Battles.Enemies
             }
         }
 
-        public abstract void InitEasy();
+        public virtual void InitEasy()
+        {
+            this.SpriteSheet = Sprites.EnemyHitSpriteSheetEasy;
+            this.HitSpriteSheet = Sprites.EnemyHitSpriteSheetEasy;
+        }
 
-        public abstract void InitHard();
+        public virtual void InitHard()
+        {
+            this.SpriteSheet = Sprites.EnemySpriteSheetHard;
+            this.HitSpriteSheet = Sprites.EnemyHitSpriteSheetMedium;
+        }
 
-        public abstract void InitInsane();
+        public virtual void InitInsane()
+        {
+            this.SpriteSheet = Sprites.EnemySpriteSheetInsane;
+            this.HitSpriteSheet = Sprites.EnemyHitSpriteSheetInsane;
+        }
 
-        public abstract void InitMedium();
+        public virtual void InitMedium()
+        {
+            this.SpriteSheet = Sprites.EnemySpriteSheetMedium;
+            this.HitSpriteSheet = Sprites.EnemyHitSpriteSheetMedium;
+        }
 
         public void InitPlayer()
         {

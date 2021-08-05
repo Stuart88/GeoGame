@@ -7,6 +7,12 @@ using System.Linq;
 
 namespace GeoGame.Models.Battles.Weapons
 {
+    #region Delegates
+
+    public delegate void BulletMoveAction(BulletBase b, float dt, float totalT, SKCanvasView canvasView);
+
+    #endregion Delegates
+
     public abstract class WeaponBase : IDifficulty
     {
         #region Constructors
@@ -32,11 +38,7 @@ namespace GeoGame.Models.Battles.Weapons
 
         #endregion Constructors
 
-        #region Delegates
-
-        public delegate void BulletMoveAction(BulletBase b, float dt, float totalT, SKCanvasView canvasView);
-
-        #endregion Delegates
+        
 
         #region Events
 
