@@ -73,6 +73,11 @@ namespace GeoGame.Models.Battles
 
         public int MaxHealth { get; set; }
 
+        /// <summary>
+        /// Useful for objects with movements that change after a particular time (e.g. for varying enemy movements)
+        /// </summary>
+        public float MovementTime { get; set; }
+
         public float PosX { get; set; }
 
         public float PosY { get; set; }
@@ -111,6 +116,7 @@ namespace GeoGame.Models.Battles
                     this.Health = 0;
                     this.IsDead = true;
                     this.Active = false;
+                    this.MovementTime = 0;
                 }
             }
         }
@@ -129,6 +135,8 @@ namespace GeoGame.Models.Battles
 
         public virtual void Move(float dt, float totalT, SKCanvasView canvasView)
         {
+            this.MovementTime += dt;
+
             this.OnMove?.Invoke(this, dt, totalT, canvasView);
 
             if (this is Enemies.EnemyBase e)
