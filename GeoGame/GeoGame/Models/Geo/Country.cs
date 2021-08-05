@@ -4,11 +4,16 @@ namespace GeoGame.Models.Geo
 {
     public class Country
     {
+        #region Properties
+
+        [Column("continent")]
+        public string Continent { get; set; }
+
+        [Ignore]
+        public NetTopologySuite.Geometries.Geometry Geometry { get; set; }
+
         [Column("ogc_fid")]
         public int Id { get; set; }
-
-        [Column("admin")]
-        public string NameOfficial { get; set; }
 
         [Column("name_en")]
         public string Name { get; set; }
@@ -16,17 +21,17 @@ namespace GeoGame.Models.Geo
         [Column("name_long")]
         public string NameLong { get; set; }
 
-        [Column("continent")]
-        public string Continent { get; set; }
+        [Column("admin")]
+        public string NameOfficial { get; set; }
+
+        [Column("pop_est")]
+        public int Population { get; set; }
 
         [Column("region_un")]
         public string Region { get; set; }
 
         [Column("subregion")]
         public string SubRegion { get; set; }
-
-        [Column("pop_est")]
-        public int Population { get; set; }
 
         [Column("GEOMETRY")]
         public byte[] WkbGeometry
@@ -44,7 +49,6 @@ namespace GeoGame.Models.Geo
             }
         }
 
-        [Ignore]
-        public NetTopologySuite.Geometries.Geometry Geometry { get; set; }
+        #endregion Properties
     }
 }

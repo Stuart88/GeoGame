@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace GeoGame.Data
+﻿namespace GeoGame.Data
 {
     public static class BattlesData
     {
+        #region Enums
+
         public enum SpriteDirection
         {
             Centre,
@@ -14,5 +12,7 @@ namespace GeoGame.Data
             Right,
             RightMax
         }
+
+        #endregion Enums
     }
 }

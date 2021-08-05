@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace GeoGame.Models.Enums
+﻿namespace GeoGame.Models.Enums
 {
     public enum EnemyDifficulty
     {
         /// <summary>
         /// Use this when difficulty settings are not needed, e.g. when assigning something to player rather than enemy
         /// </summary>
-        IsPlayer, 
+        IsPlayer,
+
         Easy,
         Medium,
         Hard,

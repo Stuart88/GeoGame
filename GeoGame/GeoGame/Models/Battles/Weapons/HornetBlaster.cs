@@ -1,18 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace GeoGame.Models.Battles.Weapons
+﻿namespace GeoGame.Models.Battles.Weapons
 {
     public class HornetBlaster : WeaponBase
     {
-        public HornetBlaster(MovingObjectBase parent, BulletMoveAction onBulletMove, WeaponsEnum weaponType): base(parent, onBulletMove, weaponType)
+        #region Constructors
+
+        public HornetBlaster(MovingObjectBase parent, BulletMoveAction onBulletMove, WeaponsEnum weaponType) : base(parent, onBulletMove, weaponType)
         {
             for (int i = 0; i < this.BulletsAmount; i++)
             {
                 this.Bullets.Add(new HornetBlasterBullet(this));
             }
         }
+
+        #endregion Constructors
+
+        #region Methods
 
         public override void InitEasy()
         {
@@ -43,5 +45,7 @@ namespace GeoGame.Models.Battles.Weapons
             this.BulletsAmount = 100;
             this.FireRate = 0.150d;
         }
+
+        #endregion Methods
     }
 }

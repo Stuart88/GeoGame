@@ -30,10 +30,10 @@ namespace GeoGame.Models.Battles
         #endregion Constructors
 
         #region Properties
-        public List<BulletBase> ActiveBullets => this.WeaponsList.Where(w => w.Bullets.Any(b => b.Fired)).SelectMany(b => b.Bullets).ToList();
 
         public float AccelLeft { get; set; } = 400;
         public float AccelRight { get; set; } = 400;
+        public List<BulletBase> ActiveBullets => this.WeaponsList.Where(w => w.Bullets.Any(b => b.Fired)).SelectMany(b => b.Bullets).ToList();
         public float BaseAccelLeft { get; set; } = 400;
         public float BaseAccelRight { get; set; } = 400;
         public SpriteDirection Direction { get; set; } = SpriteDirection.Centre;

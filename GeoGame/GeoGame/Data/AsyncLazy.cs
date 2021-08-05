@@ -1,14 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace GeoGame.Data
 {
     public class AsyncLazy<T>
     {
-        readonly Lazy<Task<T>> instance;
+        #region Fields
+
+        private readonly Lazy<Task<T>> instance;
+
+        #endregion Fields
+
+        #region Constructors
 
         public AsyncLazy(Func<T> factory)
         {
@@ -20,9 +24,15 @@ namespace GeoGame.Data
             instance = new Lazy<Task<T>>(() => Task.Run(factory));
         }
 
+        #endregion Constructors
+
+        #region Methods
+
         public TaskAwaiter<T> GetAwaiter()
         {
             return instance.Value.GetAwaiter();
         }
+
+        #endregion Methods
     }
 }

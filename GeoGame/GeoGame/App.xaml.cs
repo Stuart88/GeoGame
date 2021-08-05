@@ -1,12 +1,10 @@
-﻿using GeoGame.Views;
-using System;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+﻿using Xamarin.Forms;
 
 namespace GeoGame
 {
     public partial class App : Application
     {
+        #region Constructors
 
         public App()
         {
@@ -17,7 +15,11 @@ namespace GeoGame
             MainPage = new AppShell();
         }
 
-        protected override void OnStart()
+        #endregion Constructors
+
+        #region Methods
+
+        protected override void OnResume()
         {
         }
 
@@ -25,8 +27,10 @@ namespace GeoGame
         {
         }
 
-        protected override void OnResume()
+        protected override void OnStart()
         {
         }
+
+        #endregion Methods
     }
 }

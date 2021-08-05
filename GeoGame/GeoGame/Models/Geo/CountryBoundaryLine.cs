@@ -4,6 +4,14 @@ namespace GeoGame.Models.Geo
 {
     public class CountryBoundaryLine
     {
+        #region Properties
+
+        [Column("featurecla")]
+        public string Feature { get; set; }
+
+        [Ignore]
+        public NetTopologySuite.Geometries.Geometry Geometry { get; set; }
+
         [Column("ogc_fid")]
         public int Id { get; set; }
 
@@ -15,9 +23,6 @@ namespace GeoGame.Models.Geo
 
         [Column("type")]
         public string Type { get; set; }
-
-        [Column("featurecla")]
-        public string Feature { get; set; }
 
         [Column("WKT_GEOMETRY")]
         public string WktGeometry
@@ -35,9 +40,6 @@ namespace GeoGame.Models.Geo
             }
         }
 
-        [Ignore]
-        public NetTopologySuite.Geometries.Geometry Geometry { get; set; }
-
-
+        #endregion Properties
     }
 }

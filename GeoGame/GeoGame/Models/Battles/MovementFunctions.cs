@@ -1,13 +1,11 @@
 ﻿using SkiaSharp.Views.Forms;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace GeoGame.Models.Battles
 {
     public static class MovementFunctions
     {
-
+        #region Methods
 
         public static void BasicLinearLeftRight(MovingObjectBase o, float dt, float totalT, SKCanvasView canvasView)
         {
@@ -24,6 +22,23 @@ namespace GeoGame.Models.Battles
                 o.PosX = canvasView.CanvasSize.Width - o.Width - 1;
                 o.VelX = -o.VelX;
             }
+        }
+
+        public static void LocalisedCircle(MovingObjectBase o, float dt, float totalT, SKCanvasView canvasView)
+        {
+            var s = canvasView.CanvasSize;
+
+            float amplitude = s.Width / 8;
+
+            if (o.BasePosX + amplitude + o.Width > s.Width)
+                o.BasePosX = s.Width - amplitude - o.Width;
+
+            if (o.BasePosX - amplitude < 0)
+                o.BasePosX = amplitude;
+
+            o.PosX = o.BasePosX + amplitude * (float)Math.Sin(o.DirectionSignX * totalT * Math.PI);
+            o.BasePosY += dt * o.VelY;
+            o.PosY = o.BasePosY + amplitude * (float)Math.Cos(o.DirectionSignY * totalT * Math.PI);
         }
 
         /// <summary>
@@ -44,7 +59,6 @@ namespace GeoGame.Models.Battles
 
             o.PosX = (1 + (float)Math.Sin((o.DirectionSignX * totalT * Math.PI / 2) + o.SinePhaseX.Value)) * w / 2;
             o.PosY += dt * o.VelY;
-
         }
 
         /// <summary>
@@ -68,24 +82,8 @@ namespace GeoGame.Models.Battles
 
             o.PosX = o.BasePosX + amplitude * (float)Math.Sin(o.DirectionSignX * totalT * Math.PI / 2);
             o.PosY += dt * o.VelY;
-
-
         }
-        public static void LocalisedCircle(MovingObjectBase o, float dt, float totalT, SKCanvasView canvasView)
-        {
-            var s = canvasView.CanvasSize;
 
-            float amplitude = s.Width / 8;
-
-            if (o.BasePosX + amplitude + o.Width > s.Width)
-                o.BasePosX = s.Width - amplitude - o.Width;
-
-            if (o.BasePosX - amplitude < 0)
-                o.BasePosX = amplitude;
-
-            o.PosX = o.BasePosX + amplitude * (float)Math.Sin(o.DirectionSignX * totalT * Math.PI);
-            o.BasePosY += dt * o.VelY;
-            o.PosY = o.BasePosY + amplitude * (float)Math.Cos(o.DirectionSignY * totalT * Math.PI);
-        }
+        #endregion Methods
     }
 }

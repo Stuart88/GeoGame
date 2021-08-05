@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace GeoGame.Data
 {
@@ -13,15 +11,9 @@ namespace GeoGame.Data
         Countries
     }
 
-    public static class DbNames
-    {
-        public static readonly string PopulatedPlacesDb = "PopulatedPlaces.sqlite";
-        public static readonly string CountriesDb = "CountriesSmall.sqlite";
-    }
-
     public static class DbConnections
     {
-       
+        #region Fields
 
         public const SQLite.SQLiteOpenFlags Flags =
         // open the database in read/write mode
@@ -30,6 +22,10 @@ namespace GeoGame.Data
         //SQLite.SQLiteOpenFlags.Create |
         // enable multi-threaded database access
         SQLite.SQLiteOpenFlags.SharedCache;
+
+        #endregion Fields
+
+        #region Methods
 
         public static string DatabasePath(DataItem item)
         {
@@ -41,5 +37,16 @@ namespace GeoGame.Data
             };
         }
 
+        #endregion Methods
+    }
+
+    public static class DbNames
+    {
+        #region Fields
+
+        public static readonly string CountriesDb = "CountriesSmall.sqlite";
+        public static readonly string PopulatedPlacesDb = "PopulatedPlaces.sqlite";
+
+        #endregion Fields
     }
 }

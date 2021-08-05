@@ -69,6 +69,7 @@ namespace GeoGame.Models.Battles.Weapons
         /// </summary>
         public int BulletsPerShotCycle { get; set; } = 1;
 
+        public int CurrentBulletShot { get; set; } = 0;
         public double DeltaTime { get; set; }
 
         public Enums.EnemyDifficulty Difficulty { get; set; }
@@ -123,23 +124,10 @@ namespace GeoGame.Models.Battles.Weapons
                         playFireSound = false;
                     }
 
-
                     b.PosX = this.Parent.PosX + this.Parent.Width / 2 - b.Width / 2;
                     b.PosY = this.Parent.PosY + (this.Parent.IsPlayer ? -this.Parent.Height : 0);
                     b.Fired = true;
                 }
-            }
-        }
-
-        /// <summary>
-        /// Assigns ShotID to bullets, such that they can be handled specifically in BulletMovement function, if needed
-        /// </summary>
-        /// <param name="bullets"></param>
-        private void AssignShotId(List<BulletBase> bullets)
-        {
-            for(int i = 0; i < bullets.Count(); i++)
-            {
-                bullets[i].ShotId = i;
             }
         }
 
@@ -160,7 +148,7 @@ namespace GeoGame.Models.Battles.Weapons
                 b.Weapon.OnBulletMove?.Invoke(b, dt, totalT, canvasView);
             }
         }
-        public int CurrentBulletShot { get; set; } = 0;
+
         protected virtual void PostInit()
         {
             switch (this.WeaponNameEnum)
@@ -202,6 +190,18 @@ namespace GeoGame.Models.Battles.Weapons
                         this.BulletFiredSound.Volume = 0.4;
                     }
                     break;
+            }
+        }
+
+        /// <summary>
+        /// Assigns ShotID to bullets, such that they can be handled specifically in BulletMovement function, if needed
+        /// </summary>
+        /// <param name="bullets"></param>
+        private void AssignShotId(List<BulletBase> bullets)
+        {
+            for (int i = 0; i < bullets.Count(); i++)
+            {
+                bullets[i].ShotId = i;
             }
         }
 

@@ -1,14 +1,14 @@
 ﻿using SkiaSharp;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Text;
 
 namespace GeoGame.Extensions
 {
     public static class BitmapExtensions
     {
+        #region Methods
+
         public static SKBitmap LoadBitmapResource(Type type, string resourceID)
         {
             Assembly assembly = type.GetTypeInfo().Assembly;
@@ -19,5 +19,7 @@ namespace GeoGame.Extensions
                 return SKBitmap.Decode(stream);
             }
         }
+
+        #endregion Methods
     }
 }

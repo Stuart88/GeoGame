@@ -3,7 +3,6 @@ using GeoGame.Models.Battles.Weapons;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace GeoGame.Models.Battles
@@ -96,8 +95,6 @@ namespace GeoGame.Models.Battles
         public WeaponBase Weapon { get; set; }
         public float Width { get; set; }
 
-        
-
         #endregion Properties
 
         #region Methods
@@ -131,7 +128,9 @@ namespace GeoGame.Models.Battles
             }
         }
 
-        public virtual void Update(float dt, float totalT, SKCanvasView canvasView) { }
+        public virtual void Update(float dt, float totalT, SKCanvasView canvasView)
+        {
+        }
 
         internal virtual void Move(float dt, float totalT, SKCanvasView canvasView)
         {

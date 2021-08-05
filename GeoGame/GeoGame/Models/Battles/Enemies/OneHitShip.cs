@@ -1,20 +1,18 @@
-﻿using GeoGame.Helpers;
-using GeoGame.Models.Battles.Weapons;
+﻿using GeoGame.Models.Battles.Weapons;
 using SkiaSharp.Views.Forms;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using static GeoGame.Models.Battles.Weapons.WeaponBase;
 
 namespace GeoGame.Models.Battles.Enemies
 {
     public class OneHitShip : EnemyBase
     {
+        #region Constructors
+
         public OneHitShip(Enums.EnemyDifficulty difficulty, MoveAction onMove, BulletMoveAction onBulletMove, WeaponsEnum weaponType, SKCanvasView canvasView) : base(difficulty, onMove, canvasView)
         {
             this.Width = canvasView.CanvasSize.Width / 10;
             this.Height = this.Width;
-            
+
             this.Health = 1;
             this.MaxHealth = this.Health;
 
@@ -22,19 +20,21 @@ namespace GeoGame.Models.Battles.Enemies
             this.BaseVelX = this.VelX; // VelX initialised via base constructor
 
             this.VelY = this.Rand.Next(35, 45);
-            
+
             this.PosX = this.Rand.Next(0, (int)(canvasView.CanvasSize.Width - this.Width));
             this.PosY = this.ResetPosYToTop();
-            
+
             this.BasePosX = this.PosX;
             this.BasePosY = this.PosY;
-            
+
             this.Weapon = new SlowBlaster(this, onBulletMove, weaponType);
 
             this.AssignMainSprite(9, 3);
-
-
         }
+
+        #endregion Constructors
+
+        #region Methods
 
         public override void InitEasy()
         {
@@ -42,13 +42,6 @@ namespace GeoGame.Models.Battles.Enemies
 
             this.SpriteSheet = Sprites.EnemyHitSpriteSheetEasy;
             this.HitSpriteSheet = Sprites.EnemyHitSpriteSheetEasy;
-        }
-        public override void InitMedium()
-        {
-            this.VelX = this.Rand.Next(75, 126);
-
-            this.SpriteSheet = Sprites.EnemySpriteSheetMedium;
-            this.HitSpriteSheet = Sprites.EnemyHitSpriteSheetMedium;
         }
 
         public override void InitHard()
@@ -67,5 +60,14 @@ namespace GeoGame.Models.Battles.Enemies
             this.HitSpriteSheet = Sprites.EnemyHitSpriteSheetInsane;
         }
 
+        public override void InitMedium()
+        {
+            this.VelX = this.Rand.Next(75, 126);
+
+            this.SpriteSheet = Sprites.EnemySpriteSheetMedium;
+            this.HitSpriteSheet = Sprites.EnemyHitSpriteSheetMedium;
+        }
+
+        #endregion Methods
     }
 }

@@ -25,7 +25,6 @@ namespace GeoGame.Data
                     GameData = JsonConvert.DeserializeObject<GameData>(jsonData);
                 }
             }
-           
         }
 
         public static void SaveGame()
@@ -79,9 +78,9 @@ namespace GeoGame.Data
     {
         #region Fields
 
+        public static readonly string HighlightCountry = "HighlightCountry";
         public static readonly string OpenCountryBattle = "OpenCountryBattle";
         public static readonly string WonCountryBattle = "WonCountryBattle";
-        public static readonly string HighlightCountry = "HighlightCountry";
 
         #endregion Fields
     }

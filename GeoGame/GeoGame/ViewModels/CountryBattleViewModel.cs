@@ -1,17 +1,21 @@
-﻿using GeoGame.Models.Battles;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace GeoGame.ViewModels
+﻿namespace GeoGame.ViewModels
 {
     public class CountryBattleViewModel : BaseViewModel
     {
-        string selectedWeaponName;
+        #region Fields
+
+        private string selectedWeaponName;
+
+        #endregion Fields
+
+        #region Properties
+
         public string SelectedWeaponName
         {
             get { return selectedWeaponName; }
             set { SetProperty(ref selectedWeaponName, value); }
         }
+
+        #endregion Properties
     }
 }

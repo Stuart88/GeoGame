@@ -104,6 +104,12 @@ namespace GeoGame.Views
             base.OnDisappearing();
         }
 
+        private void ChangePlayerWeapon(WeaponsEnum nextWeapon)
+        {
+            ((CountryBattleViewModel)this.BindingContext).SelectedWeaponName = nextWeapon.GetDisplayName();
+            this.Player.ChangeWeapon(nextWeapon);
+        }
+
         private void CheckCollisions()
         {
             foreach (var e in this.Enemies.Where(i => i.Active || i.Weapon.Bullets.Any(b => b.Fired)))
@@ -233,10 +239,9 @@ namespace GeoGame.Views
             int availableTracksCount = 15;
             int songNum = this.Country.Id % availableTracksCount + 1; // Modulus ranges from 0 - 14
             this.BattleMusic.Load(Helpers.Functions.GetStreamFromFile($"Resources.Music.Battle.{songNum}.mp3"));
-            this.BattleMusic.PlaybackEnded += (s,e) => { this.BattleMusic.Play(); };
+            this.BattleMusic.PlaybackEnded += (s, e) => { this.BattleMusic.Play(); };
             this.BattleMusic.Play();
         }
-
 
         private void InitPlayer()
         {
@@ -270,22 +275,6 @@ namespace GeoGame.Views
         {
             WeaponsEnum nextWeapon = this.Player.Weapon.WeaponNameEnum.CycleNext<WeaponsEnum>();
             ChangePlayerWeapon(nextWeapon);
-        }
-
-        private void ChangePlayerWeapon(WeaponsEnum nextWeapon)
-        {
-            ((CountryBattleViewModel)this.BindingContext).SelectedWeaponName = nextWeapon.GetDisplayName();
-            this.Player.ChangeWeapon(nextWeapon);
-        }
-
-        private void Updatebjects(float dt, float totalT)
-        {
-            this.Player.Update(dt, totalT, canvasView);
-
-            foreach (var e in this.Enemies)
-            {
-                e.Update(dt, totalT, canvasView);
-            }
         }
 
         private void OnGameWon()
@@ -354,6 +343,16 @@ namespace GeoGame.Views
             canvasView.InvalidateSurface();
 
             return _pageActive;
+        }
+
+        private void Updatebjects(float dt, float totalT)
+        {
+            this.Player.Update(dt, totalT, canvasView);
+
+            foreach (var e in this.Enemies)
+            {
+                e.Update(dt, totalT, canvasView);
+            }
         }
 
         /// <summary>

@@ -32,6 +32,8 @@ namespace GeoGame.Droid.CustomRenderers
 
         #region Properties
 
+        private List<(Country, Android.Gms.Maps.Model.Polygon)> CountryPolygons { get; set; } = new List<(Country, Android.Gms.Maps.Model.Polygon)>();
+
         /// <summary>
         /// Populated places cache, data can be reused when going to battle page
         /// </summary>
@@ -41,15 +43,13 @@ namespace GeoGame.Droid.CustomRenderers
         /// Ppolygons cache for reuse
         /// </summary>
         private List<Android.Gms.Maps.Model.Polygon> SelectedPolygons { get; set; } = new List<Android.Gms.Maps.Model.Polygon>();
+
+        private Data.MapEnums.MapTheme SelectedTheme { get; set; }
         private Marker ShowingMarker { get; set; }
 
         #endregion Properties
 
         #region Methods
-
-        private List<(Country, Android.Gms.Maps.Model.Polygon)> CountryPolygons { get; set; } = new List<(Country, Android.Gms.Maps.Model.Polygon)>();
-
-        private Data.MapEnums.MapTheme SelectedTheme { get; set; }
 
         public Android.Views.View GetInfoContents(Marker marker)
         {
@@ -63,7 +63,7 @@ namespace GeoGame.Droid.CustomRenderers
 
         public async void HighlightCountry(Country c)
         {
-            if(this.CountryPolygons.Any(p => p.Item1.Id == c.Id))
+            if (this.CountryPolygons.Any(p => p.Item1.Id == c.Id))
             {
                 var poly = this.CountryPolygons.FirstOrDefault(p => p.Item1.Id == c.Id);
                 await this.HighlightPolygon(poly.Item2);
@@ -86,6 +86,14 @@ namespace GeoGame.Droid.CustomRenderers
             };
 
             NativeMap.SetMapStyle(selectedStyle);
+        }
+
+        public void SubscribeToMessages()
+        {
+            MessagingCenter.Subscribe<IMessageService, Country>(this, Data.MessagingCenterMessages.HighlightCountry, (sender, c) =>
+            {
+                this.HighlightCountry(c);
+            });
         }
 
         protected override PolygonOptions CreatePolygonOptions(Xamarin.Forms.Maps.Polygon polygon)
@@ -233,24 +241,6 @@ namespace GeoGame.Droid.CustomRenderers
             return new LatLng(lat, lng);
         }
 
-        private void NativeMap_MapClick(object sender, GoogleMap.MapClickEventArgs e)
-        {
-        }
-
-        private void NativeMap_MapLongClick(object sender, GoogleMap.MapLongClickEventArgs e)
-        {
-            int themeVal = (int)this.SelectedTheme;
-
-            themeVal++;
-
-            int totalThemes = Enum.GetValues(typeof(Data.MapEnums.MapTheme)).Length;
-
-            if (themeVal >= totalThemes)
-                themeVal = 0;
-
-            this.SetMapTheme((Data.MapEnums.MapTheme)themeVal);
-        }
-
         private async Task HighlightPolygon(Android.Gms.Maps.Model.Polygon p)
         {
             if (this.SelectedPolygons.Any(poly => poly.ZIndex == p.ZIndex))
@@ -287,11 +277,27 @@ namespace GeoGame.Droid.CustomRenderers
             }
         }
 
+        private void NativeMap_MapClick(object sender, GoogleMap.MapClickEventArgs e)
+        {
+        }
+
+        private void NativeMap_MapLongClick(object sender, GoogleMap.MapLongClickEventArgs e)
+        {
+            int themeVal = (int)this.SelectedTheme;
+
+            themeVal++;
+
+            int totalThemes = Enum.GetValues(typeof(Data.MapEnums.MapTheme)).Length;
+
+            if (themeVal >= totalThemes)
+                themeVal = 0;
+
+            this.SetMapTheme((Data.MapEnums.MapTheme)themeVal);
+        }
+
         private async void NativeMap_PolygonClick(object sender, GoogleMap.PolygonClickEventArgs e)
         {
             await this.HighlightPolygon(e.Polygon);
-
-           
 
             //var v = NativeMap.Projection.VisibleRegion;
 
@@ -317,23 +323,15 @@ namespace GeoGame.Droid.CustomRenderers
             ////infoMarker.SetIcon(null);
             //Marker tempMarker = NativeMap.AddMarker(infoMarker);
             //tempMarker.ShowInfoWindow();
-            
-            //this.ShowingMarker = tempMarker;
-        }
 
-        public void SubscribeToMessages()
-        {
-            MessagingCenter.Subscribe<IMessageService, Country>(this, Data.MessagingCenterMessages.HighlightCountry, (sender, c) =>
-            {
-                this.HighlightCountry(c);
-            });
+            //this.ShowingMarker = tempMarker;
         }
 
         private void OnInfoWindowClick(object sender, GoogleMap.InfoWindowClickEventArgs e)
         {
             Country country = this.CountryPolygons.First(p => this.SelectedPolygons.Any(poly => poly.ZIndex == p.Item1.Id)).Item1;
-            List<PopulatedPlace> places = this.PopulatedPlaceMarkers.Select(p => p.place).ToList(); 
-            
+            List<PopulatedPlace> places = this.PopulatedPlaceMarkers.Select(p => p.place).ToList();
+
             MessagingCenter.Send<IMessageService, Country>(this, Data.MessagingCenterMessages.OpenCountryBattle, country);
         }
 
