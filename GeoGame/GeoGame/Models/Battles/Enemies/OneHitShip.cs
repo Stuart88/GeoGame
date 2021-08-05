@@ -4,21 +4,19 @@ using SkiaSharp.Views.Forms;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using static GeoGame.Models.Battles.Weapons.WeaponBase;
 
 namespace GeoGame.Models.Battles.Enemies
 {
     public class OneHitShip : EnemyBase
     {
-        public OneHitShip(Enums.EnemyDifficulty difficulty, MoveAction onMove, SKCanvasView canvasView) : base(difficulty, onMove, canvasView)
+        public OneHitShip(Enums.EnemyDifficulty difficulty, MoveAction onMove, BulletMoveAction onBulletMove, WeaponsEnum weaponType, SKCanvasView canvasView) : base(difficulty, onMove, canvasView)
         {
             this.Width = canvasView.CanvasSize.Width / 10;
             this.Height = this.Width;
             
             this.Health = 1;
             this.MaxHealth = this.Health;
-
-            this.DirectionSignX = this.Rand.RandomSign();
-            this.DirectionSignY = this.Rand.RandomSign();
 
             this.BaseVelY = 40;
             this.BaseVelX = this.VelX; // VelX initialised via base constructor
@@ -31,9 +29,10 @@ namespace GeoGame.Models.Battles.Enemies
             this.BasePosX = this.PosX;
             this.BasePosY = this.PosY;
             
-            this.Weapon = new SlowBlaster(this);
+            this.Weapon = new SlowBlaster(this, onBulletMove, weaponType);
 
             this.AssignMainSprite(9, 3);
+
 
         }
 

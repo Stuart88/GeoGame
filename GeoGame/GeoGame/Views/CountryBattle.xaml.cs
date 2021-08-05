@@ -1,9 +1,11 @@
 ﻿using GeoGame.Extensions;
+using GeoGame.Helpers;
 using GeoGame.Interfaces;
 using GeoGame.Models.Battles;
 using GeoGame.Models.Battles.Enemies;
 using GeoGame.Models.Battles.Weapons;
 using GeoGame.Models.Geo;
+using GeoGame.ViewModels;
 using Plugin.SimpleAudioPlayer;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
@@ -44,9 +46,9 @@ namespace GeoGame.Views
 
         public CountryBattle(Country country)
         {
+            this.BindingContext = new CountryBattleViewModel();
             InitializeComponent();
             SubscribeToMessages();
-
             this.Country = country;
             this.IsSmallCountry = this.Country.Population < this.PopulationScaler;
             _totalTime.Start();
@@ -104,10 +106,13 @@ namespace GeoGame.Views
 
         private void CheckCollisions()
         {
-            foreach (var e in this.Enemies.Where(i => i.Active))
+            foreach (var e in this.Enemies.Where(i => i.Active || i.Weapon.Bullets.Any(b => b.Fired)))
             {
-                foreach (var b in this.Player.Weapon.Bullets.Where(i => i.Fired))
-                    e.CheckCollisionWithBullet(b);
+                if (e.Active)
+                {
+                    foreach (var b in this.Player.ActiveBullets)
+                        e.CheckCollisionWithBullet(b);
+                }
 
                 foreach (var b in e.Weapon.Bullets.Where(i => i.Fired))
                     this.Player.CheckCollisionWithBullet(b);
@@ -201,7 +206,7 @@ namespace GeoGame.Views
 
             for (int i = 0; i < this.EnemyCount; i++)
             {
-                OneHitShip e = new OneHitShip(Models.Enums.EnemyDifficulty.Easy, MovementFunctions.LocalisedCircle, canvasView);
+                OneHitShip e = new OneHitShip(Models.Enums.EnemyDifficulty.Easy, MovementFunctions.LocalisedCircle, BulletMovementFunctions.BasicStraightVertical, WeaponsEnum.SlowBlaster, canvasView);
 
                 if (activesAdded++ < this.MaxActiveEnemies)
                     e.Active = true;
@@ -228,8 +233,10 @@ namespace GeoGame.Views
             int availableTracksCount = 15;
             int songNum = this.Country.Id % availableTracksCount + 1; // Modulus ranges from 0 - 14
             this.BattleMusic.Load(Helpers.Functions.GetStreamFromFile($"Resources.Music.Battle.{songNum}.mp3"));
+            this.BattleMusic.PlaybackEnded += (s,e) => { this.BattleMusic.Play(); };
             this.BattleMusic.Play();
         }
+
 
         private void InitPlayer()
         {
@@ -240,8 +247,8 @@ namespace GeoGame.Views
             this.Player.Height = this.Player.Width * 2f;
             this.Player.PosX = (canvasView.CanvasSize.Width - this.Player.Width) / 2;
             this.Player.PosY = canvasView.CanvasSize.Height * (1 - 0.01f);
-            this.Player.Weapon = new SlowBlaster(this.Player);
             this.Player.BaseVelX = 500;
+            ChangePlayerWeapon(WeaponsEnum.SlowBlaster);
         }
 
         private void LeftButton_Pressed(object sender, EventArgs e)
@@ -261,19 +268,23 @@ namespace GeoGame.Views
 
         private void MiddleButton_Pressed(object sender, EventArgs e)
         {
+            WeaponsEnum nextWeapon = this.Player.Weapon.WeaponNameEnum.CycleNext<WeaponsEnum>();
+            ChangePlayerWeapon(nextWeapon);
         }
 
-        private void MoveObjects(float dt, float totalT)
+        private void ChangePlayerWeapon(WeaponsEnum nextWeapon)
         {
-            this.Player.Move(dt, totalT, canvasView);
-            this.Player.MoveBullets(dt, totalT, canvasView);
+            ((CountryBattleViewModel)this.BindingContext).SelectedWeaponName = nextWeapon.GetDisplayName();
+            this.Player.ChangeWeapon(nextWeapon);
+        }
+
+        private void Updatebjects(float dt, float totalT)
+        {
+            this.Player.Update(dt, totalT, canvasView);
 
             foreach (var e in this.Enemies)
             {
-                if(e.Active && !e.IsDead)
-                    e.Move(dt, totalT, canvasView);
-                
-                e.MoveBullets(dt, totalT, canvasView);
+                e.Update(dt, totalT, canvasView);
             }
         }
 
@@ -333,7 +344,7 @@ namespace GeoGame.Views
             // Restart the time measurement for the next time this method is called
             _stopWatch.Restart();
 
-            MoveObjects(dt, (float)_totalTime.Elapsed.TotalSeconds);
+            Updatebjects(dt, (float)_totalTime.Elapsed.TotalSeconds);
 
             CheckCollisions();
 

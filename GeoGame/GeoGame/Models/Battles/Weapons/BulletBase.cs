@@ -15,6 +15,11 @@ namespace GeoGame.Models.Battles.Weapons
             this.PosY = weapon.Parent.PosY;
             this.HitDamage = 10; // general value. Reassign elsewhere if needed
 
+            this.Id = this.Weapon.Bullets.Count + 1;
+            
+            // ID used as index for selection in some BulletMovementFunctions methods
+            // ID starts at 1 because some BulletMovementFunctions methods hit divde by zero error if using the index in modulo operator
+
             switch (this.Difficulty)
             {
                 case Enums.EnemyDifficulty.Easy: InitEasy(); break;
@@ -23,12 +28,54 @@ namespace GeoGame.Models.Battles.Weapons
                 case Enums.EnemyDifficulty.Insane: InitInsane(); break;
                 case Enums.EnemyDifficulty.IsPlayer: InitPlayer(); break;
             }
+
+            this.BaseVelX = this.VelX;
+            this.BaseVelY = this.VelY;
+
+            PostInit();
         }
 
         #endregion Constructors
+        public virtual void PostInit()
+        {
+            if(this.Weapon.Parent is Player)
+            {
+                switch (this.Weapon.WeaponNameEnum)
+                {
+                    case WeaponsEnum.StarBlaster:
+                        this.Sprite = Sprites.StarBlasterSprite;
+                        break;
 
+                    case WeaponsEnum.HornetBlaster:
+                        this.Sprite = Sprites.PlayerBeeBlasterSprite;
+                        break;
+
+                    case WeaponsEnum.SlowBlaster:
+                        this.Sprite = Sprites.SlowBlasterSprite;
+                        break;
+
+                    default:
+                        this.Sprite = Sprites.PlayerBlasterSprite;
+                        break;
+                }
+            }
+            if(this.Weapon.Parent is Enemies.EnemyBase)
+            {
+                switch (this.Weapon.WeaponNameEnum)
+                {
+                    default:
+                        this.Sprite = Sprites.EnemyBlasterSprite;
+                        break;
+                }
+            }
+            
+
+        }
         #region Properties
-
+        /// <summary>
+        /// Useful for tracking bullet when part of a weapon that fires multiple bullets in one shot
+        /// </summary>
+        public int ShotId { get; set; }
         /// <summary>
         /// Angle at which bullet should move  (+/- pi relative to vertical).
         /// </summary>
@@ -60,6 +107,16 @@ namespace GeoGame.Models.Battles.Weapons
         public abstract void InitMedium();
 
         public abstract void InitPlayer();
+
+        public override void Draw(ref SKCanvas canvas, SKSize canvasSize)
+        {
+            this.CheckStillInView(canvasSize);
+            if (this.Fired)
+            {
+                SKRect destRect = new SKRect(this.PosX, this.PosY - this.Height, this.PosX + this.Width, this.PosY);
+                canvas.DrawBitmap(this.Sprite, destRect);
+            }
+        }
 
         #endregion Methods
     }

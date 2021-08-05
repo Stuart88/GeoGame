@@ -245,7 +245,7 @@ namespace GeoGame.Droid.CustomRenderers
 
             int totalThemes = Enum.GetValues(typeof(Data.MapEnums.MapTheme)).Length;
 
-            if (themeVal + 1 >= totalThemes)
+            if (themeVal >= totalThemes)
                 themeVal = 0;
 
             this.SetMapTheme((Data.MapEnums.MapTheme)themeVal);

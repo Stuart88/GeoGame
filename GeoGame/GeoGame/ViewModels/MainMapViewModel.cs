@@ -11,9 +11,10 @@ namespace GeoGame.ViewModels
         public Country SelectedCountry
         {
             get { return selectedCountry; }
-            set { 
-                SetProperty(ref selectedCountry, value); 
-            }
+            set { SetProperty(ref selectedCountry, value); }
         }
+
+       
+
     }
 }

@@ -1,24 +1,17 @@
-﻿namespace GeoGame.Models.Battles.Weapons
-{
-    public class Blaster : WeaponBase
-    {
-        #region Constructors
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
-        public Blaster(MovingObjectBase parent, BulletMoveAction onBulletMove, WeaponsEnum weaponType) : base(parent, onBulletMove, weaponType)
+namespace GeoGame.Models.Battles.Weapons
+{
+    public class HornetBlaster : WeaponBase
+    {
+        public HornetBlaster(MovingObjectBase parent, BulletMoveAction onBulletMove, WeaponsEnum weaponType): base(parent, onBulletMove, weaponType)
         {
             for (int i = 0; i < this.BulletsAmount; i++)
             {
-                this.Bullets.Add(new BlasterBullet(this));
+                this.Bullets.Add(new HornetBlasterBullet(this));
             }
-        }
-
-        #endregion Constructors
-
-        #region Methods
-
-        public override void FireWeapon(float dt)
-        {
-            base.FireWeapon(dt);
         }
 
         public override void InitEasy()
@@ -47,12 +40,8 @@
 
         public override void InitPlayer()
         {
-            this.BulletFiredSound.Volume = 0.1;
-
             this.BulletsAmount = 100;
-            this.FireRate = 0.100d;
+            this.FireRate = 0.150d;
         }
-
-        #endregion Methods
     }
 }

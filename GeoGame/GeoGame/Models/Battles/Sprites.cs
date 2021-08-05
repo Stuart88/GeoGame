@@ -15,7 +15,10 @@ namespace GeoGame.Models.Battles
         public static readonly SKBitmap PlayerSpriteRight = BitmapExtensions.LoadBitmapResource(typeof(EnemyBase), "GeoGame.Resources.Sprites.shipRight.png");
         public static readonly SKBitmap PlayerSpriteMaxRight = BitmapExtensions.LoadBitmapResource(typeof(EnemyBase), "GeoGame.Resources.Sprites.shipRightMax.png");
         public static readonly SKBitmap PlayerBlasterSprite = BitmapExtensions.LoadBitmapResource(typeof(EnemyBase), "GeoGame.Resources.Sprites.shipBlaster.png");
-        
+        public static readonly SKBitmap PlayerBeeBlasterSprite = BitmapExtensions.LoadBitmapResource(typeof(EnemyBase), "GeoGame.Resources.Sprites.bee.png");
+        public static readonly SKBitmap StarBlasterSprite = BitmapExtensions.LoadBitmapResource(typeof(EnemyBase), "GeoGame.Resources.Sprites.starBullet.png");
+        public static readonly SKBitmap SlowBlasterSprite = BitmapExtensions.LoadBitmapResource(typeof(EnemyBase), "GeoGame.Resources.Sprites.orbYellow.png");
+
         public static readonly SKBitmap EnemySpriteSheetEasy = BitmapExtensions.LoadBitmapResource(typeof(EnemyBase), "GeoGame.Resources.Sprites.enemySpritesEasy.png");
         public static readonly SKBitmap EnemyHitSpriteSheetEasy = BitmapExtensions.LoadBitmapResource(typeof(EnemyBase), "GeoGame.Resources.Sprites.enemySpritesEasyHit.png");
         public static readonly SKBitmap EnemySpriteSheetMedium = BitmapExtensions.LoadBitmapResource(typeof(EnemyBase), "GeoGame.Resources.Sprites.enemySpritesMedium.png");

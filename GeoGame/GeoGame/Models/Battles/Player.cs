@@ -2,6 +2,8 @@
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using static GeoGame.Data.BattlesData;
 
 namespace GeoGame.Models.Battles
@@ -10,17 +12,30 @@ namespace GeoGame.Models.Battles
     {
         #region Constructors
 
-        public Player() : base(Enums.EnemyDifficulty.IsPlayer) 
+        public Player() : base(Enums.EnemyDifficulty.IsPlayer)
         {
             this.Width = 30f;
             this.Height = 70f;
             this.MainSprite = Sprites.PlayerSpriteCentre;
+            this.WeaponsList = new List<WeaponBase>
+            {
+                new SlowBlaster(this, BulletMovementFunctions.BasicStraightVertical, WeaponsEnum.SlowBlaster),
+                new Blaster(this, BulletMovementFunctions.BasicStraightVertical, WeaponsEnum.FastBlaster),
+                new Blaster(this, BulletMovementFunctions.AlternateDiagonal, WeaponsEnum.StarBlaster),
+                new SlowBlaster(this, BulletMovementFunctions.SpreadShot, WeaponsEnum.SpreadBlaster),
+                new HornetBlaster(this, BulletMovementFunctions.HornetShot, WeaponsEnum.HornetBlaster),
+            };
         }
 
         #endregion Constructors
 
         #region Properties
+        public List<BulletBase> ActiveBullets => this.WeaponsList.Where(w => w.Bullets.Any(b => b.Fired)).SelectMany(b => b.Bullets).ToList();
 
+        public float AccelLeft { get; set; } = 400;
+        public float AccelRight { get; set; } = 400;
+        public float BaseAccelLeft { get; set; } = 400;
+        public float BaseAccelRight { get; set; } = 400;
         public SpriteDirection Direction { get; set; } = SpriteDirection.Centre;
         public bool MovingLeft { get; set; }
         public bool MovingRight { get; set; }
@@ -28,20 +43,16 @@ namespace GeoGame.Models.Battles
         public SKBitmap ShipLeftMax { get; set; } = Sprites.PlayerSpriteMaxLeft;
         public SKBitmap ShipRight { get; set; } = Sprites.PlayerSpriteRight;
         public SKBitmap ShipRightMax { get; set; } = Sprites.PlayerSpriteMaxRight;
+        public List<WeaponBase> WeaponsList { get; }
+        private float Jerk { get; set; } = 500;
 
         #endregion Properties
 
-        public float AccelLeft { get; set; } = 400;
-        public float AccelRight { get; set; } = 400;
-        public float BaseAccelLeft { get; set; } = 400;
-        public float BaseAccelRight { get; set; } = 400;
-        private float Jerk { get; set; } = 500;
-
         #region Methods
 
-        public void ChangeWeapon(WeaponBase weapon)
+        public void ChangeWeapon(WeaponsEnum weapon)
         {
-            this.Weapon = weapon;
+            this.Weapon = this.WeaponsList.First(w => w.WeaponNameEnum == weapon);
         }
 
         public override void Draw(ref SKCanvas canvas, SKSize canvasSize)
@@ -72,7 +83,23 @@ namespace GeoGame.Models.Battles
             }
         }
 
-        public override void Move(float dt, float totalT, SKCanvasView canvasView)
+        public override void DrawBullets(ref SKCanvas canvas, SKSize canvasSize)
+        {
+            foreach (BulletBase b in this.ActiveBullets)
+            {
+                b.Draw(ref canvas, canvasSize);
+            }
+        }
+
+        public override void Update(float dt, float totalT, SKCanvasView canvasView)
+        {
+            this.Move(dt, totalT, canvasView);
+
+            foreach (var w in this.WeaponsList)
+                w.MoveBullets(dt, totalT, canvasView);
+        }
+
+        internal override void Move(float dt, float totalT, SKCanvasView canvasView)
         {
             if (!this.MovingLeft && !this.MovingRight)
                 return;

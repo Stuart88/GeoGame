@@ -52,6 +52,7 @@ namespace GeoGame.Views
         {
             int songNum = _rand.Next(1, 6);
             this.Music.Load(Helpers.Functions.GetStreamFromFile($"Resources.Music.Map.{songNum}.mp3"));
+            this.Music.PlaybackEnded += (s, e) => { this.Music.Play(); };
         }
 
         #endregion Constructors

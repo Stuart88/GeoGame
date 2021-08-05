@@ -9,15 +9,13 @@ namespace GeoGame.Models.Battles.Enemies
     {
         #region Constructors
 
-        public Random Rand { get; set; } = new Random();
-
         public EnemyBase(Enums.EnemyDifficulty difficulty, MoveAction onMove, SKCanvasView canvasView) : base(difficulty)
         {
             this.MainSprite = new SKBitmap();
             this.HitSprite = new SKBitmap();
-            
+
             this.OnMove += onMove;
-            
+
             switch (this.Difficulty)
             {
                 case Enums.EnemyDifficulty.Easy: InitEasy(); break;
@@ -27,16 +25,6 @@ namespace GeoGame.Models.Battles.Enemies
                 case Enums.EnemyDifficulty.IsPlayer: InitPlayer(); break;
             }
         }
-
-        public float ResetPosYToTop()
-        {
-            this.PosY = this.Rand.Next((int)-this.Height - 20, (int)-this.Height); // off top of screen
-            this.BasePosY = this.PosY;
-            this.MovementTime = 0;
-            return this.PosY;
-        }
-
-        
 
         #endregion Constructors
 
@@ -90,6 +78,22 @@ namespace GeoGame.Models.Battles.Enemies
         public void InitPlayer()
         {
             //Just here for interface implementation...
+        }
+
+        public float ResetPosYToTop()
+        {
+            this.PosY = this.Rand.Next((int)-this.Height - 20, (int)-this.Height); // off top of screen
+            this.BasePosY = this.PosY;
+            this.MovementTime = 0;
+            return this.PosY;
+        }
+
+        public override void Update(float dt, float totalT, SKCanvasView canvasView)
+        {
+            if (this.Active && !this.IsDead)
+                this.Move(dt, totalT, canvasView);
+
+            this.Weapon.MoveBullets(dt, totalT, canvasView);
         }
 
         #endregion Methods

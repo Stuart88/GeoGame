@@ -1,6 +1,9 @@
-﻿using GeoGame.Models.Battles.Weapons;
+﻿using GeoGame.Helpers;
+using GeoGame.Models.Battles.Weapons;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace GeoGame.Models.Battles
@@ -12,6 +15,8 @@ namespace GeoGame.Models.Battles
         public MovingObjectBase(Enums.EnemyDifficulty difficulty)
         {
             this.Difficulty = difficulty;
+            this.DirectionSignX = this.Rand.RandomSign();
+            this.DirectionSignY = this.Rand.RandomSign();
         }
 
         #endregion Constructors
@@ -56,21 +61,14 @@ namespace GeoGame.Models.Battles
         public int DirectionSignY { get; set; }
 
         public int Health { get; set; }
-
         public float Height { get; set; }
-
         public bool HitByBullet { get; set; }
-
         public SKBitmap HitSprite { get; set; }
-
         public SKBitmap HitSpriteSheet { get; set; }
-
+        public int Id { get; set; }
         public bool IsDead { get; set; }
-
         public bool IsPlayer => this is Player;
-
         public SKBitmap MainSprite { get; set; }
-
         public int MaxHealth { get; set; }
 
         /// <summary>
@@ -79,8 +77,8 @@ namespace GeoGame.Models.Battles
         public float MovementTime { get; set; }
 
         public float PosX { get; set; }
-
         public float PosY { get; set; }
+        public Random Rand { get; set; } = new Random();
 
         /// <summary>
         /// Useful for trig movement functions where phase is needed to ensure all movements stays relative to BasePosX (start pos)
@@ -97,6 +95,8 @@ namespace GeoGame.Models.Battles
         public float VelY { get; set; }
         public WeaponBase Weapon { get; set; }
         public float Width { get; set; }
+
+        
 
         #endregion Properties
 
@@ -131,7 +131,9 @@ namespace GeoGame.Models.Battles
             }
         }
 
-        public virtual void Move(float dt, float totalT, SKCanvasView canvasView)
+        public virtual void Update(float dt, float totalT, SKCanvasView canvasView) { }
+
+        internal virtual void Move(float dt, float totalT, SKCanvasView canvasView)
         {
             this.MovementTime += dt;
 
@@ -145,16 +147,6 @@ namespace GeoGame.Models.Battles
                 {
                     e.PosY = e.ResetPosYToTop();
                 }
-            }
-        }
-
-
-
-        public virtual void MoveBullets(float dt, float totalT, SKCanvasView canvasView)
-        {
-            foreach (var b in this.Weapon.Bullets.Where(b => b.Fired))
-            {
-                b.OnMove?.Invoke(b, dt, totalT, canvasView);
             }
         }
 
