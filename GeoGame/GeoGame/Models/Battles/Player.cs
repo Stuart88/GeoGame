@@ -19,11 +19,11 @@ namespace GeoGame.Models.Battles
             this.MainSprite = Sprites.PlayerSpriteCentre;
             this.WeaponsList = new List<WeaponBase>
             {
-                new SlowBlaster(this, BulletMovementFunctions.BasicStraightVertical, WeaponsEnum.SlowBlaster),
-                new Blaster(this, BulletMovementFunctions.BasicStraightVertical, WeaponsEnum.FastBlaster),
-                new Blaster(this, BulletMovementFunctions.AlternateDiagonal, WeaponsEnum.StarBlaster),
-                new SlowBlaster(this, BulletMovementFunctions.SpreadShot, WeaponsEnum.SpreadBlaster),
-                new HornetBlaster(this, BulletMovementFunctions.HornetShot, WeaponsEnum.HornetBlaster),
+                new SlowBlaster(this),
+                new FastBlaster(this),
+                new StarBlaster(this),
+                new SpreadBlaster(this),
+                new HornetBlaster(this),
             };
         }
 

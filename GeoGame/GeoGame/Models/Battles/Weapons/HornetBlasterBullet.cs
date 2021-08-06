@@ -1,6 +1,6 @@
 ﻿namespace GeoGame.Models.Battles.Weapons
 {
-    public class HornetBlasterBullet : BlasterBullet
+    public class HornetBlasterBullet : FastBlasterBullet
     {
         #region Constructors
 
@@ -11,5 +11,17 @@
         }
 
         #endregion Constructors
+
+        #region Methods
+
+        public override void PostInit()
+        {
+            base.PostInit();
+
+            this.Sprite = this.Weapon.Parent.IsPlayer ? Sprites.PlayerBeeBlasterSprite : Sprites.EnemyBeeBlasterSprite;
+            this.HitDamage = 50;
+        }
+
+        #endregion Methods
     }
 }

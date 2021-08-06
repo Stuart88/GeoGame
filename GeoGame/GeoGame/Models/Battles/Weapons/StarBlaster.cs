@@ -1,24 +1,29 @@
 ﻿namespace GeoGame.Models.Battles.Weapons
 {
-    public class HornetBlaster : WeaponBase
+    public class StarBlaster : WeaponBase
     {
         #region Constructors
 
-        public HornetBlaster(MovingObjectBase parent) : base(parent)
+        public StarBlaster(MovingObjectBase parent) : base(parent)
         {
-            this.WeaponNameEnum = WeaponsEnum.HornetBlaster;
+            this.WeaponNameEnum = WeaponsEnum.StarBlaster;
 
             for (int i = 0; i < this.BulletsAmount; i++)
             {
-                this.Bullets.Add(new HornetBlasterBullet(this));
+                this.Bullets.Add(new StarBlasterBullet(this));
             }
 
-            this.OnBulletMove += BulletMovementFunctions.HornetShot;
+            this.OnBulletMove += BulletMovementFunctions.AlternateDiagonal;
         }
 
         #endregion Constructors
 
         #region Methods
+
+        public override void FireWeapon(float dt)
+        {
+            base.FireWeapon(dt);
+        }
 
         public override void InitEasy()
         {
@@ -46,21 +51,20 @@
 
         public override void InitPlayer()
         {
+            this.BulletFiredSound.Volume = 0.1;
+
             this.BulletsAmount = 100;
-            this.FireRate = 0.150d;
+            this.FireRate = 0.100d;
         }
 
         protected override void PostInit()
         {
             base.PostInit();
 
-            BulletsPerShotCycle = 7;
-            BulletsPerShot = 1;
-            BulletsAmount = this.BulletsAmount * 2;
             if (this.Parent is Player)
             {
-                this.BulletFiredSound.Load(Helpers.Functions.GetStreamFromFile("Resources.Sounds.beeBlasterBullet.wav"));
-                this.BulletFiredSound.Volume = 0.8;
+                this.BulletFiredSound.Load(Helpers.Functions.GetStreamFromFile("Resources.Sounds.blasterBullet.wav"));
+                this.BulletFiredSound.Volume = 0.4;
             }
         }
 

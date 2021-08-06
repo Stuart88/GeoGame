@@ -35,6 +35,7 @@
     <None Remove="Resources\Sounds\pulse.wav" />
     <None Remove="Resources\Sprites\bee.png" />
     <None Remove="Resources\Sprites\carrotShip.png" />
+    <None Remove="Resources\Sprites\enemyBee.png" />
     <None Remove="Resources\Sprites\enemyBlaster.png" />
     <None Remove="Resources\Sprites\enemySprites.png" />
     <None Remove="Resources\Sprites\enemySpritesEasy.png" />
@@ -87,6 +88,7 @@
     <EmbeddedResource Include="Resources\Sounds\pulse.wav" />
     <EmbeddedResource Include="Resources\Sprites\bee.png" />
     <EmbeddedResource Include="Resources\Sprites\carrotShip.png" />
+    <EmbeddedResource Include="Resources\Sprites\enemyBee.png" />
     <EmbeddedResource Include="Resources\Sprites\enemyBlaster.png" />
     <EmbeddedResource Include="Resources\Sprites\enemySpritesEasy.png" />
     <EmbeddedResource Include="Resources\Sprites\enemySpritesEasyHit.png" />

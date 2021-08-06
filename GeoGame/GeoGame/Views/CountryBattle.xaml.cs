@@ -217,33 +217,33 @@ namespace GeoGame.Views
                     EnemyBase e;
                     if (i >= 0 && i <= 1)
                     {
-                        e = new OneHitShip(Models.Enums.EnemyDifficulty.Easy, MovementFunctions.BasicLinearLeftRight, BulletMovementFunctions.BasicStraightVertical, WeaponsEnum.SlowBlaster, canvasView);
+                        e = new OneHitShip(EnemyDifficulty.Easy, MovementFunctions.BasicLinearLeftRight, WeaponsEnum.SlowBlaster, canvasView);
                     }
                     else if (i > 1 && i <= 3)
                     {
-                        e = new OneHitShip(Models.Enums.EnemyDifficulty.Easy, MovementFunctions.SinusoidalLeftRightLocal, BulletMovementFunctions.BasicStraightVertical, WeaponsEnum.SlowBlaster, canvasView);
+                        e = new OneHitShip(EnemyDifficulty.Easy, MovementFunctions.SinusoidalLeftRightLocal, WeaponsEnum.SlowBlaster, canvasView);
                     }
                     else if (i > 3 && i <= 5)
                     {
-                        e = new OneHitShip(Models.Enums.EnemyDifficulty.Medium, MovementFunctions.SinusoidalLeftRightFull, BulletMovementFunctions.AlternateDiagonal, WeaponsEnum.SlowBlaster, canvasView);
+                        e = new OneHitShip(EnemyDifficulty.Medium, MovementFunctions.SinusoidalLeftRightFull, WeaponsEnum.SlowBlaster, canvasView);
                     }
                     else if(i > 5 && i <= 10)
                     {
-                        e = new Drone(Models.Enums.EnemyDifficulty.Easy, MovementFunctions.BasicLinearLeftRight, BulletMovementFunctions.AlternateDiagonal, WeaponsEnum.FastBlaster, canvasView);
+                        e = new Drone(EnemyDifficulty.Easy, MovementFunctions.BasicLinearLeftRight, WeaponsEnum.FastBlaster, canvasView);
                     }
                     else if (i > 10 && i <= 15)
                     {
                         var cycledDifficulty = this.Enemies.Last().Difficulty.CycleNext<EnemyDifficulty>();
-                        e = new Drone(cycledDifficulty, MovementFunctions.SinusoidalLeftRightLocal, BulletMovementFunctions.BasicStraightVertical, WeaponsEnum.SlowBlaster, canvasView);
+                        e = new Drone(cycledDifficulty, MovementFunctions.SinusoidalLeftRightLocal, WeaponsEnum.SlowBlaster, canvasView);
                     }
                     else if (i > 15 && i <= 20)
                     {
                         var cycledDifficulty = this.Enemies.Last().Difficulty.CycleNext<EnemyDifficulty>();
-                        e = new Drone(cycledDifficulty, MovementFunctions.SinusoidalLeftRightLocal, BulletMovementFunctions.BasicStraightVertical, WeaponsEnum.SlowBlaster, canvasView);
+                        e = new Drone(cycledDifficulty, MovementFunctions.SinusoidalLeftRightLocal, WeaponsEnum.SlowBlaster, canvasView);
                     }
                     else
                     {
-                        e = new Attacker(Models.Enums.EnemyDifficulty.Easy, MovementFunctions.SinusoidalLeftRightLocal, BulletMovementFunctions.HornetShot, WeaponsEnum.HornetBlaster, canvasView);
+                        e = new Attacker(EnemyDifficulty.Easy, MovementFunctions.SinusoidalLeftRightLocal, WeaponsEnum.HornetBlaster, canvasView);
                     }
 
                     if (activesAdded++ < this.MaxActiveEnemies)
@@ -274,7 +274,7 @@ namespace GeoGame.Views
         {
             int availableTracksCount = 15;
             int songNum = this.Country.Id % availableTracksCount + 1; // Modulus ranges from 0 - 14
-            this.BattleMusic.Load(Helpers.Functions.GetStreamFromFile($"Resources.Music.Battle.{songNum}.mp3"));
+            this.BattleMusic.Load(Functions.GetStreamFromFile($"Resources.Music.Battle.{songNum}.mp3"));
             this.BattleMusic.PlaybackEnded += (s, e) => { this.BattleMusic.Play(); };
             this.BattleMusic.Play();
         }
@@ -296,7 +296,7 @@ namespace GeoGame.Views
         {
             this.Player.MovingLeft = true;
             this.Player.VelX = -this.Player.BaseVelX;
-            this.Player.Direction = Data.BattlesData.SpriteDirection.LeftMax;
+            this.Player.Direction = SpriteDirection.LeftMax;
         }
 
         private void LeftButton_Released(object sender, EventArgs e)

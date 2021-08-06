@@ -7,7 +7,7 @@ namespace GeoGame.Models.Battles.Enemies
     {
         #region Constructors
 
-        public OneHitShip(Enums.EnemyDifficulty difficulty, MoveAction onMove, BulletMoveAction onBulletMove, WeaponsEnum weaponType, SKCanvasView canvasView) : base(difficulty, onMove, canvasView)
+        public OneHitShip(Enums.EnemyDifficulty difficulty, MoveAction onMove, WeaponsEnum weaponType, SKCanvasView canvasView) : base(difficulty, onMove, canvasView)
         {
             this.Width = canvasView.CanvasSize.Width / 10;
             this.Height = this.Width;
@@ -26,7 +26,7 @@ namespace GeoGame.Models.Battles.Enemies
             this.BasePosX = this.PosX;
             this.BasePosY = this.PosY;
 
-            this.Weapon = new SlowBlaster(this, onBulletMove, weaponType);
+            this.Weapon = new SlowBlaster(this);
 
             this.AssignMainSprite(9, 3);
         }

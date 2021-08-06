@@ -4,12 +4,16 @@
     {
         #region Constructors
 
-        public SlowBlaster(MovingObjectBase parent, BulletMoveAction onBulletMove, WeaponsEnum weaponType) : base(parent, onBulletMove, weaponType)
+        public SlowBlaster(MovingObjectBase parent) : base(parent)
         {
+            this.WeaponNameEnum = WeaponsEnum.SlowBlaster;
+
             for (int i = 0; i < this.BulletsAmount; i++)
             {
-                this.Bullets.Add(new BlasterBullet(this));
+                this.Bullets.Add(new SlowBlasterBullet(this));
             }
+
+            this.OnBulletMove += BulletMovementFunctions.BasicStraightVertical;
         }
 
         #endregion Constructors
@@ -44,6 +48,17 @@
         {
             this.BulletsAmount = 20;
             this.FireRate = 0.400d;
+        }
+
+        protected override void PostInit()
+        {
+            base.PostInit();
+
+            if (this.Parent is Player)
+            {
+                this.BulletFiredSound.Load(Helpers.Functions.GetStreamFromFile("Resources.Sounds.pulse.wav"));
+                this.BulletFiredSound.Volume = 0.9;
+            }
         }
 
         #endregion Methods

@@ -7,7 +7,7 @@ namespace GeoGame.Models.Battles.Enemies
     {
         #region Constructors
 
-        public Attacker(Enums.EnemyDifficulty difficulty, MoveAction onMove, BulletMoveAction onBulletMove, WeaponsEnum weaponType, SKCanvasView canvasView) : base(difficulty, onMove, canvasView)
+        public Attacker(Enums.EnemyDifficulty difficulty, MoveAction onMove, WeaponsEnum weaponType, SKCanvasView canvasView) : base(difficulty, onMove, canvasView)
         {
             this.Width = canvasView.CanvasSize.Width / 9;
             this.Height = this.Width;
@@ -25,7 +25,7 @@ namespace GeoGame.Models.Battles.Enemies
             this.BasePosX = this.PosX;
             this.BasePosY = this.PosY;
 
-            this.Weapon = new Blaster(this, onBulletMove, weaponType);
+            this.SetWeapon(weaponType);
 
             this.AssignMainSprite(3, 4);
         }

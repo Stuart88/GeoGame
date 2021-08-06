@@ -1,15 +1,19 @@
 ﻿namespace GeoGame.Models.Battles.Weapons
 {
-    public class Blaster : WeaponBase
+    public class FastBlaster : WeaponBase
     {
         #region Constructors
 
-        public Blaster(MovingObjectBase parent, BulletMoveAction onBulletMove, WeaponsEnum weaponType) : base(parent, onBulletMove, weaponType)
+        public FastBlaster(MovingObjectBase parent) : base(parent)
         {
+            this.WeaponNameEnum = WeaponsEnum.FastBlaster;
+
             for (int i = 0; i < this.BulletsAmount; i++)
             {
-                this.Bullets.Add(new BlasterBullet(this));
+                this.Bullets.Add(new FastBlasterBullet(this));
             }
+
+            this.OnBulletMove += BulletMovementFunctions.BasicStraightVertical;
         }
 
         #endregion Constructors
@@ -51,6 +55,17 @@
 
             this.BulletsAmount = 100;
             this.FireRate = 0.100d;
+        }
+
+        protected override void PostInit()
+        {
+            base.PostInit();
+
+            if (this.Parent is Player)
+            {
+                this.BulletFiredSound.Load(Helpers.Functions.GetStreamFromFile("Resources.Sounds.pulse.wav"));
+                this.BulletFiredSound.Volume = 0.9;
+            }
         }
 
         #endregion Methods

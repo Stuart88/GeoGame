@@ -1,4 +1,5 @@
 ﻿using GeoGame.Interfaces;
+using GeoGame.Models.Battles.Weapons;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using System;
@@ -102,6 +103,18 @@ namespace GeoGame.Models.Battles.Enemies
             this.BasePosY = this.PosY;
             this.MovementTime = 0;
             return this.PosY;
+        }
+
+        public void SetWeapon(Weapons.WeaponsEnum weapon)
+        {
+            this.Weapon = weapon switch
+            {
+                Weapons.WeaponsEnum.SlowBlaster => new SlowBlaster(this),
+                Weapons.WeaponsEnum.FastBlaster => new FastBlaster(this),
+                Weapons.WeaponsEnum.StarBlaster => new StarBlaster(this),
+                Weapons.WeaponsEnum.SpreadBlaster => new SpreadBlaster(this),
+                Weapons.WeaponsEnum.HornetBlaster => new HornetBlaster(this),
+            };
         }
 
         public override void Update(float dt, float totalT, SKCanvasView canvasView)

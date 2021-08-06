@@ -1,10 +1,10 @@
 ﻿namespace GeoGame.Models.Battles.Weapons
 {
-    public class BlasterBullet : BulletBase
+    public class SpreadBlasterBullet : BulletBase
     {
         #region Constructors
 
-        public BlasterBullet(WeaponBase weapon) : base(weapon)
+        public SpreadBlasterBullet(WeaponBase weapon) : base(weapon)
         {
             this.Width = weapon.Parent is Player ? weapon.Parent.Width / 2 : weapon.Parent.Width / 4;
             this.Height = this.Width;
@@ -43,6 +43,14 @@
         {
             this.VelX = 400f;
             this.VelY = -800f;
+        }
+
+        public override void PostInit()
+        {
+            base.PostInit();
+
+            this.Sprite = Sprites.OrbYellow;
+            this.HitDamage = 10;
         }
 
         #endregion Methods

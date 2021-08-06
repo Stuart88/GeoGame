@@ -7,22 +7,16 @@ using System.Linq;
 
 namespace GeoGame.Models.Battles.Weapons
 {
-    #region Delegates
-
     public delegate void BulletMoveAction(BulletBase b, float dt, float totalT, SKCanvasView canvasView);
-
-    #endregion Delegates
 
     public abstract class WeaponBase : IDifficulty
     {
         #region Constructors
 
-        public WeaponBase(MovingObjectBase parent, BulletMoveAction onBulletMove, WeaponsEnum weaponType)
+        public WeaponBase(MovingObjectBase parent)
         {
             this.Parent = parent;
             this.Difficulty = this.Parent.Difficulty;
-            this.OnBulletMove += onBulletMove;
-            this.WeaponNameEnum = weaponType;
 
             switch (this.Difficulty)
             {
@@ -37,8 +31,6 @@ namespace GeoGame.Models.Battles.Weapons
         }
 
         #endregion Constructors
-
-        
 
         #region Events
 
@@ -153,46 +145,6 @@ namespace GeoGame.Models.Battles.Weapons
 
         protected virtual void PostInit()
         {
-            switch (this.WeaponNameEnum)
-            {
-                case WeaponsEnum.HornetBlaster:
-                    BulletsPerShotCycle = 7;
-                    BulletsPerShot = 1;
-                    BulletsAmount = this.BulletsAmount * 2;
-                    if (this.Parent is Player)
-                    {
-                        this.BulletFiredSound.Load(Helpers.Functions.GetStreamFromFile("Resources.Sounds.beeBlasterBullet.wav"));
-                        this.BulletFiredSound.Volume = 0.8;
-                    }
-                    break;
-
-                case WeaponsEnum.SpreadBlaster:
-                    BulletsPerShot = 5;
-                    BulletsPerShotCycle = 5;
-                    BulletsAmount = this.BulletsAmount * 5;
-                    if (this.Parent is Player)
-                    {
-                        this.BulletFiredSound.Load(Helpers.Functions.GetStreamFromFile("Resources.Sounds.blasterBullet.wav"));
-                        this.BulletFiredSound.Volume = 0.4;
-                    }
-                    break;
-
-                case WeaponsEnum.FastBlaster:
-                    if (this.Parent is Player)
-                    {
-                        this.BulletFiredSound.Load(Helpers.Functions.GetStreamFromFile("Resources.Sounds.pulse.wav"));
-                        this.BulletFiredSound.Volume = 0.9;
-                    }
-                    break;
-
-                default:
-                    if (this.Parent is Player)
-                    {
-                        this.BulletFiredSound.Load(Helpers.Functions.GetStreamFromFile("Resources.Sounds.blasterBullet.wav"));
-                        this.BulletFiredSound.Volume = 0.4;
-                    }
-                    break;
-            }
         }
 
         /// <summary>
