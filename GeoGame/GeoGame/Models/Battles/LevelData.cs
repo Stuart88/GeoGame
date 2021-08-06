@@ -189,14 +189,14 @@ namespace GeoGame.Models.Battles
             for (int i = 0; i < this.DroneBalance; i++)
             {
                 SetDifficultyBasedOnIncrement(ref diff, i);
-                WeaponsEnum w = i % 5 == 0 ? WeaponsEnum.SpreadBlaster : WeaponsEnum.SlowBlaster;
+                WeaponsEnum w = i % 7 == 0 ? WeaponsEnum.FastBlaster : WeaponsEnum.SlowBlaster;
                 this.Enemies.Add(new Drone(diff, GetRandomMoveAction(), w, this.Canvas));
                 diff = DifficultyLevel.Easy;
             }
             for (int i = 0; i < this.AttackerBalance; i++)
             {
                 SetDifficultyBasedOnIncrement(ref diff, i);
-                WeaponsEnum w = i % 3 == 0 ? WeaponsEnum.StarBlaster : WeaponsEnum.SpreadBlaster;
+                WeaponsEnum w = i % 5 == 0 ? WeaponsEnum.StarBlaster : WeaponsEnum.SpreadBlaster;
                 this.Enemies.Add(new Attacker(diff, GetRandomMoveAction(), w, this.Canvas));
                 diff = DifficultyLevel.Easy;
             }

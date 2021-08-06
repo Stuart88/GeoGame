@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 using static GeoGame.Data.BattlesData;
@@ -45,6 +46,7 @@ namespace GeoGame.Views
         {
             this.BindingContext = new CountryBattleViewModel();
             InitializeComponent();
+            InitWeaponButtons();
             SubscribeToMessages();
             this.Country = country;
             this.AllCountries = allCountries;
@@ -61,19 +63,33 @@ namespace GeoGame.Views
         public List<Country> AllCountries { get; set; }
 
         public ISimpleAudioPlayer BattleMusic { get; set; } = CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
+
         public LevelData LevelData { get; set; }
+
         private Country Country { get; set; }
+
         private bool GameWon { get; set; }
+
         private bool IsSmallCountry { get; }
+
         private SKRect ParalaxDestRect { get; set; }
-        private Player Player { get; set; }
+
+        private Player Player { get; set; } = new Player();
+
         private int PopulationScaler { get; } = 1000000;
+
         private float ScreenRatio { get; set; }
+
         private SKBitmap StarsMid { get; set; } = BitmapExtensions.LoadBitmapResource(typeof(EnemyBase), "GeoGame.Resources.Backgrounds.Stars.starsMid.png");
+
         private float StarsMidShift { get; set; }
+
         private SKRect StarsMidSrcRect { get; set; }
+
         private SKBitmap StarsSmall { get; set; } = BitmapExtensions.LoadBitmapResource(typeof(EnemyBase), "GeoGame.Resources.Backgrounds.Stars.starsSmall.png");
+
         private float StarsSmallShift { get; set; }
+
         private SKRect StarsSmallSrcRect { get; set; }
 
         #endregion Properties
@@ -160,18 +176,20 @@ namespace GeoGame.Views
 
         private void DrawObjects(SKCanvas canvas, SKPaint skPaint)
         {
-            // Need to do this here cos ScreenRation remains as Nan is initialised too early.
+             this.ScreenRatio = canvasView.CanvasSize.Width / canvasView.CanvasSize.Height;
+            // Can be 0 or NaN if initialisation happens early.
             if (this.ScreenRatio == 0 || this.ScreenRatio == float.NaN)
-            {
-                this.ScreenRatio = canvasView.CanvasSize.Width / canvasView.CanvasSize.Height;
-                this.StarsSmallSrcRect = new SKRect(0, 0, this.StarsSmall.Width / 2 * this.ScreenRatio, this.StarsSmall.Height / 2);
-                this.StarsMidSrcRect = new SKRect(0, 0, this.StarsMid.Width / 2 * this.ScreenRatio, this.StarsMid.Height / 2);
-                this.ParalaxDestRect = new SKRect(0, 0, canvasView.CanvasSize.Width, canvasView.CanvasSize.Height);
-            }
+                return;
+            this.StarsSmallSrcRect = new SKRect(0, 0, this.StarsSmall.Width / 2 * this.ScreenRatio, this.StarsSmall.Height / 2);
+            this.StarsMidSrcRect = new SKRect(0, 0, this.StarsMid.Width / 2 * this.ScreenRatio, this.StarsMid.Height / 2);
+            this.ParalaxDestRect = new SKRect(0, 0, canvasView.CanvasSize.Width, canvasView.CanvasSize.Height);
 
             canvas.DrawBitmap(this.StarsMid, this.StarsMidSrcRect, this.ParalaxDestRect, skPaint);
             canvas.DrawBitmap(this.StarsSmall, this.StarsSmallSrcRect, this.ParalaxDestRect, skPaint);
 
+            // annoyingly need to force set this here because it's being initalised as a smaller value?! Seems canvas dimesions are late to init,
+            // presumably cos of some XAML bullshit because this error only popped up after I changed a shit ton of XAML. Fucking annoying.
+            this.Player.PosY = canvasView.CanvasSize.GetPlayerPosY();
             this.Player.Draw(ref canvas, canvasView.CanvasSize);
             this.Player.DrawBullets(ref canvas, canvasView.CanvasSize);
 
@@ -182,6 +200,11 @@ namespace GeoGame.Views
             }
         }
 
+        private void FastBlasterBtn_Clicked(object sender, EventArgs e)
+        {
+            this.ChangePlayerWeapon(WeaponsEnum.FastBlaster);
+        }
+
         private void FireWeapons(float dt)
         {
             this.Player.Weapon.FireWeapon(dt);
@@ -190,6 +213,11 @@ namespace GeoGame.Views
             {
                 e.Weapon.FireWeapon(dt + dt * (-1 + 2 * (float)_rand.NextDouble())); // Add a +/- 1dt variation, so all enemies don't fire in unison
             }
+        }
+
+        private void HornetBlasterBtn_Clicked(object sender, EventArgs e)
+        {
+            this.ChangePlayerWeapon(WeaponsEnum.HornetBlaster);
         }
 
         private void InitEnemies()
@@ -219,7 +247,6 @@ namespace GeoGame.Views
 
         private void InitPlayer()
         {
-            this.Player = new Player();
             this.Player.MaxHealth = 100 + 2 * Data.Game.GameData.CountriesDefeatedIds.Count; // health increases as game progresses
             this.Player.Health = this.Player.MaxHealth;
             this.Player.Width = canvasView.CanvasSize.Width / 15;
@@ -227,11 +254,46 @@ namespace GeoGame.Views
             this.Player.PosX = (canvasView.CanvasSize.Width - this.Player.Width) / 2;
             this.Player.PosY = canvasView.CanvasSize.Height * (1 - 0.01f);
             this.Player.BaseVelX = 500;
-            foreach(var w in Data.Game.GameData.AvailableWeapons)
+            foreach (var w in Data.Game.GameData.AvailableWeapons)
             {
                 this.Player.AddWeapon(w);
             }
             ChangePlayerWeapon(WeaponsEnum.SlowBlaster);
+        }
+
+        private void InitWeaponButtons()
+        {
+            SlowBlasterBtn.Source = ImageSource.FromResource("GeoGame.Resources.Sprites.btnSlowBlaster.png", typeof(CountryBattle).GetTypeInfo().Assembly);
+            FastBlasterBtn.Source = ImageSource.FromResource("GeoGame.Resources.Sprites.btnFastBlaster.png", typeof(CountryBattle).GetTypeInfo().Assembly);
+            StarBlasterBtn.Source = ImageSource.FromResource("GeoGame.Resources.Sprites.btnStarBlaster.png", typeof(CountryBattle).GetTypeInfo().Assembly);
+            SpreadBlasterBtn.Source = ImageSource.FromResource("GeoGame.Resources.Sprites.btnSpreadBlaster.png", typeof(CountryBattle).GetTypeInfo().Assembly);
+            HornetBlasterBtn.Source = ImageSource.FromResource("GeoGame.Resources.Sprites.btnHornetBlaster.png", typeof(CountryBattle).GetTypeInfo().Assembly);
+
+            if (Data.Game.GameData.AvailableWeapons.Contains(WeaponsEnum.SlowBlaster))
+            {
+                SlowBlasterBtn.IsEnabled = true;
+                SlowBlasterBtn.Opacity = 1;
+            }
+            if (Data.Game.GameData.AvailableWeapons.Contains(WeaponsEnum.StarBlaster))
+            {
+                StarBlasterBtn.IsEnabled = true;
+                StarBlasterBtn.Opacity = 1;
+            }
+            if (Data.Game.GameData.AvailableWeapons.Contains(WeaponsEnum.FastBlaster))
+            {
+                FastBlasterBtn.IsEnabled = true;
+                FastBlasterBtn.Opacity = 1;
+            }
+            if (Data.Game.GameData.AvailableWeapons.Contains(WeaponsEnum.SpreadBlaster))
+            {
+                SpreadBlasterBtn.IsEnabled = true;
+                SpreadBlasterBtn.Opacity = 1;
+            }
+            if (Data.Game.GameData.AvailableWeapons.Contains(WeaponsEnum.HornetBlaster))
+            {
+                HornetBlasterBtn.IsEnabled = true;
+                HornetBlasterBtn.Opacity = 1;
+            }
         }
 
         private void LeftButton_Pressed(object sender, EventArgs e)
@@ -249,12 +311,6 @@ namespace GeoGame.Views
             this.Player.Direction = SpriteDirection.Centre;
         }
 
-        private void MiddleButton_Pressed(object sender, EventArgs e)
-        {
-            WeaponsEnum nextWeapon = this.Player.Weapon.WeaponNameEnum.CycleNext<WeaponsEnum>();
-            ChangePlayerWeapon(nextWeapon);
-        }
-
         private void OnGameWon()
         {
             MessagingCenter.Send<IMessageService, Country>(this, Data.MessagingCenterMessages.WonCountryBattle, this.Country);
@@ -262,10 +318,12 @@ namespace GeoGame.Views
 
         private void OnPainting(object sender, SKPaintSurfaceEventArgs e)
         {
+            if (!_pageActive)
+                return;
+
             var surface = e.Surface;
             var canvas = surface.Canvas;
             canvas.Clear(_fillColor);
-
             if (!this._objectsReady)
             {
                 InitPlayer();
@@ -293,6 +351,21 @@ namespace GeoGame.Views
             this.Player.AccelRight = this.Player.BaseAccelRight;
             this.Player.VelX = 0;
             this.Player.Direction = SpriteDirection.Centre;
+        }
+
+        private void SlowBlasterBtn_Clicked(object sender, EventArgs e)
+        {
+            this.ChangePlayerWeapon(WeaponsEnum.SlowBlaster);
+        }
+
+        private void SpreadBlasterBtn_Clicked(object sender, EventArgs e)
+        {
+            this.ChangePlayerWeapon(WeaponsEnum.SpreadBlaster);
+        }
+
+        private void StarBlasterBtn_Clicked(object sender, EventArgs e)
+        {
+            this.ChangePlayerWeapon(WeaponsEnum.StarBlaster);
         }
 
         private bool TimerLoop()

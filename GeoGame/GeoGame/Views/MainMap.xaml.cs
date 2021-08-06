@@ -55,7 +55,13 @@ namespace GeoGame.Views
         {
             MessagingCenter.Subscribe<IMessageService, Country>(this, Data.MessagingCenterMessages.OpenCountryBattle, async (sender, data) =>
             {
-                await Navigation.PushModalAsync(new CountryBattle(data, this.Countries));
+                await Navigation.PushModalAsync(new CountryBattle(data, this.Countries), false);
+            });
+
+            MessagingCenter.Subscribe<IMessageService, Country>(this, Data.MessagingCenterMessages.CountryClicked, (sender, c) =>
+            {
+                this.GetViewModel.SelectedCountry = c;
+                PanMapToCountry(c);
             });
 
             MessagingCenter.Subscribe<IMessageService, Country>(this, Data.MessagingCenterMessages.WonCountryBattle, async (sender, country) =>
@@ -134,7 +140,7 @@ namespace GeoGame.Views
 
         private async void BeginBattleBtn_Clicked(object sender, EventArgs e)
         {
-            await Navigation.PushModalAsync(new CountryBattle(this.GetViewModel.SelectedCountry, this.Countries));
+            await Navigation.PushModalAsync(new CountryBattle(this.GetViewModel.SelectedCountry, this.Countries), false);
         }
 
         private void DrawGeometries(Country c, NetTopologySuite.Geometries.Geometry g)
@@ -162,10 +168,14 @@ namespace GeoGame.Views
                 this.Contexts = await DbContexts.Instance;
                 this.Countries = await this.Contexts.GetAllCountries();
 
+                int index = 1;
                 foreach (Country c in this.Countries)
                 {
+                    c.IndexNumber = index++;
                     DrawGeometries(c, c.Geometry);
                 }
+
+                MessagingCenter.Send<IMessageService, List<Country>>(this, Data.MessagingCenterMessages.GotCountries, this.Countries);
 
                 // Get country the player is currently on
 
@@ -217,8 +227,8 @@ namespace GeoGame.Views
             this.Map = new CustomMap()
             {
                 MapType = MapType.Street,
-                HasScrollEnabled = false,
-                HasZoomEnabled = false,
+                HasScrollEnabled = true,
+                HasZoomEnabled = true,
                 IsShowingUser = false,
                 TrafficEnabled = false,
                 MoveToLastRegionOnLayoutChange = false,
@@ -268,7 +278,6 @@ namespace GeoGame.Views
                 return;
 
             this.GetViewModel.SelectedCountry = this.Countries[i + 1];
-            //this.UpdateLabels();
 
             this.PanMapToCountry(this.GetViewModel.SelectedCountry);
         }
@@ -283,7 +292,6 @@ namespace GeoGame.Views
 
             Position mapPos = new Position(geom.Envelope.Centroid.Y, geom.Envelope.Centroid.Coordinate.X);
 
-            //var mapZoom = Xamarin.Essentials.Location.CalculateDistance()
             MapSpan span = MapSpan.FromCenterAndRadius(mapPos, d);
 
             this.Map.MoveToRegion(span);
@@ -299,8 +307,6 @@ namespace GeoGame.Views
             this.GetViewModel.SelectedCountry = this.Countries[i - 1];
 
             this.PanMapToCountry(this.GetViewModel.SelectedCountry);
-
-            //this.UpdateLabels();
         }
 
         private void ShowSpinner()
@@ -310,12 +316,11 @@ namespace GeoGame.Views
             LoadingSpinner.IsRunning = true;
         }
 
-        private void UpdateLabels()
-        {
-            this.SelectedCountryLabel.Text = $"{this.GetViewModel.SelectedCountry.Name}";
-            this.PopulationLabel.Text = $"{this.GetViewModel.SelectedCountry.Population}";
-        }
+        #endregion Methods
 
-#endregion Methods
+        private void CenterOnCountryBtn_Clicked(object sender, EventArgs e)
+        {
+            this.PanMapToCountry(this.GetViewModel.SelectedCountry);
+        }
     }
 }

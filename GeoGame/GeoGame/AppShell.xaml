@@ -3,7 +3,8 @@
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
        xmlns:local="clr-namespace:GeoGame.Views"
        Title="GeoGame"
-       x:Class="GeoGame.AppShell">
+       x:Class="GeoGame.AppShell"
+       >
 
     <!--
         The overall app visual hierarchy is defined here, along with navigation.
@@ -78,9 +79,61 @@
         FlyoutDisplayOptions="AsMultipleItems" will create a separate flyout item for each child element
         https://docs.microsoft.com/dotnet/api/xamarin.forms.shellgroupitem.flyoutdisplayoptions?view=xamarin-forms
     -->
-    <FlyoutItem Title="MainMap" Icon="icon_about.png">
-        <ShellContent Route="MainMap" ContentTemplate="{DataTemplate local:MainMap}" />
-    </FlyoutItem>
+
+    <Shell.FlyoutHeader>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="4"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="4"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            
+            <Label Grid.Row="0" Grid.ColumnSpan="2" Text="Welcome to" HorizontalTextAlignment="Center" Padding="0, 5, 0, 0" FontSize="Small" VerticalTextAlignment="Center" TextColor="Black"/>
+            <Label Grid.Row="1"  Grid.ColumnSpan="2" Text="TAKE THE PLANET" HorizontalTextAlignment="Center" Padding="5" FontSize="Large" VerticalTextAlignment="Center" TextColor="DarkOrange"
+                   FontAttributes="Bold"/>
+            <Image Grid.Row="2"  Grid.ColumnSpan="2" x:Name="ShellHeaderImage" HorizontalOptions="FillAndExpand" VerticalOptions="CenterAndExpand" HeightRequest="50"/>
+            <Label Grid.Row="3"  Grid.ColumnSpan="2" x:Name="ShipHealthLabel" HorizontalTextAlignment="Center" Padding="5" TextColor="Black"/>
+            <Label Grid.Row="4"  Grid.ColumnSpan="2" x:Name="CountriesDefeatedLabel" HorizontalTextAlignment="Center" Padding="5" TextColor="Black"/>
+            <Frame Grid.Row="5"  Grid.ColumnSpan="2" BackgroundColor="#eaeaea"/>
+            
+            <Label Grid.Row="6"  Grid.Column="0" Text="Map Style" HorizontalTextAlignment="Center" Padding="5" VerticalTextAlignment="Center" TextColor="Black"/>
+            <Picker Grid.Row="6"  Grid.Column="1" x:Name="MapStylePicker" TextColor="Black" BackgroundColor="Orange" TitleColor="DarkOrange" SelectedIndexChanged="Picker_SelectedIndexChanged">
+                <Picker.Items>
+                    <x:String>Standard</x:String>
+                    <x:String>Silver</x:String>
+                    <x:String>Retro</x:String>
+                    <x:String>Dark</x:String>
+                    <x:String>Night</x:String>
+                    <x:String>Aubergine</x:String>
+                </Picker.Items>
+            </Picker>
+
+            <Frame Grid.Row="7"  Grid.ColumnSpan="2" BackgroundColor="#eaeaea"/>
+
+            
+        </Grid>
+    </Shell.FlyoutHeader>
+    <Shell.FlyoutContent>
+        <ScrollView VerticalOptions="StartAndExpand" >
+            <StackLayout x:Name="CountriesListStack" >
+
+            </StackLayout>
+        </ScrollView>
+    </Shell.FlyoutContent>
+    
+    <!--<FlyoutItem Title="MainMap" Icon="icon_about.png" >
+    </FlyoutItem>-->
+    
+    <ShellContent Route="MainMap" ContentTemplate="{DataTemplate local:MainMap}" />
 
     <!-- When the Flyout is visible this will be a menu item you can tie a click behavior to  -->
     <!--<MenuItem Text="Logout" StyleClass="MenuItemLayoutStyle" Clicked="OnMenuItemClicked">

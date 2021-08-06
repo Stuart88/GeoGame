@@ -49,7 +49,15 @@
         {
             base.PostInit();
 
-            this.Sprite = Sprites.OrbYellow;
+            this.Sprite = this.Weapon.Parent.Difficulty switch
+            {
+                Enums.DifficultyLevel.IsPlayer => Sprites.OrbYellow,
+                Enums.DifficultyLevel.Easy => Sprites.OrbYellow,
+                Enums.DifficultyLevel.Medium => Sprites.OrbBlue,
+                Enums.DifficultyLevel.Hard => Sprites.OrbRed,
+                Enums.DifficultyLevel.Insane => Sprites.OrbGreen,
+            };
+
             this.HitDamage = 10;
         }
 

@@ -10,10 +10,16 @@ namespace GeoGame.Models.Geo
         public string Continent { get; set; }
 
         [Ignore]
+        public string Defeated => Data.Game.GameData.CountriesDefeatedIds.Contains(this.Id) ? " (DEFEATED)" : "";
+
+        [Ignore]
         public NetTopologySuite.Geometries.Geometry Geometry { get; set; }
 
         [Column("ogc_fid")]
         public int Id { get; set; }
+
+        [Ignore]
+        public int IndexNumber { get; set; }
 
         [Column("name_en")]
         public string Name { get; set; }

@@ -50,7 +50,7 @@
             base.PostInit();
 
             this.Sprite = Sprites.StarBlasterSprite;
-            this.HitDamage = 10;
+            this.HitDamage = 15;
         }
 
         #endregion Methods

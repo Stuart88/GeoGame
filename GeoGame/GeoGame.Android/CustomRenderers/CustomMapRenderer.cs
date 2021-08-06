@@ -74,18 +74,11 @@ namespace GeoGame.Droid.CustomRenderers
         {
             this.SelectedTheme = theme;
 
-            var selectedStyle = theme switch
-            {
-                Data.MapEnums.MapTheme.Standard => new MapStyleOptions(GeoGame.Data.MapData.PlainMapStandardStyle),
-                Data.MapEnums.MapTheme.Silver => new MapStyleOptions(GeoGame.Data.MapData.PlainMapSilver_Style),
-                Data.MapEnums.MapTheme.Retro => new MapStyleOptions(GeoGame.Data.MapData.PlainMapRetro_Style),
-                Data.MapEnums.MapTheme.Dark => new MapStyleOptions(GeoGame.Data.MapData.PlainMapDark_Style),
-                Data.MapEnums.MapTheme.Night => new MapStyleOptions(GeoGame.Data.MapData.PlainMapNight_Style),
-                Data.MapEnums.MapTheme.Aubergine => new MapStyleOptions(GeoGame.Data.MapData.PlainMapAubergine_Style),
-                _ => new MapStyleOptions(GeoGame.Data.MapData.PlainMapStandardStyle)
-            };
+            NativeMap.SetMapStyle(new MapStyleOptions(Data.MapData.GetThemeStyleString(theme)));
 
-            NativeMap.SetMapStyle(selectedStyle);
+            Data.Game.GameData.MapTheme = theme;
+
+            Data.Game.SaveGame();
         }
 
         public void SubscribeToMessages()
@@ -93,6 +86,11 @@ namespace GeoGame.Droid.CustomRenderers
             MessagingCenter.Subscribe<IMessageService, Country>(this, Data.MessagingCenterMessages.HighlightCountry, (sender, c) =>
             {
                 this.HighlightCountry(c);
+            });
+
+            MessagingCenter.Subscribe<IMessageService, Data.MapEnums.MapTheme>(this, Data.MessagingCenterMessages.SetMapTheme, (sender, theme) =>
+            {
+                this.SetMapTheme(theme);
             });
         }
 
@@ -124,7 +122,7 @@ namespace GeoGame.Droid.CustomRenderers
                 }
             }
 
-            AssignDefaultPolyOptions(poly);
+            AssignDefaultPolyOptions(poly, Data.Game.GameData.CountriesDefeatedIds.Contains(data.Item1.Id));
 
             poly.InvokeZIndex(country.Id);
 
@@ -154,12 +152,10 @@ namespace GeoGame.Droid.CustomRenderers
         protected override void OnMapReady(GoogleMap map)
         {
             base.OnMapReady(map);
-            NativeMap.SetMapStyle(new MapStyleOptions(GeoGame.Data.MapData.PlainMapAubergine_Style));
+            NativeMap.SetMapStyle(new MapStyleOptions(GeoGame.Data.MapData.GetThemeStyleString(Data.Game.GameData.MapTheme)));
             NativeMap.InfoWindowClick += OnInfoWindowClick;
             NativeMap.SetInfoWindowAdapter(this);
-            NativeMap.MapClick += NativeMap_MapClick;
-            //NativeMap.PolygonClick += NativeMap_PolygonClick;
-            //NativeMap.MapLongClick += NativeMap_MapLongClick;
+            NativeMap.PolygonClick += NativeMap_PolygonClick;
             SubscribeToMessages();
         }
 
@@ -194,11 +190,21 @@ namespace GeoGame.Droid.CustomRenderers
             }
         }
 
-        private void AssignDefaultPolyOptions(PolygonOptions poly)
+        private void AssignDefaultPolyOptions(PolygonOptions poly, bool isDefeated)
         {
-            poly.InvokeFillColor(System.Drawing.Color.Transparent.ToPlatformColor());
-            poly.InvokeStrokeColor(System.Drawing.Color.LightGreen.ToPlatformColor());
             poly.InvokeStrokeWidth(4);
+
+            if (isDefeated)
+            {
+                poly.InvokeStrokeColor(System.Drawing.Color.DarkOrange.ToPlatformColor());
+                poly.InvokeFillColor(System.Drawing.Color.Orange.ToPlatformColor());
+            }
+            else
+            {
+                poly.InvokeStrokeColor(System.Drawing.Color.LightGreen.ToPlatformColor());
+                poly.InvokeFillColor(System.Drawing.Color.Transparent.ToPlatformColor());
+            }
+            
             poly.Clickable(true);
         }
 
@@ -211,7 +217,7 @@ namespace GeoGame.Droid.CustomRenderers
 
             poly.InvokeZIndex(p.ZIndex);
 
-            AssignDefaultPolyOptions(poly);
+            AssignDefaultPolyOptions(poly, Data.Game.GameData.CountriesDefeatedIds.Contains((int)p.ZIndex));
 
             return poly;
         }
@@ -264,7 +270,7 @@ namespace GeoGame.Droid.CustomRenderers
             foreach (var c in this.CountryPolygons.Where(p => p.Item1.Id == countryId).ToList())
             {
                 //Draw currently selected polygon with highlighting colours
-                PolygonOptions newPoly = ClonePolygonWithNewColours(c.Item2, System.Drawing.Color.DarkRed, System.Drawing.Color.DarkRed, 9);
+                PolygonOptions newPoly = ClonePolygonWithNewColours(c.Item2, System.Drawing.Color.LightBlue, System.Drawing.Color.Blue, 9); ;
                 Android.Gms.Maps.Model.Polygon addedPoly = NativeMap.AddPolygon(newPoly);
                 this.SelectedPolygons.Add(addedPoly);
 
@@ -277,9 +283,6 @@ namespace GeoGame.Droid.CustomRenderers
             }
         }
 
-        private void NativeMap_MapClick(object sender, GoogleMap.MapClickEventArgs e)
-        {
-        }
 
         private void NativeMap_MapLongClick(object sender, GoogleMap.MapLongClickEventArgs e)
         {
@@ -299,32 +302,11 @@ namespace GeoGame.Droid.CustomRenderers
         {
             await this.HighlightPolygon(e.Polygon);
 
-            //var v = NativeMap.Projection.VisibleRegion;
+            Country country = this.CountryPolygons.First(p => p.Item1.Id == e.Polygon.ZIndex).Item1;
 
-            // get all country geometry points that are in the visible region
-            //List<LatLng> visiblePoints = country.Geometry.Coordinates.Select(s => new LatLng(s.Y, s.X)).Where(c => PointInVisibleRegion(v, c)).ToList();
+            this.HighlightCountry(country);
 
-            // Marker point will be the centre point of the visible region that the country is showing
-            //LatLng centroid = GetPointsCentre(visiblePoints);
-
-            //this.ShowingMarker?.Remove();
-
-            //Show populated places for clicked country
-
-            //this.AddPopulatedPlacesForCountry(country);
-
-            //Show info window for clicked country
-
-            //var infoMarker = new MarkerOptions();
-            //infoMarker.SetAlpha(0.0f);
-            //infoMarker.SetTitle($"This area belongs to {country.NameOfficial}");
-            //infoMarker.SetPosition(centroid);
-            //infoMarker.Anchor(0, 0);
-            ////infoMarker.SetIcon(null);
-            //Marker tempMarker = NativeMap.AddMarker(infoMarker);
-            //tempMarker.ShowInfoWindow();
-
-            //this.ShowingMarker = tempMarker;
+            MessagingCenter.Send<IMessageService, Country>(this, Data.MessagingCenterMessages.CountryClicked, country);
         }
 
         private void OnInfoWindowClick(object sender, GoogleMap.InfoWindowClickEventArgs e)

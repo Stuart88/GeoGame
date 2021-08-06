@@ -12,17 +12,27 @@
             <ContentView x:Name="MapContentArea" Grid.Row="0" />
             <Grid Grid.Row="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition />
-                    <RowDefinition />
-                    <RowDefinition />
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <Label x:Name="SelectedCountryLabel" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Text="{Binding SelectedCountry.Name, Mode=OneWay}" TextColor="Black" />
-                <Label x:Name="PopulationLabel" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3">
+                <Label x:Name="SelectedCountryLabel" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Padding="5, 5, 0, 0">
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Lvl " TextColor="Black" />
+                            <Span Text="{Binding SelectedCountry.IndexNumber, Mode=OneWay}" TextColor="Black" />
+                            <Span Text=": " TextColor="Black" />
+                            <Span Text="{Binding SelectedCountry.Name, Mode=OneWay}" TextColor="Blue" />
+                            <Span Text="{Binding SelectedCountry.Defeated, Mode=OneWay}" TextColor="Blue" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <Label x:Name="PopulationLabel" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Padding="5, 5, 0, 10">
                     <Label.FormattedText>
                         <FormattedString>
                             <Span Text="Population: " TextColor="Black" />
@@ -30,6 +40,9 @@
                         </FormattedString>
                     </Label.FormattedText>
                 </Label>
+                <Button x:Name="CenterOnCountryBtn" Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" VerticalOptions="Center" CornerRadius="4" Text="Centre" 
+                        Clicked="CenterOnCountryBtn_Clicked"
+                        TranslationX="-20"  />
                 <Button x:Name="PreviousCountryBtn" Grid.Row="2" Grid.Column="0" Text="Prev" Clicked="PreviousCountryBtn_Clicked" />
                 <Button x:Name="BeginBattleBtn" Grid.Row="2" Grid.Column="1" Text="FIGHT!" Clicked="BeginBattleBtn_Clicked" />
                 <Button x:Name="NextCountryBtn" Grid.Row="2" Grid.Column="2" Text="Next" Clicked="NextCountryBtn_Clicked" />

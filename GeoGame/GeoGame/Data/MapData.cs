@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
+using static GeoGame.Data.MapEnums;
 
 namespace GeoGame.Data
 {
@@ -50,6 +51,21 @@ namespace GeoGame.Data
         public static readonly string PlainMapStandardStyle = "[ { \"elementType\": \"labels\", \"stylers\": [ { \"visibility\": \"off\" } ] }, { \"featureType\": \"administrative\", \"elementType\": \"geometry\", \"stylers\": [ { \"visibility\": \"off\" } ] }, { \"featureType\": \"administrative.neighborhood\", \"stylers\": [ { \"visibility\": \"off\" } ] }, { \"featureType\": \"poi\", \"stylers\": [ { \"visibility\": \"off\" } ] }, { \"featureType\": \"road\", \"stylers\": [ { \"visibility\": \"off\" } ] }, { \"featureType\": \"road\", \"elementType\": \"labels.icon\", \"stylers\": [ { \"visibility\": \"off\" } ] }, { \"featureType\": \"transit\", \"stylers\": [ { \"visibility\": \"off\" } ] } ]";
 
         #endregion Fields
+
+        public static string GetThemeStyleString(MapTheme theme)
+        {
+            return theme switch
+            {
+                MapTheme.Standard => PlainMapStandardStyle,
+                MapTheme.Silver => PlainMapSilver_Style,
+                MapTheme.Retro => PlainMapRetro_Style,
+                MapTheme.Dark => PlainMapDark_Style,
+                MapTheme.Night => PlainMapNight_Style,
+                MapTheme.Aubergine => PlainMapAubergine_Style,
+                _ => PlainMapStandardStyle
+            };
+
+        }
     }
 
     public static class MapEnums
@@ -82,6 +98,9 @@ namespace GeoGame.Data
         public static readonly string HighlightCountry = "HighlightCountry";
         public static readonly string OpenCountryBattle = "OpenCountryBattle";
         public static readonly string WonCountryBattle = "WonCountryBattle";
+        public static readonly string CountryClicked = "CountryClicked";
+        public static readonly string GotCountries = "GotCountries";
+        public static readonly string SetMapTheme = "SetMapTheme";
 
         #endregion Fields
     }
@@ -91,7 +110,8 @@ namespace GeoGame.Data
         #region Fields
 
         public List<int> CountriesDefeatedIds = new List<int>() { 0 };
-        public List<WeaponsEnum> AvailableWeapons = new List<WeaponsEnum>() { WeaponsEnum.SlowBlaster };
+        public List<WeaponsEnum> AvailableWeapons = new List<WeaponsEnum>() { WeaponsEnum.SlowBlaster, WeaponsEnum.StarBlaster };
+        public MapEnums.MapTheme MapTheme = MapEnums.MapTheme.Aubergine;
 
         #endregion Fields
 

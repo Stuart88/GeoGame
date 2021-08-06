@@ -34,6 +34,11 @@
     <None Remove="Resources\Sounds\blasterBullet.wav" />
     <None Remove="Resources\Sounds\pulse.wav" />
     <None Remove="Resources\Sprites\bee.png" />
+    <None Remove="Resources\Sprites\btnFastBlaster.png" />
+    <None Remove="Resources\Sprites\btnHornetBlaster.png" />
+    <None Remove="Resources\Sprites\btnSlowBlaster.png" />
+    <None Remove="Resources\Sprites\btnSpreadBlaster.png" />
+    <None Remove="Resources\Sprites\btnStarBlaster.png" />
     <None Remove="Resources\Sprites\carrotShip.png" />
     <None Remove="Resources\Sprites\enemyBee.png" />
     <None Remove="Resources\Sprites\enemyBlaster.png" />
@@ -87,6 +92,11 @@
     <EmbeddedResource Include="Resources\Sounds\blasterBullet.wav" />
     <EmbeddedResource Include="Resources\Sounds\pulse.wav" />
     <EmbeddedResource Include="Resources\Sprites\bee.png" />
+    <EmbeddedResource Include="Resources\Sprites\btnFastBlaster.png" />
+    <EmbeddedResource Include="Resources\Sprites\btnHornetBlaster.png" />
+    <EmbeddedResource Include="Resources\Sprites\btnSlowBlaster.png" />
+    <EmbeddedResource Include="Resources\Sprites\btnSpreadBlaster.png" />
+    <EmbeddedResource Include="Resources\Sprites\btnStarBlaster.png" />
     <EmbeddedResource Include="Resources\Sprites\carrotShip.png" />
     <EmbeddedResource Include="Resources\Sprites\enemyBee.png" />
     <EmbeddedResource Include="Resources\Sprites\enemyBlaster.png" />

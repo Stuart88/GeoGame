@@ -1,4 +1,5 @@
-﻿using GeoGame.Models.Battles.Weapons;
+﻿using GeoGame.Extensions;
+using GeoGame.Models.Battles.Weapons;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using System;
@@ -29,8 +30,8 @@ namespace GeoGame.Models.Battles
                 WeaponsEnum.StarBlaster => new StarBlaster(this),
                 WeaponsEnum.SpreadBlaster => new SpreadBlaster(this),
                 WeaponsEnum.HornetBlaster => new HornetBlaster(this),
-            }
-            this.WeaponsList.Add(w);
+            };
+            this.WeaponsList.Add(toAdd);
         }
 
         #endregion Constructors
@@ -63,7 +64,7 @@ namespace GeoGame.Models.Battles
 
         public override void Draw(ref SKCanvas canvas, SKSize canvasSize)
         {
-            SKRect drawRect = new SKRect(this.PosX, this.PosY - this.Height, this.PosX + this.Width, this.PosY);
+            SKRect drawRect = new SKRect(this.PosX, canvasSize.GetPlayerPosY() - this.Height, this.PosX + this.Width, canvasSize.GetPlayerPosY());
 
             switch (this.Direction)
             {
