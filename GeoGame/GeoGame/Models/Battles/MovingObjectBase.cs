@@ -114,6 +114,8 @@ namespace GeoGame.Models.Battles
             }
         }
 
+        
+
         public abstract void Draw(ref SKCanvas canvas, SKSize canvasSize);
 
         public virtual void DrawBullets(ref SKCanvas canvas, SKSize canvasSize)

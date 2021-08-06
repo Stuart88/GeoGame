@@ -6,7 +6,7 @@
 
         public HornetBlasterBullet(WeaponBase weapon) : base(weapon)
         {
-            this.Width = weapon.Parent.Width;
+            this.Width = weapon.Parent.IsPlayer ? weapon.Parent.Width : weapon.Parent.Width / 3;
             this.Height = this.Width;
         }
 

@@ -132,7 +132,7 @@ namespace GeoGame.Models.Battles
             for (int i = 0; i < this.DroneBalance; i++)
             {
                 SetDifficultyBasedOnIncrement(ref diff, i);
-                WeaponsEnum w = i % 3 == 0 ? WeaponsEnum.SlowBlaster : WeaponsEnum.SpreadBlaster;
+                WeaponsEnum w = i % 4 == 0 ? WeaponsEnum.SpreadBlaster : WeaponsEnum.SlowBlaster;
                 this.Enemies.Add(new Drone(diff, GetRandomMoveAction(), w, this.Canvas));
                 diff = DifficultyLevel.Easy;
             }
@@ -196,7 +196,7 @@ namespace GeoGame.Models.Battles
             for (int i = 0; i < this.AttackerBalance; i++)
             {
                 SetDifficultyBasedOnIncrement(ref diff, i);
-                WeaponsEnum w = i % 5 == 0 ? WeaponsEnum.StarBlaster : WeaponsEnum.SpreadBlaster;
+                WeaponsEnum w = i % 5 == 0 ? WeaponsEnum.SpreadBlaster : WeaponsEnum.StarBlaster;
                 this.Enemies.Add(new Attacker(diff, GetRandomMoveAction(), w, this.Canvas));
                 diff = DifficultyLevel.Easy;
             }

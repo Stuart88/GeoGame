@@ -133,7 +133,12 @@ namespace GeoGame.Views
                 }
 
                 foreach (var b in e.Weapon.Bullets.Where(i => i.Fired))
+                {
                     this.Player.CheckCollisionWithBullet(b);
+
+                    foreach (var b_player in this.Player.ActiveBullets)
+                        b_player.CheckBulletOnBulletCollision(b);
+                }
             }
 
             // Now check if any new enemies need to be added, if
@@ -157,6 +162,12 @@ namespace GeoGame.Views
                 this.GameWon = true;
                 this._pageActive = false;
                 this.OnGameWon();
+            }
+
+            if(this.Player.Health <= 0)
+            {
+                this._pageActive = false;
+                this.OnGameLost();
             }
         }
 
@@ -247,7 +258,7 @@ namespace GeoGame.Views
 
         private void InitPlayer()
         {
-            this.Player.MaxHealth = 100 + 2 * Data.Game.GameData.CountriesDefeatedIds.Count; // health increases as game progresses
+            this.Player.MaxHealth = 100 + 10 * (Data.Game.GameData.CountriesDefeatedIds.Count - 1); // health increases as game progresses
             this.Player.Health = this.Player.MaxHealth;
             this.Player.Width = canvasView.CanvasSize.Width / 15;
             this.Player.Height = this.Player.Width * 2f;
@@ -314,6 +325,11 @@ namespace GeoGame.Views
         private void OnGameWon()
         {
             MessagingCenter.Send<IMessageService, Country>(this, Data.MessagingCenterMessages.WonCountryBattle, this.Country);
+        }
+
+        private void OnGameLost()
+        {
+            MessagingCenter.Send<IMessageService, object>(this, Data.MessagingCenterMessages.LostCountryBattle, null);
         }
 
         private void OnPainting(object sender, SKPaintSurfaceEventArgs e)

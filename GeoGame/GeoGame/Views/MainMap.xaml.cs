@@ -64,6 +64,13 @@ namespace GeoGame.Views
                 PanMapToCountry(c);
             });
 
+            MessagingCenter.Subscribe<IMessageService, object>(this, Data.MessagingCenterMessages.LostCountryBattle, async (sender, obj) =>
+            {
+                await Navigation.PopModalAsync();
+
+                await this.DisplayAlert("DEAD", "You died!", "Okay :(");
+            });
+
             MessagingCenter.Subscribe<IMessageService, Country>(this, Data.MessagingCenterMessages.WonCountryBattle, async (sender, country) =>
             {
                 await Navigation.PopModalAsync();
@@ -266,11 +273,6 @@ namespace GeoGame.Views
 
         private void NextCountryBtn_Clicked(object sender, EventArgs e)
         {
-
-#if !DEBUG
-            if (!Game.GameData.CountriesDefeatedIds.Contains(this.GetViewModel.SelectedCountry.Id)) // If country not defeated, cannot go further
-                return;
-#endif
 
             int i = this.Countries.IndexOf(this.GetViewModel.SelectedCountry);
 

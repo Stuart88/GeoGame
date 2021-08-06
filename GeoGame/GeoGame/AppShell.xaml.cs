@@ -52,7 +52,7 @@ namespace GeoGame
             {
                 if (FlyoutIsPresented)
                 {
-                    this.ShipHealthLabel.Text = $"Ship Health: {100 + 2 * Data.Game.GameData.CountriesDefeatedIds.Count}";
+                    this.ShipHealthLabel.Text = $"Ship Health: {100 + 10 * (Data.Game.GameData.CountriesDefeatedIds.Count - 1)}";
                     this.CountriesDefeatedLabel.Text = $"Defeated: {Data.Game.GameData.CountriesDefeatedIds.Count} / 176 Nations";
                 }
             }

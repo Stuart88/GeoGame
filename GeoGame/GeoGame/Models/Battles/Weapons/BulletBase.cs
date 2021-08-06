@@ -40,6 +40,22 @@ namespace GeoGame.Models.Battles.Weapons
         #region Properties
 
         /// <summary>
+        /// If player bullet hits enemy bullet, destroy enemy bullet
+        /// </summary>
+        /// <param name="bullet"></param>
+        public void CheckBulletOnBulletCollision(BulletBase enemyBullet)
+        {
+            if (enemyBullet.Weapon.Parent is Player)
+                return;
+
+            if (enemyBullet.PosX + enemyBullet.Width >= this.PosX && enemyBullet.PosX <= this.PosX + this.Width
+                && enemyBullet.PosY + enemyBullet.Height <= this.PosY && enemyBullet.PosY >= this.PosY - this.Height && enemyBullet.Fired)
+            {
+                enemyBullet.Fired = false;
+            }
+        }
+
+        /// <summary>
         /// Angle at which bullet should move  (+/- pi relative to vertical).
         /// </summary>
         public virtual float FireAngle { get; set; }

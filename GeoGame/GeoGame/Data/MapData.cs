@@ -98,6 +98,7 @@ namespace GeoGame.Data
         public static readonly string HighlightCountry = "HighlightCountry";
         public static readonly string OpenCountryBattle = "OpenCountryBattle";
         public static readonly string WonCountryBattle = "WonCountryBattle";
+        public static readonly string LostCountryBattle = "LostCountryBattle";
         public static readonly string CountryClicked = "CountryClicked";
         public static readonly string GotCountries = "GotCountries";
         public static readonly string SetMapTheme = "SetMapTheme";
@@ -110,7 +111,7 @@ namespace GeoGame.Data
         #region Fields
 
         public List<int> CountriesDefeatedIds = new List<int>() { 0 };
-        public List<WeaponsEnum> AvailableWeapons = new List<WeaponsEnum>() { WeaponsEnum.SlowBlaster, WeaponsEnum.StarBlaster };
+        public List<WeaponsEnum> AvailableWeapons = new List<WeaponsEnum>() { WeaponsEnum.SlowBlaster };
         public MapEnums.MapTheme MapTheme = MapEnums.MapTheme.Aubergine;
 
         #endregion Fields

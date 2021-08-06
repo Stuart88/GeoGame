@@ -88,6 +88,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="4"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="4"/>
@@ -103,10 +104,11 @@
             <Image Grid.Row="2"  Grid.ColumnSpan="2" x:Name="ShellHeaderImage" HorizontalOptions="FillAndExpand" VerticalOptions="CenterAndExpand" HeightRequest="50"/>
             <Label Grid.Row="3"  Grid.ColumnSpan="2" x:Name="ShipHealthLabel" HorizontalTextAlignment="Center" Padding="5" TextColor="Black"/>
             <Label Grid.Row="4"  Grid.ColumnSpan="2" x:Name="CountriesDefeatedLabel" HorizontalTextAlignment="Center" Padding="5" TextColor="Black"/>
-            <Frame Grid.Row="5"  Grid.ColumnSpan="2" BackgroundColor="#eaeaea"/>
+            <Label Grid.Row="5"  Grid.ColumnSpan="2" Text="HINT: DESTROY SMALL POPULATIONS FIRST!" FontSize="Micro" HorizontalTextAlignment="Start" Padding="5" TextColor="Red"/>
+            <Frame Grid.Row="6"  Grid.ColumnSpan="2" BackgroundColor="#eaeaea"/>
             
-            <Label Grid.Row="6"  Grid.Column="0" Text="Map Style" HorizontalTextAlignment="Center" Padding="5" VerticalTextAlignment="Center" TextColor="Black"/>
-            <Picker Grid.Row="6"  Grid.Column="1" x:Name="MapStylePicker" TextColor="Black" BackgroundColor="Orange" TitleColor="DarkOrange" SelectedIndexChanged="Picker_SelectedIndexChanged">
+            <Label Grid.Row="7"  Grid.Column="0" Text="Map Style" HorizontalTextAlignment="Center" Padding="5" VerticalTextAlignment="Center" TextColor="Black"/>
+            <Picker Grid.Row="7"  Grid.Column="1" x:Name="MapStylePicker" TextColor="Black" BackgroundColor="Orange" TitleColor="DarkOrange" SelectedIndexChanged="Picker_SelectedIndexChanged">
                 <Picker.Items>
                     <x:String>Standard</x:String>
                     <x:String>Silver</x:String>
@@ -117,7 +119,7 @@
                 </Picker.Items>
             </Picker>
 
-            <Frame Grid.Row="7"  Grid.ColumnSpan="2" BackgroundColor="#eaeaea"/>
+            <Frame Grid.Row="8"  Grid.ColumnSpan="2" BackgroundColor="#eaeaea"/>
 
             
         </Grid>

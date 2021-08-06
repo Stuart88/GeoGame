@@ -16,11 +16,12 @@
     <uses-library android:name="org.apache.http.legacy" android:required="false" />
     
     <!--RELEASE MAPS API KEY-->
-    <!--<meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="AIzaSyCwTMCnBzYOyVOn0I7vAFV7-htG2WqjgPk" />-->
+    <meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="AIzaSyCwTMCnBzYOyVOn0I7vAFV7-htG2WqjgPk" />
     
     <!--DEBUG MAPS API KEY-->
-    <meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="AIzaSyBTwLG3LmNZ9aKAWoQIKs1823hqFjFjX34" />
-		<meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
+    <!--<meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="AIzaSyBTwLG3LmNZ9aKAWoQIKs1823hqFjFjX34" />-->
+		
+    <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
 	</application>
 
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
