@@ -7,11 +7,13 @@ using System.Linq;
 
 namespace GeoGame.Models.Battles
 {
+    public delegate void MoveAction(MovingObjectBase o, float dt, float totalT, SKCanvasView canvasView);
+
     public abstract class MovingObjectBase
     {
         #region Constructors
 
-        public MovingObjectBase(Enums.EnemyDifficulty difficulty)
+        public MovingObjectBase(Enums.DifficultyLevel difficulty)
         {
             this.Difficulty = difficulty;
             this.DirectionSignX = this.Rand.RandomSign();
@@ -19,12 +21,6 @@ namespace GeoGame.Models.Battles
         }
 
         #endregion Constructors
-
-        #region Delegates
-
-        public delegate void MoveAction(MovingObjectBase o, float dt, float totalT, SKCanvasView canvasView);
-
-        #endregion Delegates
 
         #region Events
 
@@ -47,7 +43,7 @@ namespace GeoGame.Models.Battles
         public float BasePosY { get; set; }
         public float BaseVelX { get; set; }
         public float BaseVelY { get; set; }
-        public Models.Enums.EnemyDifficulty Difficulty { get; set; }
+        public Models.Enums.DifficultyLevel Difficulty { get; set; }
 
         /// <summary>
         /// +/-1, useful for setting direction of movement
@@ -102,11 +98,11 @@ namespace GeoGame.Models.Battles
         public void CheckCollisionWithBullet(BulletBase bullet)
         {
             if (bullet.PosX + bullet.Width >= this.PosX && bullet.PosX <= this.PosX + this.Width
-                && bullet.PosY + bullet.Height <= this.PosY && bullet.PosY >= this.PosY - this.Height)
+                && bullet.PosY + bullet.Height <= this.PosY && bullet.PosY >= this.PosY - this.Height && bullet.Fired)
             {
                 this.Health -= bullet.HitDamage;
                 this.HitByBullet = true; // will draw hit sprite on next run
-                bullet.Fired = false; // will not draw again
+                bullet.Fired = false;
 
                 if (this.Health <= 0)
                 {

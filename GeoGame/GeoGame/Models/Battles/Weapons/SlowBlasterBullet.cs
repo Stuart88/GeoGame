@@ -8,7 +8,6 @@
         {
             this.Width = weapon.Parent is Player ? weapon.Parent.Width / 2 : weapon.Parent.Width / 4;
             this.Height = this.Width;
-            this.FireAngle = 0;
         }
 
         #endregion Constructors
@@ -50,6 +49,8 @@
             base.PostInit();
 
             this.Sprite = this.Weapon.Parent.IsPlayer ? Sprites.PlayerBlasterSprite : Sprites.EnemyBlasterSprite;
+
+            this.HitDamage = 10;
         }
 
         #endregion Methods

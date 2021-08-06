@@ -7,14 +7,14 @@ namespace GeoGame.Models.Battles.Enemies
     {
         #region Constructors
 
-        public Attacker(Enums.EnemyDifficulty difficulty, MoveAction onMove, WeaponsEnum weaponType, SKCanvasView canvasView) : base(difficulty, onMove, canvasView)
+        public Attacker(Enums.DifficultyLevel difficulty, MoveAction onMove, WeaponsEnum weaponType, SKCanvasView canvasView) : base(difficulty, onMove, canvasView)
         {
             this.Width = canvasView.CanvasSize.Width / 9;
             this.Height = this.Width;
 
             this.MaxHealth = this.Health;
 
-            this.BaseVelY = 50;
+            this.BaseVelY = 150;
             this.BaseVelX = this.VelX; // VelX initialised via base constructor
 
             this.VelY = this.Rand.Next(35, 45);
@@ -37,28 +37,28 @@ namespace GeoGame.Models.Battles.Enemies
         public override void InitEasy()
         {
             base.InitEasy();
-            this.Health = 40;
+            this.Health = 25;
             this.VelX = this.Rand.Next(50, 101);
         }
 
         public override void InitHard()
         {
             base.InitHard();
-            this.Health = 80;
+            this.Health = 50;
             this.VelX = this.Rand.Next(100, 151);
         }
 
         public override void InitInsane()
         {
             base.InitInsane();
-            this.Health = 100;
+            this.Health = 70;
             this.VelX = this.Rand.Next(125, 176);
         }
 
         public override void InitMedium()
         {
             base.InitMedium();
-            this.Health = 60;
+            this.Health = 35;
             this.VelX = this.Rand.Next(75, 126);
         }
 

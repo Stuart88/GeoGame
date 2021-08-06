@@ -6,7 +6,7 @@
 
         public SpreadBlasterBullet(WeaponBase weapon) : base(weapon)
         {
-            this.Width = weapon.Parent is Player ? weapon.Parent.Width / 2 : weapon.Parent.Width / 4;
+            this.Width = weapon.Parent is Player ? weapon.Parent.Width / 2 : weapon.Parent.Width / 8;
             this.Height = this.Width;
             this.FireAngle = 0;
         }

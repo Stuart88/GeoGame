@@ -41,7 +41,7 @@ namespace GeoGame.Models.Battles
         public static void SpreadShot(BulletBase b, float dt, float totalT, SKCanvasView canvasView)
         {
             int spread = b.Weapon.BulletsPerShot;
-            float divisor = 1f / spread;
+            float divisor = 2f / spread;
 
             b.PosX += dt * divisor * (b.ShotId - spread / 2) * b.BaseVelX;
 

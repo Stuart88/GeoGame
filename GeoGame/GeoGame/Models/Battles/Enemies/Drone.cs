@@ -7,12 +7,11 @@ namespace GeoGame.Models.Battles.Enemies
     {
         #region Constructors
 
-        public Drone(Enums.EnemyDifficulty difficulty, MoveAction onMove, WeaponsEnum weaponType, SKCanvasView canvasView) : base(difficulty, onMove, canvasView)
+        public Drone(Enums.DifficultyLevel difficulty, MoveAction onMove, WeaponsEnum weaponType, SKCanvasView canvasView) : base(difficulty, onMove, canvasView)
         {
             this.Width = canvasView.CanvasSize.Width / 9;
             this.Height = this.Width;
 
-            this.Health = 20;
             this.MaxHealth = this.Health;
 
             this.BaseVelY = 40;
@@ -38,28 +37,28 @@ namespace GeoGame.Models.Battles.Enemies
         public override void InitEasy()
         {
             base.InitEasy();
-            this.Health = 10;
+            this.Health = 50;
             this.VelX = this.Rand.Next(50, 101);
         }
 
         public override void InitHard()
         {
             base.InitHard();
-            this.Health = 30;
+            this.Health = 75;
             this.VelX = this.Rand.Next(100, 151);
         }
 
         public override void InitInsane()
         {
             base.InitInsane();
-            this.Health = 40;
+            this.Health = 100;
             this.VelX = this.Rand.Next(125, 176);
         }
 
         public override void InitMedium()
         {
             base.InitMedium();
-            this.Health = 20;
+            this.Health = 60;
             this.VelX = this.Rand.Next(75, 126);
         }
 

@@ -7,7 +7,7 @@ namespace GeoGame.Models.Battles.Enemies
     {
         #region Constructors
 
-        public OneHitShip(Enums.EnemyDifficulty difficulty, MoveAction onMove, WeaponsEnum weaponType, SKCanvasView canvasView) : base(difficulty, onMove, canvasView)
+        public OneHitShip(Enums.DifficultyLevel difficulty, MoveAction onMove, WeaponsEnum weaponType, SKCanvasView canvasView) : base(difficulty, onMove, canvasView)
         {
             this.Width = canvasView.CanvasSize.Width / 10;
             this.Height = this.Width;
@@ -15,7 +15,7 @@ namespace GeoGame.Models.Battles.Enemies
             this.Health = 1;
             this.MaxHealth = this.Health;
 
-            this.BaseVelY = 40;
+            this.BaseVelY = 80;
             this.BaseVelX = this.VelX; // VelX initialised via base constructor
 
             this.VelY = this.Rand.Next(35, 45);

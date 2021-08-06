@@ -12,7 +12,7 @@ namespace GeoGame.Models.Battles
     {
         #region Constructors
 
-        public Player() : base(Enums.EnemyDifficulty.IsPlayer)
+        public Player() : base(Enums.DifficultyLevel.IsPlayer)
         {
             this.Width = 30f;
             this.Height = 70f;

@@ -238,12 +238,8 @@ namespace GeoGame.Views
 
         private void NextCountryBtn_Clicked(object sender, EventArgs e)
         {
-
-#if RELEASE
             if (!Game.GameData.CountriesDefeatedIds.Contains(this.GetViewModel.SelectedCountry.Id)) // If country not defeated, cannot go further
                 return;
-#endif
-
 
             int i = this.Countries.IndexOf(this.GetViewModel.SelectedCountry);
 
@@ -299,6 +295,6 @@ namespace GeoGame.Views
             this.PopulationLabel.Text = $"{this.GetViewModel.SelectedCountry.Population}";
         }
 
-#endregion Methods
+        #endregion Methods
     }
 }

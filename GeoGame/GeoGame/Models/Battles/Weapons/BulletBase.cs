@@ -22,11 +22,11 @@ namespace GeoGame.Models.Battles.Weapons
 
             switch (this.Difficulty)
             {
-                case Enums.EnemyDifficulty.Easy: InitEasy(); break;
-                case Enums.EnemyDifficulty.Medium: InitMedium(); break;
-                case Enums.EnemyDifficulty.Hard: InitHard(); break;
-                case Enums.EnemyDifficulty.Insane: InitInsane(); break;
-                case Enums.EnemyDifficulty.IsPlayer: InitPlayer(); break;
+                case Enums.DifficultyLevel.Easy: InitEasy(); break;
+                case Enums.DifficultyLevel.Medium: InitMedium(); break;
+                case Enums.DifficultyLevel.Hard: InitHard(); break;
+                case Enums.DifficultyLevel.Insane: InitInsane(); break;
+                case Enums.DifficultyLevel.IsPlayer: InitPlayer(); break;
             }
 
             this.BaseVelX = this.VelX;
@@ -90,40 +90,6 @@ namespace GeoGame.Models.Battles.Weapons
 
         public virtual void PostInit()
         {
-            if (this.Weapon.Parent is Player)
-            {
-                switch (this.Weapon.WeaponNameEnum)
-                {
-                    case WeaponsEnum.StarBlaster:
-
-                        break;
-
-                    case WeaponsEnum.HornetBlaster:
-
-                        break;
-
-                    case WeaponsEnum.SlowBlaster:
-
-                        break;
-
-                    case WeaponsEnum.FastBlaster:
-
-                        break;
-
-                    default:
-
-                        break;
-                }
-            }
-            if (this.Weapon.Parent is Enemies.EnemyBase)
-            {
-                switch (this.Weapon.WeaponNameEnum)
-                {
-                    default:
-                        this.Sprite = Sprites.EnemyBlasterSprite;
-                        break;
-                }
-            }
         }
 
         #endregion Methods

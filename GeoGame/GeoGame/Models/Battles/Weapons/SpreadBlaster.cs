@@ -34,19 +34,19 @@
         public override void InitHard()
         {
             this.BulletsAmount = 30;
-            this.FireRate = 0.6d;
+            this.FireRate = 0.5d;
         }
 
         public override void InitInsane()
         {
             this.BulletsAmount = 35;
-            this.FireRate = 0.4;
+            this.FireRate = 0.25;
         }
 
         public override void InitMedium()
         {
             this.BulletsAmount = 25;
-            this.FireRate = 0.8d;
+            this.FireRate = 0.75d;
         }
 
         public override void InitPlayer()
@@ -54,7 +54,7 @@
             this.BulletFiredSound.Volume = 0.1;
 
             this.BulletsAmount = 100;
-            this.FireRate = 0.100d;
+            this.FireRate = 0.3d;
         }
 
         protected override void PostInit()

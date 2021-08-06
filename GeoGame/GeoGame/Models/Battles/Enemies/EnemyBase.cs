@@ -10,7 +10,7 @@ namespace GeoGame.Models.Battles.Enemies
     {
         #region Constructors
 
-        public EnemyBase(Enums.EnemyDifficulty difficulty, MoveAction onMove, SKCanvasView canvasView) : base(difficulty)
+        public EnemyBase(Enums.DifficultyLevel difficulty, MoveAction onMove, SKCanvasView canvasView) : base(difficulty)
         {
             this.MainSprite = new SKBitmap();
             this.HitSprite = new SKBitmap();
@@ -19,11 +19,11 @@ namespace GeoGame.Models.Battles.Enemies
 
             switch (this.Difficulty)
             {
-                case Enums.EnemyDifficulty.Easy: InitEasy(); break;
-                case Enums.EnemyDifficulty.Medium: InitMedium(); break;
-                case Enums.EnemyDifficulty.Hard: InitHard(); break;
-                case Enums.EnemyDifficulty.Insane: InitInsane(); break;
-                case Enums.EnemyDifficulty.IsPlayer: InitPlayer(); break;
+                case Enums.DifficultyLevel.Easy: InitEasy(); break;
+                case Enums.DifficultyLevel.Medium: InitMedium(); break;
+                case Enums.DifficultyLevel.Hard: InitHard(); break;
+                case Enums.DifficultyLevel.Insane: InitInsane(); break;
+                case Enums.DifficultyLevel.IsPlayer: InitPlayer(); break;
             }
         }
 
@@ -77,7 +77,7 @@ namespace GeoGame.Models.Battles.Enemies
         public virtual void InitHard()
         {
             this.SpriteSheet = Sprites.EnemySpriteSheetHard;
-            this.HitSpriteSheet = Sprites.EnemyHitSpriteSheetMedium;
+            this.HitSpriteSheet = Sprites.EnemyHitSpriteSheetHard;
         }
 
         public virtual void InitInsane()

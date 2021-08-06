@@ -8,7 +8,7 @@
         {
             this.Width = weapon.Parent is Player ? weapon.Parent.Width / 2 : weapon.Parent.Width / 4;
             this.Height = this.Width;
-            this.FireAngle = 0;
+            
         }
 
         #endregion Constructors
@@ -41,7 +41,7 @@
 
         public override void InitPlayer()
         {
-            this.VelX = 400f;
+            this.VelX = 200f;
             this.VelY = -800f;
         }
 
@@ -50,7 +50,7 @@
             base.PostInit();
 
             this.Sprite = Sprites.StarBlasterSprite;
-            this.HitDamage = 5;
+            this.HitDamage = 10;
         }
 
         #endregion Methods

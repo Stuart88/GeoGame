@@ -20,11 +20,11 @@ namespace GeoGame.Models.Battles.Weapons
 
             switch (this.Difficulty)
             {
-                case Enums.EnemyDifficulty.Easy: InitEasy(); break;
-                case Enums.EnemyDifficulty.Medium: InitMedium(); break;
-                case Enums.EnemyDifficulty.Hard: InitHard(); break;
-                case Enums.EnemyDifficulty.Insane: InitInsane(); break;
-                case Enums.EnemyDifficulty.IsPlayer: InitPlayer(); break;
+                case Enums.DifficultyLevel.Easy: InitEasy(); break;
+                case Enums.DifficultyLevel.Medium: InitMedium(); break;
+                case Enums.DifficultyLevel.Hard: InitHard(); break;
+                case Enums.DifficultyLevel.Insane: InitInsane(); break;
+                case Enums.DifficultyLevel.IsPlayer: InitPlayer(); break;
             }
 
             PostInit();
@@ -66,7 +66,7 @@ namespace GeoGame.Models.Battles.Weapons
         public int CurrentBulletShot { get; set; } = 0;
         public double DeltaTime { get; set; }
 
-        public Enums.EnemyDifficulty Difficulty { get; set; }
+        public Enums.DifficultyLevel Difficulty { get; set; }
 
         /// <summary>
         /// After how many seconds should the Fire method be called again (for automatic firing)
@@ -106,8 +106,7 @@ namespace GeoGame.Models.Battles.Weapons
                         {
                             if (this is HornetBlaster)
                             {
-                                //only play sound for every 2rd bee, otherwise it sounds crap
-                                if (b.Id % 2 == 0)
+                                if(!this.BulletFiredSound.IsPlaying)
                                     this.BulletFiredSound.Play();
                             }
                             else

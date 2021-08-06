@@ -34,9 +34,6 @@ namespace GeoGame.Views
         private readonly Stopwatch _totalTime = new Stopwatch();
 
         private SKColor _fillColor;
-        private double _fpsAverage = 0.0;
-        private int _fpsCount = 0;
-        private uint _frameCount = 0;
         private bool _objectsReady = false;
         private bool _pageActive;
         private Random _rand = new Random();
@@ -65,13 +62,10 @@ namespace GeoGame.Views
         public List<Country> AllCountries { get; set; }
 
         public ISimpleAudioPlayer BattleMusic { get; set; } = CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
-        public int MaxEnemyHealth { get; set; }
+        public LevelData LevelData { get; set; }
         private Country Country { get; set; }
-        private List<EnemyBase> Enemies { get; set; }
-        private int EnemyCount { get; set; }
         private bool GameWon { get; set; }
         private bool IsSmallCountry { get; }
-        private int MaxActiveEnemies { get; set; }
         private SKRect ParalaxDestRect { get; set; }
         private Player Player { get; set; }
         private int PopulationScaler { get; } = 1000000;
@@ -115,7 +109,7 @@ namespace GeoGame.Views
 
         private void CheckCollisions()
         {
-            foreach (var e in this.Enemies.Where(i => i.Active || i.Weapon.Bullets.Any(b => b.Fired)))
+            foreach (var e in this.LevelData.Enemies.Where(i => i.Active || i.Weapon.Bullets.Any(b => b.Fired)))
             {
                 if (e.Active)
                 {
@@ -129,12 +123,12 @@ namespace GeoGame.Views
 
             // Now check if any new enemies need to be added, if
 
-            int activeEnemiesCount = this.Enemies.Where(e => e.Active).Count();
+            int activeEnemiesCount = this.LevelData.Enemies.Where(e => e.Active).Count();
 
-            if (activeEnemiesCount < this.MaxActiveEnemies)
+            if (activeEnemiesCount < this.LevelData.MaxActiveEnemies)
             {
                 //Get next available non-dead enemy
-                var toActivate = this.Enemies.FirstOrDefault(e => !e.IsDead && !e.Active);
+                var toActivate = this.LevelData.Enemies.FirstOrDefault(e => !e.IsDead && !e.Active);
 
                 if (toActivate != null)
                 {
@@ -182,7 +176,7 @@ namespace GeoGame.Views
             this.Player.Draw(ref canvas, canvasView.CanvasSize);
             this.Player.DrawBullets(ref canvas, canvasView.CanvasSize);
 
-            foreach (var en in this.Enemies)
+            foreach (var en in this.LevelData.Enemies)
             {
                 en.Draw(ref canvas, canvasView.CanvasSize);
                 en.DrawBullets(ref canvas, canvasView.CanvasSize);
@@ -193,7 +187,7 @@ namespace GeoGame.Views
         {
             this.Player.Weapon.FireWeapon(dt);
 
-            foreach (var e in this.Enemies.Where(e => e.Active && !e.IsDead))
+            foreach (var e in this.LevelData.Enemies.Where(e => e.Active && !e.IsDead))
             {
                 e.Weapon.FireWeapon(dt + dt * (-1 + 2 * (float)_rand.NextDouble())); // Add a +/- 1dt variation, so all enemies don't fire in unison
             }
@@ -201,62 +195,7 @@ namespace GeoGame.Views
 
         private void InitEnemies()
         {
-            this.Enemies = new List<EnemyBase>();
-
-            if(this.Country.Population <= 1000000)
-            {
-                int smallCountriesCount = this.AllCountries.Count(c => c.Population <= 1000000);
-
-                // There are about 20 small countries, so just add number of enemies based on index of country (i.e. 1 - 20 enemies)
-                this.EnemyCount = this.AllCountries.IndexOf(this.Country) + 1; // 
-                this.MaxActiveEnemies = 3;
-                int activesAdded = 0;
-
-                for (int i = 0; i < this.EnemyCount; i++)
-                {
-                    EnemyBase e;
-                    if (i >= 0 && i <= 1)
-                    {
-                        e = new OneHitShip(EnemyDifficulty.Easy, MovementFunctions.BasicLinearLeftRight, WeaponsEnum.SlowBlaster, canvasView);
-                    }
-                    else if (i > 1 && i <= 3)
-                    {
-                        e = new OneHitShip(EnemyDifficulty.Easy, MovementFunctions.SinusoidalLeftRightLocal, WeaponsEnum.SlowBlaster, canvasView);
-                    }
-                    else if (i > 3 && i <= 5)
-                    {
-                        e = new OneHitShip(EnemyDifficulty.Medium, MovementFunctions.SinusoidalLeftRightFull, WeaponsEnum.SlowBlaster, canvasView);
-                    }
-                    else if(i > 5 && i <= 10)
-                    {
-                        e = new Drone(EnemyDifficulty.Easy, MovementFunctions.BasicLinearLeftRight, WeaponsEnum.FastBlaster, canvasView);
-                    }
-                    else if (i > 10 && i <= 15)
-                    {
-                        var cycledDifficulty = this.Enemies.Last().Difficulty.CycleNext<EnemyDifficulty>();
-                        e = new Drone(cycledDifficulty, MovementFunctions.SinusoidalLeftRightLocal, WeaponsEnum.SlowBlaster, canvasView);
-                    }
-                    else if (i > 15 && i <= 20)
-                    {
-                        var cycledDifficulty = this.Enemies.Last().Difficulty.CycleNext<EnemyDifficulty>();
-                        e = new Drone(cycledDifficulty, MovementFunctions.SinusoidalLeftRightLocal, WeaponsEnum.SlowBlaster, canvasView);
-                    }
-                    else
-                    {
-                        e = new Attacker(EnemyDifficulty.Easy, MovementFunctions.SinusoidalLeftRightLocal, WeaponsEnum.HornetBlaster, canvasView);
-                    }
-
-                    if (activesAdded++ < this.MaxActiveEnemies)
-                        e.Active = true;
-
-                    this.Enemies.Add(e);
-                }
-
-                this.Enemies.Shuffle();
-            }
-
-
-            this.MaxEnemyHealth = this.Enemies.Sum(e => e.MaxHealth);
+            this.LevelData = new LevelData(canvasView, this.Country, this.AllCountries);
         }
 
         private void InitGame()
@@ -385,7 +324,7 @@ namespace GeoGame.Views
         {
             this.Player.Update(dt, totalT, canvasView);
 
-            foreach (var e in this.Enemies)
+            foreach (var e in this.LevelData.Enemies)
             {
                 e.Update(dt, totalT, canvasView);
             }
@@ -397,8 +336,8 @@ namespace GeoGame.Views
         private void UpdateScreenInformation()
         {
             // Progress bar starts full then progresses down to 0
-            int remainingEnemyHealth = this.Enemies.Sum(e => e.Health);
-            BattleStateProgress.ProgressTo((double)remainingEnemyHealth / this.MaxEnemyHealth, 100, Easing.CubicInOut);
+            int remainingEnemyHealth = this.LevelData.Enemies.Sum(e => e.Health);
+            BattleStateProgress.ProgressTo((double)remainingEnemyHealth / this.LevelData.MaxEnemyHealth, 100, Easing.CubicInOut);
 
             double healthBarProgress = (double)this.Player.Health / this.Player.MaxHealth;
             HealthBar.ProgressTo(healthBarProgress, 200, Easing.CubicInOut);
