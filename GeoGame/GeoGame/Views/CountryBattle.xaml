@@ -24,6 +24,16 @@
             <Button Grid.Row="4" Grid.Column="0" Text="◀" FontSize="20" x:Name="LeftButton" Pressed="LeftButton_Pressed" Released="LeftButton_Released" />
             <Button Grid.Row="4" Grid.Column="1" Text="{Binding SelectedWeaponName, Mode=OneWay}" FontSize="10" x:Name="MiddleButton" Clicked="MiddleButton_Pressed" />
             <Button Grid.Row="4" Grid.Column="2" Text="▶" FontSize="20" x:Name="RightButton" Pressed="RightButton_Pressed" Released="RightButton_Released" />
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <ImageButton/>
+            </Grid>
         </Grid>
     </ContentPage.Content>
 </ContentPage>

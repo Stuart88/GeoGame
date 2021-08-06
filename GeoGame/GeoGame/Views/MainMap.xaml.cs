@@ -65,7 +65,33 @@ namespace GeoGame.Views
                 if (Game.GameData.CountriesDefeatedIds.Contains(country.Id)) // This was a replay battle. Don't need to do anything here.
                     return;
 
+                if (Game.GameData.CountriesDefeatedIds.Count == this.Countries.Count) // Game already completed
+                    return;
+
+
                 Game.GameData.CountriesDefeatedIds.Add(country.Id);
+
+                if(Game.GameData.CountriesDefeatedIds.Count == 20)
+                {
+                    await this.DisplayAlert("NEW WEAPON!", "Star Blaster is available", "COOL!");
+                    Game.GameData.AvailableWeapons.Add(Models.Battles.Weapons.WeaponsEnum.StarBlaster);
+                }
+                if (Game.GameData.CountriesDefeatedIds.Count == 50)
+                {
+                    await this.DisplayAlert("NEW WEAPON!", "Fast Blaster is available", "COOL!");
+                    Game.GameData.AvailableWeapons.Add(Models.Battles.Weapons.WeaponsEnum.FastBlaster);
+                }
+                if (Game.GameData.CountriesDefeatedIds.Count == 100)
+                {
+                    await this.DisplayAlert("NEW WEAPON!", "Spread Blaster is available", "COOL!");
+                    Game.GameData.AvailableWeapons.Add(Models.Battles.Weapons.WeaponsEnum.SpreadBlaster);
+                }
+                if (Game.GameData.CountriesDefeatedIds.Count == 150)
+                {
+                    await this.DisplayAlert("NEW WEAPON!", "Hornet Blaster is available", "COOL!");
+                    Game.GameData.AvailableWeapons.Add(Models.Battles.Weapons.WeaponsEnum.HornetBlaster);
+                }
+
                 Game.SaveGame();
 
                 Country nextCountry = GetNextCountryToBattle();
@@ -73,6 +99,7 @@ namespace GeoGame.Views
                 if (nextCountry == null)
                 {
                     // GAME FINISHED?!
+                    await this.DisplayAlert("WINNER!", "YOU FINISHED THE GAME!", "OK");
                 }
                 else
                 {
@@ -198,8 +225,6 @@ namespace GeoGame.Views
                 Opacity = 0
             };
 
-            this.Map.MapClicked += Map_MapClicked;
-
             this.MapContentArea.Content = this.Map;
 
             //Gets countries ordered by population (smallest to largest)
@@ -211,13 +236,6 @@ namespace GeoGame.Views
             int songNum = _rand.Next(1, 6);
             this.Music.Load(Helpers.Functions.GetStreamFromFile($"Resources.Music.Map.{songNum}.mp3"));
             this.Music.PlaybackEnded += (s, e) => { this.Music.Play(); };
-        }
-
-        private async void Map_MapClicked(object sender, MapClickedEventArgs e)
-        {
-            //this.ShowPopulatedPlacedForClickedCountry(e.Position);
-
-            return;
         }
 
         private Distance MaxDistanceAcrossCountry(NetTopologySuite.Geometries.Envelope env)
@@ -238,8 +256,11 @@ namespace GeoGame.Views
 
         private void NextCountryBtn_Clicked(object sender, EventArgs e)
         {
+
+#if !DEBUG
             if (!Game.GameData.CountriesDefeatedIds.Contains(this.GetViewModel.SelectedCountry.Id)) // If country not defeated, cannot go further
                 return;
+#endif
 
             int i = this.Countries.IndexOf(this.GetViewModel.SelectedCountry);
 
@@ -295,6 +316,6 @@ namespace GeoGame.Views
             this.PopulationLabel.Text = $"{this.GetViewModel.SelectedCountry.Population}";
         }
 
-        #endregion Methods
+#endregion Methods
     }
 }

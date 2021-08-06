@@ -17,14 +17,20 @@ namespace GeoGame.Models.Battles
             this.Width = 30f;
             this.Height = 70f;
             this.MainSprite = Sprites.PlayerSpriteCentre;
-            this.WeaponsList = new List<WeaponBase>
+            this.WeaponsList = new List<WeaponBase>();
+        }
+
+        public void AddWeapon(WeaponsEnum w)
+        {
+            WeaponBase toAdd = w switch
             {
-                new SlowBlaster(this),
-                new FastBlaster(this),
-                new StarBlaster(this),
-                new SpreadBlaster(this),
-                new HornetBlaster(this),
-            };
+                WeaponsEnum.SlowBlaster => new SlowBlaster(this),
+                WeaponsEnum.FastBlaster => new FastBlaster(this),
+                WeaponsEnum.StarBlaster => new StarBlaster(this),
+                WeaponsEnum.SpreadBlaster => new SpreadBlaster(this),
+                WeaponsEnum.HornetBlaster => new HornetBlaster(this),
+            }
+            this.WeaponsList.Add(w);
         }
 
         #endregion Constructors

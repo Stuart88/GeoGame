@@ -38,9 +38,9 @@ namespace GeoGame.Models.Battles
 
             this.DifficultyLevel = diff;
 
-            this.OneHitShipBalance = (double)(countryCount - currentCountryIndex) / countryCount;
-            this.DroneBalance = (double)(countryCount / 2 - currentCountryIndex) / countryCount;
-            this.AttackerBalance = (double)(countryCount / 4 - currentCountryIndex) / countryCount;
+            this.OneHitShipBalance = (double)(-8d / countryCount * currentCountryIndex + 8);
+            this.DroneBalance = (double)(8d / countryCount * currentCountryIndex + 8);
+            this.AttackerBalance = (double)(-5d / countryCount * currentCountryIndex + 5);
             this.CountryIndex = currentCountryIndex;
 
             EnemyCount = this.CountryIndex < 5 ? 5 : this.CountryIndex;
@@ -119,17 +119,87 @@ namespace GeoGame.Models.Battles
 
         public void InitHard()
         {
-            this.MaxActiveEnemies = 30;
+            this.MaxActiveEnemies = 20;
+
+            DifficultyLevel diff = DifficultyLevel.Hard;
+
+            for (int i = 0; i < this.OneHitShipBalance; i++)
+            {
+                SetDifficultyBasedOnIncrement(ref diff, i);
+                this.Enemies.Add(new OneHitShip(diff, GetRandomMoveAction(), WeaponsEnum.SlowBlaster, this.Canvas));
+                diff = DifficultyLevel.Easy;
+            }
+            for (int i = 0; i < this.DroneBalance; i++)
+            {
+                SetDifficultyBasedOnIncrement(ref diff, i);
+                WeaponsEnum w = i % 3 == 0 ? WeaponsEnum.SlowBlaster : WeaponsEnum.SpreadBlaster;
+                this.Enemies.Add(new Drone(diff, GetRandomMoveAction(), w, this.Canvas));
+                diff = DifficultyLevel.Easy;
+            }
+            for (int i = 0; i < this.AttackerBalance; i++)
+            {
+                SetDifficultyBasedOnIncrement(ref diff, i);
+                WeaponsEnum w = i % 7 == 0 ? WeaponsEnum.HornetBlaster : WeaponsEnum.StarBlaster;
+                this.Enemies.Add(new Attacker(diff, GetRandomMoveAction(), w, this.Canvas));
+                diff = DifficultyLevel.Easy;
+            }
         }
 
         public void InitInsane()
         {
-            this.MaxActiveEnemies = 50;
+            this.MaxActiveEnemies = 30;
+
+            DifficultyLevel diff = DifficultyLevel.Hard;
+
+            for (int i = 0; i < this.OneHitShipBalance; i++)
+            {
+                SetDifficultyBasedOnIncrement(ref diff, i);
+                WeaponsEnum w = i % 4 == 0 ? WeaponsEnum.SpreadBlaster : WeaponsEnum.SlowBlaster;
+                this.Enemies.Add(new OneHitShip(diff, GetRandomMoveAction(), w, this.Canvas));
+                diff = DifficultyLevel.Easy;
+            }
+            for (int i = 0; i < this.DroneBalance; i++)
+            {
+                SetDifficultyBasedOnIncrement(ref diff, i);
+                WeaponsEnum w = i % 3 == 0 ? WeaponsEnum.FastBlaster : WeaponsEnum.SlowBlaster;
+                this.Enemies.Add(new Drone(diff, GetRandomMoveAction(), w, this.Canvas));
+                diff = DifficultyLevel.Easy;
+            }
+            for (int i = 0; i < this.AttackerBalance; i++)
+            {
+                SetDifficultyBasedOnIncrement(ref diff, i);
+                WeaponsEnum w = i % 3 == 0 ? WeaponsEnum.HornetBlaster : WeaponsEnum.SpreadBlaster;
+                this.Enemies.Add(new Attacker(diff, GetRandomMoveAction(), w, this.Canvas));
+                diff = DifficultyLevel.Easy;
+            }
         }
 
         public void InitMedium()
         {
-            this.MaxActiveEnemies = 20;
+            this.MaxActiveEnemies = 10;
+
+            DifficultyLevel diff = DifficultyLevel.Medium;
+
+            for (int i = 0; i < this.OneHitShipBalance; i++)
+            {
+                SetDifficultyBasedOnIncrement(ref diff, i);
+                this.Enemies.Add(new OneHitShip(diff, GetRandomMoveAction(), WeaponsEnum.SlowBlaster, this.Canvas));
+                diff = DifficultyLevel.Easy;
+            }
+            for (int i = 0; i < this.DroneBalance; i++)
+            {
+                SetDifficultyBasedOnIncrement(ref diff, i);
+                WeaponsEnum w = i % 5 == 0 ? WeaponsEnum.SpreadBlaster : WeaponsEnum.SlowBlaster;
+                this.Enemies.Add(new Drone(diff, GetRandomMoveAction(), w, this.Canvas));
+                diff = DifficultyLevel.Easy;
+            }
+            for (int i = 0; i < this.AttackerBalance; i++)
+            {
+                SetDifficultyBasedOnIncrement(ref diff, i);
+                WeaponsEnum w = i % 3 == 0 ? WeaponsEnum.StarBlaster : WeaponsEnum.SpreadBlaster;
+                this.Enemies.Add(new Attacker(diff, GetRandomMoveAction(), w, this.Canvas));
+                diff = DifficultyLevel.Easy;
+            }
         }
 
         public void InitPlayer()
@@ -156,28 +226,62 @@ namespace GeoGame.Models.Battles
 
         private void NormaliseBalances()
         {
-            double weighting = (double)this.EnemyCount / this.RawBalance;
+            this.OneHitShipBalance =  Math.Round(this.EnemyCount * this.OneHitShipBalance / this.RawBalance, 0, MidpointRounding.AwayFromZero);
+            this.AttackerBalance = Math.Round(this.EnemyCount * this.AttackerBalance / this.RawBalance, 0, MidpointRounding.AwayFromZero);
+            this.DroneBalance = Math.Round(this.EnemyCount * this.DroneBalance / this.RawBalance, 0, MidpointRounding.AwayFromZero);
 
-            this.OneHitShipBalance = Math.Round(weighting * this.OneHitShipBalance, 0, MidpointRounding.AwayFromZero);
-            this.AttackerBalance = Math.Round(weighting * this.AttackerBalance, 0, MidpointRounding.AwayFromZero);
-            this.DroneBalance = Math.Round(weighting * this.DroneBalance, 0, MidpointRounding.AwayFromZero);
-
+            //Ensure total enemies amounts to desired EnemyCount
             while (this.RawBalance < this.EnemyCount)
                 this.DroneBalance++;
+            while (this.RawBalance > this.EnemyCount)
+                this.DroneBalance--;
 
-            this.EnemyCount = this.RawBalance;
         }
 
         private void SetDifficultyBasedOnIncrement(ref DifficultyLevel diff, int i)
         {
-            if (i > 2)
-                diff = DifficultyLevel.Medium;
+            switch (this.DifficultyLevel)
+            {
+                case DifficultyLevel.Easy:
+                    if (i > 2)
+                        diff = DifficultyLevel.Medium;
+                    if (i > 4)
+                        diff = DifficultyLevel.Hard;
+                    if (i > 6)
+                        diff = this.DifficultyLevel;
+                    break;
 
-            if (i > 4)
-                diff = DifficultyLevel.Hard;
+                case DifficultyLevel.Medium:
+                    if (i <= 2)
+                        diff = DifficultyLevel.Easy;
+                    if (i > 2)
+                        diff = DifficultyLevel.Hard;
+                    if (i > 8)
+                        diff = DifficultyLevel.Insane;
+                    if (i > 10)
+                        diff = this.DifficultyLevel;
+                    break;
 
-            if (i > 6)
-                diff = this.DifficultyLevel;
+                case DifficultyLevel.Hard:
+                    if (i <= 2)
+                        diff = DifficultyLevel.Easy;
+                    if (i > 2)
+                        diff = DifficultyLevel.Medium;
+                    if (i > 6)
+                        diff = DifficultyLevel.Insane;
+                    if (i > 8)
+                        diff = this.DifficultyLevel;
+                    break;
+
+                case DifficultyLevel.Insane:
+                    if (i > 2)
+                        diff = DifficultyLevel.Medium;
+                    if (i > 4)
+                        diff = DifficultyLevel.Hard;
+                    if (i > 6)
+                        diff = this.DifficultyLevel;
+                    break;
+            }
         }
 
         #endregion Methods

@@ -4,7 +4,6 @@ using GeoGame.Interfaces;
 using GeoGame.Models.Battles;
 using GeoGame.Models.Battles.Enemies;
 using GeoGame.Models.Battles.Weapons;
-using GeoGame.Models.Enums;
 using GeoGame.Models.Geo;
 using GeoGame.ViewModels;
 using Plugin.SimpleAudioPlayer;
@@ -221,13 +220,17 @@ namespace GeoGame.Views
         private void InitPlayer()
         {
             this.Player = new Player();
-            this.Player.MaxHealth = 100;
-            this.Player.Health = 100;
+            this.Player.MaxHealth = 100 + 2 * Data.Game.GameData.CountriesDefeatedIds.Count; // health increases as game progresses
+            this.Player.Health = this.Player.MaxHealth;
             this.Player.Width = canvasView.CanvasSize.Width / 15;
             this.Player.Height = this.Player.Width * 2f;
             this.Player.PosX = (canvasView.CanvasSize.Width - this.Player.Width) / 2;
             this.Player.PosY = canvasView.CanvasSize.Height * (1 - 0.01f);
             this.Player.BaseVelX = 500;
+            foreach(var w in Data.Game.GameData.AvailableWeapons)
+            {
+                this.Player.AddWeapon(w);
+            }
             ChangePlayerWeapon(WeaponsEnum.SlowBlaster);
         }
 

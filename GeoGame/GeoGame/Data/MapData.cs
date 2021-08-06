@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using GeoGame.Models.Battles.Weapons;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 
@@ -90,6 +91,7 @@ namespace GeoGame.Data
         #region Fields
 
         public List<int> CountriesDefeatedIds = new List<int>() { 0 };
+        public List<WeaponsEnum> AvailableWeapons = new List<WeaponsEnum>() { WeaponsEnum.SlowBlaster };
 
         #endregion Fields
 
