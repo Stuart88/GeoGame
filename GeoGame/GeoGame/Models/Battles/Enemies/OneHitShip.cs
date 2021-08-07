@@ -27,8 +27,16 @@ namespace GeoGame.Models.Battles.Enemies
             this.BasePosY = this.PosY;
 
             this.Weapon = new SlowBlaster(this);
+            
+            (int i, int j) spritePos = difficulty switch
+            {
+                Enums.DifficultyLevel.Easy => (9, 3),
+                Enums.DifficultyLevel.Medium => (7, 5),
+                Enums.DifficultyLevel.Hard => (3, 9),
+                Enums.DifficultyLevel.Insane => (0, 2),
+            };
 
-            this.AssignMainSprite(9, 3);
+            this.AssignMainSprite(spritePos.i, spritePos.j);
         }
 
         #endregion Constructors

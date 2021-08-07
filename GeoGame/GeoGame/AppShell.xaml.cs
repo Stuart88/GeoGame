@@ -1,6 +1,7 @@
 ﻿using GeoGame.Interfaces;
 using GeoGame.Models.Geo;
 using GeoGame.Views;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using Xamarin.Forms;
@@ -52,7 +53,7 @@ namespace GeoGame
             {
                 if (FlyoutIsPresented)
                 {
-                    this.ShipHealthLabel.Text = $"Ship Health: {100 + 10 * (Data.Game.GameData.CountriesDefeatedIds.Count - 1)}";
+                    this.ShipHealthLabel.Text = $"Ship Health: {Data.Game.GetCurrentPlayerHealth()}";
                     this.CountriesDefeatedLabel.Text = $"Defeated: {Data.Game.GameData.CountriesDefeatedIds.Count} / 176 Nations";
                 }
             }
@@ -109,7 +110,8 @@ namespace GeoGame
                 Button goToBtn = new Button
                 {
                     Text = "▶",
-                    VerticalOptions = LayoutOptions.End
+                    VerticalOptions = LayoutOptions.End,
+                    BackgroundColor = Color.Orange
                 };
                 goToBtn.Clicked += (s, e) =>
                 {

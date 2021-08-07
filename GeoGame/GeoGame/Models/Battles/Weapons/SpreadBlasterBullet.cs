@@ -52,10 +52,10 @@
             this.Sprite = this.Weapon.Parent.Difficulty switch
             {
                 Enums.DifficultyLevel.IsPlayer => Sprites.OrbYellow,
-                Enums.DifficultyLevel.Easy => Sprites.OrbYellow,
-                Enums.DifficultyLevel.Medium => Sprites.OrbBlue,
+                Enums.DifficultyLevel.Easy => Sprites.OrbGreen,
+                Enums.DifficultyLevel.Medium => Sprites.OrbRed,
                 Enums.DifficultyLevel.Hard => Sprites.OrbRed,
-                Enums.DifficultyLevel.Insane => Sprites.OrbGreen,
+                Enums.DifficultyLevel.Insane => Sprites.OrbBlue,
             };
 
             this.HitDamage = 10;

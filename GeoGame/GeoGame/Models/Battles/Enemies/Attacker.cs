@@ -27,7 +27,15 @@ namespace GeoGame.Models.Battles.Enemies
 
             this.SetWeapon(weaponType);
 
-            this.AssignMainSprite(3, 4);
+            (int i, int j) spritePos = difficulty switch
+            {
+                Enums.DifficultyLevel.Easy => (3, 4),
+                Enums.DifficultyLevel.Medium => (7, 3),
+                Enums.DifficultyLevel.Hard => (0, 9),
+                Enums.DifficultyLevel.Insane => (0, 2),
+            };
+
+            this.AssignMainSprite(spritePos.i, spritePos.j);
         }
 
         #endregion Constructors

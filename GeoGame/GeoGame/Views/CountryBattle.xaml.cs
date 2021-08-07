@@ -50,7 +50,6 @@ namespace GeoGame.Views
             SubscribeToMessages();
             this.Country = country;
             this.AllCountries = allCountries;
-            this.IsSmallCountry = this.Country.Population < this.PopulationScaler;
             _totalTime.Start();
 
             countryNameLabel.Text = $"Fighting {this.Country.Name}!";
@@ -68,15 +67,10 @@ namespace GeoGame.Views
 
         private Country Country { get; set; }
 
-        private bool GameWon { get; set; }
-
-        private bool IsSmallCountry { get; }
-
         private SKRect ParalaxDestRect { get; set; }
 
         private Player Player { get; set; } = new Player();
 
-        private int PopulationScaler { get; } = 1000000;
 
         private float ScreenRatio { get; set; }
 
@@ -105,7 +99,7 @@ namespace GeoGame.Views
             base.OnAppearing();
 
             InitMusic();
-
+            
             InitGame();
         }
 
@@ -165,7 +159,6 @@ namespace GeoGame.Views
 
             if (activeEnemiesCount == 0)
             {
-                this.GameWon = true;
                 this._pageActive = false;
                 this.OnGameWon();
             }
@@ -260,7 +253,7 @@ namespace GeoGame.Views
 
         private void InitPlayer()
         {
-            this.Player.MaxHealth = 100 + 10 * (Data.Game.GameData.CountriesDefeatedIds.Count - 1); // health increases as game progresses
+            this.Player.MaxHealth = Data.Game.GetCurrentPlayerHealth();
             this.Player.Health = this.Player.MaxHealth;
             this.Player.Width = canvasView.CanvasSize.Width / 15;
             this.Player.Height = this.Player.Width * 2f;

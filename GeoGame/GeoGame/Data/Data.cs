@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using static GeoGame.Data.MapEnums;
 
 namespace GeoGame.Data
@@ -40,6 +41,11 @@ namespace GeoGame.Data
 
         #region Methods
 
+        public static int GetCurrentPlayerHealth()
+        {
+            return 100 + 5 * (GameData.CountriesDefeatedIds.Count - 1);
+        }
+
         public static void LoadGame()
         {
             if (File.Exists(SaveGameFile))
@@ -54,6 +60,7 @@ namespace GeoGame.Data
 
         public static void SaveGame()
         {
+            GameData.CountriesDefeatedIds = GameData.CountriesDefeatedIds.Distinct().ToList(); // somehow '0' was being added multiple times..?
             string json = JsonConvert.SerializeObject(GameData);
 
             File.WriteAllText(SaveGameFile, json);
@@ -112,7 +119,7 @@ namespace GeoGame.Data
         #region Fields
 
         public List<int> CountriesDefeatedIds = new List<int>() { 0 };
-        public List<WeaponsEnum> AvailableWeapons = new List<WeaponsEnum>() { WeaponsEnum.SlowBlaster, WeaponsEnum.StarBlaster };
+        public List<WeaponsEnum> AvailableWeapons = new List<WeaponsEnum>() { WeaponsEnum.SlowBlaster };
         public MapEnums.MapTheme MapTheme = MapEnums.MapTheme.Aubergine;
 
         #endregion Fields

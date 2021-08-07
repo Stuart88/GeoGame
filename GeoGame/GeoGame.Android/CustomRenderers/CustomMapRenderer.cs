@@ -113,6 +113,9 @@ namespace GeoGame.Droid.CustomRenderers
 
         public void SetMapTheme(Data.MapEnums.MapTheme theme)
         {
+            if (NativeMap == null)
+                return;
+
             this.SelectedTheme = theme;
 
             NativeMap.SetMapStyle(new MapStyleOptions(Data.Data.GetThemeStyleString(theme)));
@@ -142,6 +145,7 @@ namespace GeoGame.Droid.CustomRenderers
 
         protected override PolygonOptions CreatePolygonOptions(Xamarin.Forms.Maps.Polygon polygon)
         {
+
             Tuple<Country, Geometry> data = (Tuple<Country, Geometry>)polygon.BindingContext;
             var country = data.Item1;
             var geo = data.Item2;
@@ -205,37 +209,6 @@ namespace GeoGame.Droid.CustomRenderers
             SubscribeToMessages();
         }
 
-        private async void AddPopulatedPlacesForCountry(Country country)
-        {
-            var db = await Data.DbContexts.Instance;
-
-            //This gets all places belonging to country
-            var places = await db.GetPopulatedPlacesForCountry(country.Name);
-
-            ////So now filter only for places in the given polyong some countries are made up of more than one polygon
-            //places = places.Where(p => poly.Points)
-
-            foreach (var m in this.PopulatedPlaceMarkers.ToList())
-            {
-                m.marker.Remove();
-                this.PopulatedPlaceMarkers.Remove(m);
-            }
-            this.PopulatedPlaceMarkers.Clear();
-            foreach (var p in places)
-            {
-                CircleOptions c = new CircleOptions();
-                c.InvokeCenter(new LatLng(p.Geometry.Centroid.Coordinate.Y, p.Geometry.Centroid.Coordinate.X));
-                c.InvokeRadius(20000);//20km
-                c.InvokeFillColor(System.Drawing.Color.Yellow.ToPlatformColor());
-                c.InvokeStrokeColor(System.Drawing.Color.Yellow.ToPlatformColor());
-                c.InvokeStrokeWidth(2);
-                c.InvokeZIndex(1000);//Need this to ensure Z-index higher than values wich are used for country IDs
-                Circle added = NativeMap.AddCircle(c);
-
-                this.PopulatedPlaceMarkers.Add((added, p));
-            }
-        }
-
         private void AssignDefaultPolyOptions(PolygonOptions poly, bool isDefeated)
         {
             poly.InvokeStrokeWidth(4);
@@ -295,6 +268,9 @@ namespace GeoGame.Droid.CustomRenderers
 
         private async Task HighlightPolygon(Android.Gms.Maps.Model.Polygon p, bool flashingAnimation = false, System.Drawing.Color? fill = null, System.Drawing.Color? stroke = null)
         {
+            if (NativeMap == null)
+                return;
+
             if (this.SelectedPolygons.Any(poly => poly.ZIndex == p.ZIndex) && !flashingAnimation)
                 return; // Already selected.
 

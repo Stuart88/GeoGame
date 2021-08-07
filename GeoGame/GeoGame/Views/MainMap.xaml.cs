@@ -112,7 +112,7 @@ namespace GeoGame.Views
                 if (nextCountry == null)
                 {
                     // GAME FINISHED?!
-                    await this.DisplayAlert("WINNER!", "YOU FINISHED THE GAME!", "OK");
+                    await this.DisplayAlert("WINNER!", "YOU FINISHED THE GAME!", "Yay :)");
                 }
                 else
                 {
