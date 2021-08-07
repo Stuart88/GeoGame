@@ -173,6 +173,8 @@ namespace GeoGame.Views
 
         private void DoStarsParallax(float dt)
         {
+            this.ScreenRatio = canvasView.CanvasSize.Width / canvasView.CanvasSize.Height;
+            
             this.StarsSmallSrcRect = new SKRect(0, this.StarsSmall.Height / 2 - this.StarsSmallShift, this.StarsSmall.Width / 2 * this.ScreenRatio, this.StarsSmall.Height - this.StarsSmallShift);
             this.StarsMidSrcRect = new SKRect(0, this.StarsMid.Height / 2 - this.StarsMidShift, this.StarsMid.Width / 2 * this.ScreenRatio, this.StarsMid.Height - this.StarsMidShift);
 
@@ -187,14 +189,7 @@ namespace GeoGame.Views
 
         private void DrawObjects(SKCanvas canvas, SKPaint skPaint)
         {
-             this.ScreenRatio = canvasView.CanvasSize.Width / canvasView.CanvasSize.Height;
-            // Can be 0 or NaN if initialisation happens early.
-            if (this.ScreenRatio == 0 || this.ScreenRatio == float.NaN)
-                return;
-            this.StarsSmallSrcRect = new SKRect(0, 0, this.StarsSmall.Width / 2 * this.ScreenRatio, this.StarsSmall.Height / 2);
-            this.StarsMidSrcRect = new SKRect(0, 0, this.StarsMid.Width / 2 * this.ScreenRatio, this.StarsMid.Height / 2);
             this.ParalaxDestRect = new SKRect(0, 0, canvasView.CanvasSize.Width, canvasView.CanvasSize.Height);
-
             canvas.DrawBitmap(this.StarsMid, this.StarsMidSrcRect, this.ParalaxDestRect, skPaint);
             canvas.DrawBitmap(this.StarsSmall, this.StarsSmallSrcRect, this.ParalaxDestRect, skPaint);
 
