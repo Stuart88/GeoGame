@@ -40,12 +40,13 @@
                         </FormattedString>
                     </Label.FormattedText>
                 </Label>
-                <Button x:Name="CenterOnCountryBtn" Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" VerticalOptions="Center" CornerRadius="4" Text="Centre" 
-                        Clicked="CenterOnCountryBtn_Clicked"
-                        TranslationX="-20"  />
-                <Button x:Name="PreviousCountryBtn" Grid.Row="2" Grid.Column="0" Text="Prev" Clicked="PreviousCountryBtn_Clicked" />
+                <Button x:Name="CenterOnCountryBtn" Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="1" VerticalOptions="Center" CornerRadius="4" Text="Focus" 
+                        Clicked="CenterOnCountryBtn_Clicked" />
+                <Button x:Name="NextBattleBtn" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="1" VerticalOptions="Center" CornerRadius="4" Text="Next Battle" 
+                        Clicked="NextBattleBtn_Clicked" />
+                <Button x:Name="PreviousCountryBtn" Grid.Row="2" Grid.Column="0" Text="◀" Clicked="PreviousCountryBtn_Clicked" />
                 <Button x:Name="BeginBattleBtn" Grid.Row="2" Grid.Column="1" Text="FIGHT!" Clicked="BeginBattleBtn_Clicked" />
-                <Button x:Name="NextCountryBtn" Grid.Row="2" Grid.Column="2" Text="Next" Clicked="NextCountryBtn_Clicked" />
+                <Button x:Name="NextCountryBtn" Grid.Row="2" Grid.Column="2" Text="▶" Clicked="NextCountryBtn_Clicked" />
             </Grid>
         </Grid>
         <ActivityIndicator x:Name="LoadingSpinner"  AbsoluteLayout.LayoutFlags="PositionProportional" AbsoluteLayout.LayoutBounds=".5,.5,-1,-1" />

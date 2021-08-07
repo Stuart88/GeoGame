@@ -51,6 +51,7 @@ namespace GeoGame.Droid.CustomRenderers
 
         #region Methods
 
+
         public Android.Views.View GetInfoContents(Marker marker)
         {
             return null; // Default rendering
@@ -68,6 +69,46 @@ namespace GeoGame.Droid.CustomRenderers
                 var poly = this.CountryPolygons.FirstOrDefault(p => p.Item1.Id == c.Id);
                 await this.HighlightPolygon(poly.Item2);
             }
+        }
+
+        private int PolygonFlashCount { get; set; } = 0;
+
+        private void FlashFocusedPolygon(Country c)
+        {
+            if (this.PolygonFlashCount > 0) // already in flashing proces
+                return;
+
+            Device.StartTimer(TimeSpan.FromMilliseconds(300), () =>
+            {
+                // Simulate a kind of flashing effect to point the user to press the 'Fight' button after they press 'Next Battle'
+                if (this.CountryPolygons.Any(p => p.Item1.Id == c.Id))
+                {
+                    var poly = this.CountryPolygons.FirstOrDefault(p => p.Item1.Id == c.Id);
+                    var stroke = new Android.Graphics.Color(poly.Item2.StrokeColor).ToSystemColor();
+
+                    if (this.PolygonFlashCount % 2 == 0)
+                        _ = this.HighlightPolygon(poly.Item2, true, System.Drawing.Color.Transparent, stroke);
+                    else
+                        _ = this.HighlightPolygon(poly.Item2, true);
+
+                    this.PolygonFlashCount++;
+
+                    if (this.PolygonFlashCount == 5)
+                    {
+                        _ = this.HighlightPolygon(poly.Item2, true);
+                        this.PolygonFlashCount = 0;
+                        return false;
+                    }
+
+                    return true;
+
+                }
+                else
+                {
+                    return false;
+                }
+
+            });
         }
 
         public void SetMapTheme(Data.MapEnums.MapTheme theme)
@@ -91,6 +132,11 @@ namespace GeoGame.Droid.CustomRenderers
             MessagingCenter.Subscribe<IMessageService, Data.MapEnums.MapTheme>(this, Data.MessagingCenterMessages.SetMapTheme, (sender, theme) =>
             {
                 this.SetMapTheme(theme);
+            });
+            
+            MessagingCenter.Subscribe<IMessageService, Country>(this, Data.MessagingCenterMessages.FlashPolygon, (sender, c) =>
+            {
+                this.FlashFocusedPolygon(c);
             });
         }
 
@@ -247,13 +293,13 @@ namespace GeoGame.Droid.CustomRenderers
             return new LatLng(lat, lng);
         }
 
-        private async Task HighlightPolygon(Android.Gms.Maps.Model.Polygon p)
+        private async Task HighlightPolygon(Android.Gms.Maps.Model.Polygon p, bool flashingAnimation = false, System.Drawing.Color? fill = null, System.Drawing.Color? stroke = null)
         {
-            if (this.SelectedPolygons.Any(poly => poly.ZIndex == p.ZIndex))
+            if (this.SelectedPolygons.Any(poly => poly.ZIndex == p.ZIndex) && !flashingAnimation)
                 return; // Already selected.
 
             // Previously clicked polygons redraw with defaults
-            if (this.SelectedPolygons.Count > 0)
+            if (this.SelectedPolygons.Count > 0 && !flashingAnimation)
             {
                 foreach (var poly in this.SelectedPolygons.ToList())
                 {
@@ -270,7 +316,13 @@ namespace GeoGame.Droid.CustomRenderers
             foreach (var c in this.CountryPolygons.Where(p => p.Item1.Id == countryId).ToList())
             {
                 //Draw currently selected polygon with highlighting colours
-                PolygonOptions newPoly = ClonePolygonWithNewColours(c.Item2, System.Drawing.Color.LightBlue, System.Drawing.Color.Blue, 9); ;
+                PolygonOptions newPoly = new PolygonOptions();
+                
+                if (flashingAnimation && fill.HasValue && stroke.HasValue)
+                    newPoly = ClonePolygonWithNewColours(c.Item2, fill.Value, stroke.Value, 9);
+                else
+                    newPoly = ClonePolygonWithNewColours(c.Item2, System.Drawing.Color.LightBlue, System.Drawing.Color.Blue, 9); ;
+                
                 Android.Gms.Maps.Model.Polygon addedPoly = NativeMap.AddPolygon(newPoly);
                 this.SelectedPolygons.Add(addedPoly);
 

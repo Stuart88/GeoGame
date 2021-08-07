@@ -42,6 +42,7 @@ namespace GeoGame.Views
         public ISimpleAudioPlayer Music { get; set; } = CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
         private DbContexts Contexts { get; set; }
         private List<Country> Countries { get; set; }
+        private int FightButtonFlashCount { get; set; } = 0;
         private MainMapViewModel GetViewModel => (MainMapViewModel)this.BindingContext;
 
         //private Country SelectedCountry { get; set; }
@@ -81,10 +82,9 @@ namespace GeoGame.Views
                 if (Game.GameData.CountriesDefeatedIds.Count == this.Countries.Count) // Game already completed
                     return;
 
-
                 Game.GameData.CountriesDefeatedIds.Add(country.Id);
 
-                if(Game.GameData.CountriesDefeatedIds.Count == 20)
+                if (Game.GameData.CountriesDefeatedIds.Count == 20)
                 {
                     await this.DisplayAlert("NEW WEAPON!", "Star Blaster is available", "COOL!");
                     Game.GameData.AvailableWeapons.Add(Models.Battles.Weapons.WeaponsEnum.StarBlaster);
@@ -125,7 +125,7 @@ namespace GeoGame.Views
 
         protected override void OnAppearing()
         {
-            if(this.Countries != null) // this is 'reappearring'
+            if (this.Countries != null) // this is 'reappearring'
                 this.Music.Play();
 
             base.OnAppearing();
@@ -150,6 +150,13 @@ namespace GeoGame.Views
         private async void BeginBattleBtn_Clicked(object sender, EventArgs e)
         {
             await Navigation.PushModalAsync(new CountryBattle(this.GetViewModel.SelectedCountry, this.Countries), false);
+        }
+
+        private void CenterOnCountryBtn_Clicked(object sender, EventArgs e)
+        {
+            this.PanMapToCountry(this.GetViewModel.SelectedCountry);
+
+            MessagingCenter.Send<IMessageService, Country>(this, MessagingCenterMessages.FlashPolygon, this.GetViewModel.SelectedCountry);
         }
 
         private void DrawGeometries(Country c, NetTopologySuite.Geometries.Geometry g)
@@ -194,9 +201,9 @@ namespace GeoGame.Views
 
                 this.Music.Play();
 
-                PanMapToCountry(this.GetViewModel.SelectedCountry);
-
                 this.HideSpinner();
+
+                PanMapToCountry(this.GetViewModel.SelectedCountry);
             }));
         }
 
@@ -276,9 +283,37 @@ namespace GeoGame.Views
             return Distance.FromKilometers(max);
         }
 
+        private void NextBattleBtn_Clicked(object sender, EventArgs e)
+        {
+            var c = this.GetNextCountryToBattle();
+
+            this.PanMapToCountry(c);
+
+            this.GetViewModel.SelectedCountry = c;
+            
+            Device.StartTimer(TimeSpan.FromMilliseconds(300), () =>
+            {
+                // Simulate a kind of flashing effect to point the user to press the 'Fight' button after they press 'Next Battle'
+
+                this.BeginBattleBtn.IsEnabled = !this.BeginBattleBtn.IsEnabled;
+                this.BeginBattleBtn.Opacity = this.BeginBattleBtn.IsEnabled ? 1 : 0.7;
+
+                this.FightButtonFlashCount++;
+
+                if (this.FightButtonFlashCount == 5)
+                {
+                    this.BeginBattleBtn.IsEnabled = true;
+                    this.BeginBattleBtn.Opacity = 1;
+                    this.FightButtonFlashCount = 0;
+                    return false;
+                }
+
+                return true;
+            });
+        }
+
         private void NextCountryBtn_Clicked(object sender, EventArgs e)
         {
-
             int i = this.Countries.IndexOf(this.GetViewModel.SelectedCountry);
 
             if (i == this.Countries.Count - 1) // already at last country
@@ -300,6 +335,19 @@ namespace GeoGame.Views
             Position mapPos = new Position(geom.Envelope.Centroid.Y, geom.Envelope.Centroid.Coordinate.X);
 
             MapSpan span = MapSpan.FromCenterAndRadius(mapPos, d);
+
+            if (Data.Game.GameData.CountriesDefeatedIds.Contains(c.Id) || this.GetNextCountryToBattle().Id == c.Id)
+            {
+                // Can fight
+                BeginBattleBtn.IsEnabled = true;
+                BeginBattleBtn.Opacity = 1;
+            }
+            else
+            {
+                // Cannot fight!
+                BeginBattleBtn.IsEnabled = false;
+                BeginBattleBtn.Opacity = 0.7;
+            }
 
             this.Map.MoveToRegion(span);
         }
@@ -324,10 +372,5 @@ namespace GeoGame.Views
         }
 
         #endregion Methods
-
-        private void CenterOnCountryBtn_Clicked(object sender, EventArgs e)
-        {
-            this.PanMapToCountry(this.GetViewModel.SelectedCountry);
-        }
     }
 }

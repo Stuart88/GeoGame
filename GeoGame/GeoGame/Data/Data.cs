@@ -102,6 +102,7 @@ namespace GeoGame.Data
         public static readonly string CountryClicked = "CountryClicked";
         public static readonly string GotCountries = "GotCountries";
         public static readonly string SetMapTheme = "SetMapTheme";
+        public static readonly string FlashPolygon = "FlashPolygon";
 
         #endregion Fields
     }
