@@ -125,7 +125,9 @@ namespace GeoGame.Views
 
         protected override void OnAppearing()
         {
-            this.Music.Play();
+            if(this.Countries != null) // this is 'reappearring'
+                this.Music.Play();
+
             base.OnAppearing();
         }
 
@@ -190,6 +192,8 @@ namespace GeoGame.Views
 
                 this.Map.Opacity = 1;
 
+                this.Music.Play();
+
                 PanMapToCountry(this.GetViewModel.SelectedCountry);
 
                 this.HideSpinner();
@@ -252,6 +256,7 @@ namespace GeoGame.Views
         {
             int songNum = _rand.Next(1, 6);
             this.Music.Load(Helpers.Functions.GetStreamFromFile($"Resources.Music.Map.{songNum}.mp3"));
+            this.Music.Volume = 0.8;
             this.Music.PlaybackEnded += (s, e) => { this.Music.Play(); };
         }
 
