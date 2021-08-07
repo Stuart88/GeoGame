@@ -67,7 +67,7 @@
             if (this.Parent is Player)
             {
                 this.BulletFiredSound.Load(Helpers.Functions.GetStreamFromFile("Resources.Sounds.blasterBullet.wav"));
-                this.BulletFiredSound.Volume = 0.4;
+                this.BulletFiredSound.Volume = 0.1;
             }
         }
 

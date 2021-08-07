@@ -74,7 +74,7 @@ namespace GeoGame.Droid.CustomRenderers
         {
             this.SelectedTheme = theme;
 
-            NativeMap.SetMapStyle(new MapStyleOptions(Data.MapData.GetThemeStyleString(theme)));
+            NativeMap.SetMapStyle(new MapStyleOptions(Data.Data.GetThemeStyleString(theme)));
 
             Data.Game.GameData.MapTheme = theme;
 
@@ -152,7 +152,7 @@ namespace GeoGame.Droid.CustomRenderers
         protected override void OnMapReady(GoogleMap map)
         {
             base.OnMapReady(map);
-            NativeMap.SetMapStyle(new MapStyleOptions(GeoGame.Data.MapData.GetThemeStyleString(Data.Game.GameData.MapTheme)));
+            NativeMap.SetMapStyle(new MapStyleOptions(GeoGame.Data.Data.GetThemeStyleString(Data.Game.GameData.MapTheme)));
             NativeMap.InfoWindowClick += OnInfoWindowClick;
             NativeMap.SetInfoWindowAdapter(this);
             NativeMap.PolygonClick += NativeMap_PolygonClick;

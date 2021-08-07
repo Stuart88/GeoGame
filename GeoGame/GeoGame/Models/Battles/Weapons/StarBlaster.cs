@@ -51,10 +51,8 @@
 
         public override void InitPlayer()
         {
-            this.BulletFiredSound.Volume = 0.1;
-
             this.BulletsAmount = 100;
-            this.FireRate = 0.100d;
+            this.FireRate = 0.200d;
         }
 
         protected override void PostInit()
@@ -64,7 +62,7 @@
             if (this.Parent is Player)
             {
                 this.BulletFiredSound.Load(Helpers.Functions.GetStreamFromFile("Resources.Sounds.blasterBullet.wav"));
-                this.BulletFiredSound.Volume = 0.4;
+                this.BulletFiredSound.Volume = 0.1;
             }
         }
 

@@ -6,6 +6,29 @@ using static GeoGame.Data.MapEnums;
 
 namespace GeoGame.Data
 {
+    public static class MapEnums
+    {
+        #region Enums
+
+        public enum ElementType
+        {
+            Country,
+            PopulatedPlace
+        }
+
+        public enum MapTheme
+        {
+            Standard,
+            Silver,
+            Retro,
+            Dark,
+            Night,
+            Aubergine
+        }
+
+        #endregion Enums
+    }
+
     public static class Game
     {
         #region Fields
@@ -39,7 +62,7 @@ namespace GeoGame.Data
         #endregion Methods
     }
 
-    public static class MapData
+    public static class Data
     {
         #region Fields
 
@@ -68,29 +91,6 @@ namespace GeoGame.Data
         }
     }
 
-    public static class MapEnums
-    {
-        #region Enums
-
-        public enum ElementType
-        {
-            Country,
-            PopulatedPlace
-        }
-
-        public enum MapTheme
-        {
-            Standard,
-            Silver,
-            Retro,
-            Dark,
-            Night,
-            Aubergine
-        }
-
-        #endregion Enums
-    }
-
     public static class MessagingCenterMessages
     {
         #region Fields
@@ -111,7 +111,7 @@ namespace GeoGame.Data
         #region Fields
 
         public List<int> CountriesDefeatedIds = new List<int>() { 0 };
-        public List<WeaponsEnum> AvailableWeapons = new List<WeaponsEnum>() { WeaponsEnum.SlowBlaster };
+        public List<WeaponsEnum> AvailableWeapons = new List<WeaponsEnum>() { WeaponsEnum.SlowBlaster, WeaponsEnum.StarBlaster };
         public MapEnums.MapTheme MapTheme = MapEnums.MapTheme.Aubergine;
 
         #endregion Fields
