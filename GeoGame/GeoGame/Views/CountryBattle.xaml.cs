@@ -120,6 +120,12 @@ namespace GeoGame.Views
         {
             ((CountryBattleViewModel)this.BindingContext).SelectedWeaponName = nextWeapon.GetDisplayName();
             this.Player.ChangeWeapon(nextWeapon);
+
+            this.SlowBlasterBtn.BackgroundColor = nextWeapon == WeaponsEnum.SlowBlaster ? Color.LightGray : Color.Gray;
+            this.StarBlasterBtn.BackgroundColor = nextWeapon == WeaponsEnum.StarBlaster ? Color.LightGray : Color.Gray;
+            this.FastBlasterBtn.BackgroundColor = nextWeapon == WeaponsEnum.FastBlaster ? Color.LightGray : Color.Gray;
+            this.SpreadBlasterBtn.BackgroundColor = nextWeapon == WeaponsEnum.SpreadBlaster ? Color.LightGray : Color.Gray;
+            this.HornetBlasterBtn.BackgroundColor = nextWeapon == WeaponsEnum.HornetBlaster ? Color.LightGray : Color.Gray;
         }
 
         private void CheckCollisions()
@@ -247,6 +253,7 @@ namespace GeoGame.Views
             int availableTracksCount = 15;
             int songNum = this.Country.Id % availableTracksCount + 1; // Modulus ranges from 0 - 14
             this.BattleMusic.Load(Functions.GetStreamFromFile($"Resources.Music.Battle.{songNum}.mp3"));
+            this.BattleMusic.Volume = 0.8;
             this.BattleMusic.PlaybackEnded += (s, e) => { this.BattleMusic.Play(); };
             this.BattleMusic.Play();
         }

@@ -41,11 +41,11 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <ImageButton IsEnabled="False" Opacity="0.3" Grid.Row="0" HeightRequest="50" x:Name="SlowBlasterBtn" Grid.Column="0" Clicked="SlowBlasterBtn_Clicked"/>
-                <ImageButton IsEnabled="False" Opacity="0.3" Grid.Row="0" HeightRequest="40" x:Name="StarBlasterBtn" Grid.Column="1" Clicked="StarBlasterBtn_Clicked"/>
-                <ImageButton IsEnabled="False" Opacity="0.3" Grid.Row="0" HeightRequest="40" x:Name="FastBlasterBtn" Grid.Column="2" Clicked="FastBlasterBtn_Clicked"/>
-                <ImageButton IsEnabled="False" Opacity="0.3" Grid.Row="0" HeightRequest="40" x:Name="SpreadBlasterBtn" Grid.Column="3" Clicked="SpreadBlasterBtn_Clicked"/>
-                <ImageButton IsEnabled="False" Opacity="0.3" Grid.Row="0" HeightRequest="40" x:Name="HornetBlasterBtn" Grid.Column="4" Clicked="HornetBlasterBtn_Clicked"/>
+                <ImageButton IsEnabled="False" Opacity="0.3" Grid.Row="0" HeightRequest="50" BackgroundColor="Gray" x:Name="SlowBlasterBtn" Grid.Column="0" Clicked="SlowBlasterBtn_Clicked"/>
+                <ImageButton IsEnabled="False" Opacity="0.3" Grid.Row="0" HeightRequest="40" BackgroundColor="Gray" x:Name="StarBlasterBtn" Grid.Column="1" Clicked="StarBlasterBtn_Clicked"/>
+                <ImageButton IsEnabled="False" Opacity="0.3" Grid.Row="0" HeightRequest="40" BackgroundColor="Gray" x:Name="FastBlasterBtn" Grid.Column="2" Clicked="FastBlasterBtn_Clicked"/>
+                <ImageButton IsEnabled="False" Opacity="0.3" Grid.Row="0" HeightRequest="40" BackgroundColor="Gray" x:Name="SpreadBlasterBtn" Grid.Column="3" Clicked="SpreadBlasterBtn_Clicked"/>
+                <ImageButton IsEnabled="False" Opacity="0.3" Grid.Row="0" HeightRequest="40" BackgroundColor="Gray" x:Name="HornetBlasterBtn" Grid.Column="4" Clicked="HornetBlasterBtn_Clicked"/>
 
             </Grid>
         </Grid>
