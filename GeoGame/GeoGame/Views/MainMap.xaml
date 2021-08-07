@@ -21,7 +21,7 @@
                     <ColumnDefinition />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <Label x:Name="SelectedCountryLabel" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Padding="5, 5, 0, 0">
+                <Label x:Name="SelectedCountryLabel" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Padding="5, 5, 0, 0">
                     <Label.FormattedText>
                         <FormattedString>
                             <Span Text="Lvl " TextColor="Black" />
