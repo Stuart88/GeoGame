@@ -3,6 +3,7 @@ using GeoGame.Models.Geo;
 using GeoGame.Views;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Xamarin.Forms;
 
@@ -15,9 +16,9 @@ namespace GeoGame
         public AppShell()
         {
             InitializeComponent();
-            
+
             ShellHeaderImage.Source = ImageSource.FromResource("GeoGame.Resources.Sprites.shipRightMax.png", typeof(AppShell).GetTypeInfo().Assembly);
-            
+
             Routing.RegisterRoute(nameof(MainMap), typeof(MainMap));
             PropertyChanged += AppShell_PropertyChanged;
             this.SubscribeToMessages();
@@ -32,10 +33,15 @@ namespace GeoGame
                 Data.MapEnums.MapTheme.Aubergine => "Aubergine",
                 _ => ""
             };
-
         }
 
         #endregion Constructors
+
+        #region Properties
+
+        private List<Country> Countries { get; set; }
+
+        #endregion Properties
 
         #region Methods
 
@@ -43,7 +49,13 @@ namespace GeoGame
         {
             MessagingCenter.Subscribe<IMessageService, List<Country>>(this, Data.MessagingCenterMessages.GotCountries, (sender, c) =>
             {
-                this.PopulateCountriesList(c);
+                this.Countries = c;
+                this.PopulateCountriesList();
+            });
+
+            MessagingCenter.Subscribe<IMessageService, Country>(this, Data.MessagingCenterMessages.WonCountryBattle, async (sender, country) =>
+            {
+                this.UpdateMenuItemToDefeated(country);
             });
         }
 
@@ -57,6 +69,66 @@ namespace GeoGame
                     this.CountriesDefeatedLabel.Text = $"Defeated: {Data.Game.GameData.CountriesDefeatedIds.Count} / 176 Nations";
                 }
             }
+        }
+
+        private Grid CreateCountryMenuItem(Country c, bool isDefeated)
+        {
+            Grid addingGrid = new Grid()
+            {
+                Margin = 2,
+                BackgroundColor = Color.Transparent,
+                HorizontalOptions = LayoutOptions.StartAndExpand,
+                ClassId = c.Id.ToString()
+            };
+
+            addingGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            addingGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            addingGrid.RowDefinitions.Add(new RowDefinition { Height = 1 });
+            addingGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(3, GridUnitType.Star) });
+            addingGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+
+            Label name = new Label
+            {
+                Text = $"{c.IndexNumber}. " + c.Name + (isDefeated ? " (DEFEATED)" : ""),
+                TextColor = isDefeated ? Color.DarkOrange : Color.Blue,
+                FontSize = 15,
+            };
+            Label population = new Label
+            {
+                Text = $"Population: {c.Population}",
+                TextColor = isDefeated ? Color.DarkOrange : Color.Blue,
+                FontSize = 15,
+            };
+            Button goToBtn = new Button
+            {
+                Text = "▶",
+                VerticalOptions = LayoutOptions.End,
+                BackgroundColor = Color.Orange
+            };
+            goToBtn.Clicked += (s, e) =>
+            {
+                MessagingCenter.Send<IMessageService, Country>(this, Data.MessagingCenterMessages.HighlightCountry, c);
+                MessagingCenter.Send<IMessageService, Country>(this, Data.MessagingCenterMessages.CountryClicked, c);
+                this.FlyoutIsPresented = false;
+            };
+
+            Frame frame = new Frame { BackgroundColor = Color.LightGray, HeightRequest = 1 };
+
+            addingGrid.Children.Add(name);
+            addingGrid.Children.Add(population);
+            addingGrid.Children.Add(goToBtn);
+            addingGrid.Children.Add(frame);
+
+            Grid.SetRow(name, 0);
+            Grid.SetRow(population, 1);
+            Grid.SetRow(goToBtn, 0);
+            Grid.SetColumn(goToBtn, 1);
+            Grid.SetRowSpan(goToBtn, 2);
+            Grid.SetRow(frame, 2);
+            Grid.SetColumn(frame, 0);
+            Grid.SetColumnSpan(frame, 2);
+
+            return addingGrid;
         }
 
         private void Picker_SelectedIndexChanged(object sender, System.EventArgs e)
@@ -77,67 +149,27 @@ namespace GeoGame
             MessagingCenter.Send<IMessageService, Data.MapEnums.MapTheme>(this, Data.MessagingCenterMessages.SetMapTheme, theme);
         }
 
-        private void PopulateCountriesList(List<Country> countries)
+        private void PopulateCountriesList()
         {
-            foreach (var c in countries)
+            foreach (var c in this.Countries)
             {
                 bool isDefeated = Data.Game.GameData.CountriesDefeatedIds.Contains(c.Id);
-                Grid addingGrid = new Grid()
-                {
-                    Margin = 2,
-                    BackgroundColor = Color.Transparent,
-                    HorizontalOptions = LayoutOptions.StartAndExpand
-                };
 
-                addingGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-                addingGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-                addingGrid.RowDefinitions.Add(new RowDefinition { Height = 1 });
-                addingGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(3, GridUnitType.Star) });
-                addingGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-
-                Label name = new Label
-                {
-                    Text = $"{c.IndexNumber}. " + c.Name + (isDefeated ? " (DEFEATED)" : ""),
-                    TextColor = isDefeated ? Color.DarkOrange : Color.Blue,
-                    FontSize = 15,
-                };
-                Label population = new Label
-                {
-                    Text = $"Population: {c.Population}",
-                    TextColor = isDefeated ? Color.DarkOrange : Color.Blue,
-                    FontSize = 15,
-                };
-                Button goToBtn = new Button
-                {
-                    Text = "▶",
-                    VerticalOptions = LayoutOptions.End,
-                    BackgroundColor = Color.Orange
-                };
-                goToBtn.Clicked += (s, e) =>
-                {
-                    MessagingCenter.Send<IMessageService, Country>(this, Data.MessagingCenterMessages.HighlightCountry, c);
-                    MessagingCenter.Send<IMessageService, Country>(this, Data.MessagingCenterMessages.CountryClicked, c);
-                    this.FlyoutIsPresented = false;
-                };
-
-                Frame frame = new Frame { BackgroundColor = Color.LightGray, HeightRequest = 1 };
-
-                addingGrid.Children.Add(name);
-                addingGrid.Children.Add(population);
-                addingGrid.Children.Add(goToBtn);
-                addingGrid.Children.Add(frame);
-
-                Grid.SetRow(name, 0);
-                Grid.SetRow(population, 1);
-                Grid.SetRow(goToBtn, 0);
-                Grid.SetColumn(goToBtn, 1);
-                Grid.SetRowSpan(goToBtn, 2);
-                Grid.SetRow(frame, 2);
-                Grid.SetColumn(frame, 0);
-                Grid.SetColumnSpan(frame, 2);
+                Grid addingGrid = CreateCountryMenuItem(c, isDefeated);
 
                 this.CountriesListStack.Children.Add(addingGrid);
             }
+        }
+
+        private void UpdateMenuItemToDefeated(Country c)
+        {
+            Grid updating = this.CountriesListStack.Children.First(ch => ch is Grid g && g.ClassId == c.Id.ToString()) as Grid;
+
+            int index = this.CountriesListStack.Children.IndexOf(updating);
+
+            var newMenuItem = CreateCountryMenuItem(c, true);
+
+            this.CountriesListStack.Children[index] = newMenuItem;
         }
 
         #endregion Methods

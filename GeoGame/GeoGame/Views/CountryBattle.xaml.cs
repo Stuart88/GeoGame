@@ -71,7 +71,6 @@ namespace GeoGame.Views
 
         private Player Player { get; set; } = new Player();
 
-
         private float ScreenRatio { get; set; }
 
         private SKBitmap StarsMid { get; set; } = BitmapExtensions.LoadBitmapResource(typeof(EnemyBase), "GeoGame.Resources.Backgrounds.Stars.starsMid.png");
@@ -99,7 +98,7 @@ namespace GeoGame.Views
             base.OnAppearing();
 
             InitMusic();
-            
+
             InitGame();
         }
 
@@ -163,7 +162,7 @@ namespace GeoGame.Views
                 this.OnGameWon();
             }
 
-            if(this.Player.Health <= 0)
+            if (this.Player.Health <= 0)
             {
                 this._pageActive = false;
                 this.OnGameLost();
@@ -173,7 +172,7 @@ namespace GeoGame.Views
         private void DoStarsParallax(float dt)
         {
             this.ScreenRatio = canvasView.CanvasSize.Width / canvasView.CanvasSize.Height;
-            
+
             this.StarsSmallSrcRect = new SKRect(0, this.StarsSmall.Height / 2 - this.StarsSmallShift, this.StarsSmall.Width / 2 * this.ScreenRatio, this.StarsSmall.Height - this.StarsSmallShift);
             this.StarsMidSrcRect = new SKRect(0, this.StarsMid.Height / 2 - this.StarsMidShift, this.StarsMid.Width / 2 * this.ScreenRatio, this.StarsMid.Height - this.StarsMidShift);
 
@@ -317,14 +316,15 @@ namespace GeoGame.Views
             this.Player.Direction = SpriteDirection.Centre;
         }
 
-        private void OnGameWon()
-        {
-            MessagingCenter.Send<IMessageService, Country>(this, Data.MessagingCenterMessages.WonCountryBattle, this.Country);
-        }
-
         private void OnGameLost()
         {
             MessagingCenter.Send<IMessageService, object>(this, Data.MessagingCenterMessages.LostCountryBattle, null);
+        }
+
+        private void OnGameWon()
+        {
+            this.BattleMusic.Stop();
+            MessagingCenter.Send<IMessageService, Country>(this, Data.MessagingCenterMessages.WonCountryBattle, this.Country);
         }
 
         private void OnPainting(object sender, SKPaintSurfaceEventArgs e)

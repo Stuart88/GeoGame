@@ -70,7 +70,7 @@ namespace GeoGame.Models.Battles.Enemies
 
         public virtual void InitEasy()
         {
-            this.SpriteSheet = Sprites.EnemyHitSpriteSheetEasy;
+            this.SpriteSheet = Sprites.EnemySpriteSheetEasy;
             this.HitSpriteSheet = Sprites.EnemyHitSpriteSheetEasy;
         }
 

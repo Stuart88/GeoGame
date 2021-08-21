@@ -20,7 +20,6 @@ namespace GeoGame.Views
         #region Fields
 
         private Random _rand = new Random();
-        private string _stateProvinceStr = "StateProvince";
 
         #endregion Fields
 
@@ -39,13 +38,15 @@ namespace GeoGame.Views
 
         #region Properties
 
+        public ISimpleAudioPlayer BattleLostSound { get; set; } = CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
+        public ISimpleAudioPlayer BattleWonSound { get; set; } = CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
+        public ISimpleAudioPlayer GameWonSound { get; set; } = CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
         public ISimpleAudioPlayer Music { get; set; } = CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
+        public ISimpleAudioPlayer TheWinnerIsSound { get; set; } = CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
         private DbContexts Contexts { get; set; }
         private List<Country> Countries { get; set; }
         private int FightButtonFlashCount { get; set; } = 0;
         private MainMapViewModel GetViewModel => (MainMapViewModel)this.BindingContext;
-
-        //private Country SelectedCountry { get; set; }
         private CustomMap Map { get; set; }
 
         #endregion Properties
@@ -67,6 +68,9 @@ namespace GeoGame.Views
 
             MessagingCenter.Subscribe<IMessageService, object>(this, Data.MessagingCenterMessages.LostCountryBattle, async (sender, obj) =>
             {
+                this.Music.Stop();
+                this.BattleLostSound.Play();
+
                 await Navigation.PopModalAsync();
 
                 await this.DisplayAlert("DEAD", "You died!", "Okay :(");
@@ -75,6 +79,8 @@ namespace GeoGame.Views
             MessagingCenter.Subscribe<IMessageService, Country>(this, Data.MessagingCenterMessages.WonCountryBattle, async (sender, country) =>
             {
                 await Navigation.PopModalAsync();
+                this.Music.Stop();
+                this.BattleWonSound.Play();
 
                 if (Game.GameData.CountriesDefeatedIds.Contains(country.Id)) // This was a replay battle. Don't need to do anything here.
                     return;
@@ -84,22 +90,22 @@ namespace GeoGame.Views
 
                 Game.GameData.CountriesDefeatedIds.Add(country.Id);
 
-                if (Game.GameData.CountriesDefeatedIds.Count == 20)
+                if (Game.GameData.CountriesDefeatedIds.Count >= 20)
                 {
                     await this.DisplayAlert("NEW WEAPON!", "Star Blaster is available", "COOL!");
                     Game.GameData.AvailableWeapons.Add(Models.Battles.Weapons.WeaponsEnum.StarBlaster);
                 }
-                if (Game.GameData.CountriesDefeatedIds.Count == 50)
+                if (Game.GameData.CountriesDefeatedIds.Count >= 40)
                 {
                     await this.DisplayAlert("NEW WEAPON!", "Fast Blaster is available", "COOL!");
                     Game.GameData.AvailableWeapons.Add(Models.Battles.Weapons.WeaponsEnum.FastBlaster);
                 }
-                if (Game.GameData.CountriesDefeatedIds.Count == 100)
+                if (Game.GameData.CountriesDefeatedIds.Count >= 60)
                 {
                     await this.DisplayAlert("NEW WEAPON!", "Spread Blaster is available", "COOL!");
                     Game.GameData.AvailableWeapons.Add(Models.Battles.Weapons.WeaponsEnum.SpreadBlaster);
                 }
-                if (Game.GameData.CountriesDefeatedIds.Count == 150)
+                if (Game.GameData.CountriesDefeatedIds.Count >= 80)
                 {
                     await this.DisplayAlert("NEW WEAPON!", "Hornet Blaster is available", "COOL!");
                     Game.GameData.AvailableWeapons.Add(Models.Battles.Weapons.WeaponsEnum.HornetBlaster);
@@ -112,6 +118,8 @@ namespace GeoGame.Views
                 if (nextCountry == null)
                 {
                     // GAME FINISHED?!
+                    this.Music.Stop();
+                    this.TheWinnerIsSound.Play();
                     await this.DisplayAlert("WINNER!", "YOU FINISHED THE GAME!", "Yay :)");
                 }
                 else
@@ -265,6 +273,21 @@ namespace GeoGame.Views
             this.Music.Load(Helpers.Functions.GetStreamFromFile($"Resources.Music.Map.{songNum}.mp3"));
             this.Music.Volume = 0.8;
             this.Music.PlaybackEnded += (s, e) => { this.Music.Play(); };
+
+            // Also init various sound effects
+
+            this.BattleWonSound.Load(Helpers.Functions.GetStreamFromFile("Resources.Sounds.yay.wav"));
+            this.BattleLostSound.Load(Helpers.Functions.GetStreamFromFile("Resources.Sounds.wilhelmScream.wav"));
+            this.TheWinnerIsSound.Load(Helpers.Functions.GetStreamFromFile("Resources.Sounds.theWinnerIs.wav"));
+            this.GameWonSound.Load(Helpers.Functions.GetStreamFromFile("Resources.Sounds.winMusic.mp3"));
+
+            this.TheWinnerIsSound.Volume = 1;
+            this.GameWonSound.Volume = 0.7;
+            this.BattleLostSound.Volume = 0.7;
+            this.TheWinnerIsSound.PlaybackEnded += (e, s) => { this.GameWonSound.Play(); };
+            this.GameWonSound.PlaybackEnded += (e, s) => { this.Music.Play(); };
+            this.BattleWonSound.PlaybackEnded += (e, s) => { this.Music.Play(); };
+            this.BattleLostSound.PlaybackEnded += (e, s) => { this.Music.Play(); };
         }
 
         private Distance MaxDistanceAcrossCountry(NetTopologySuite.Geometries.Envelope env)
@@ -290,7 +313,7 @@ namespace GeoGame.Views
             this.PanMapToCountry(c);
 
             this.GetViewModel.SelectedCountry = c;
-            
+
             Device.StartTimer(TimeSpan.FromMilliseconds(300), () =>
             {
                 // Simulate a kind of flashing effect to point the user to press the 'Fight' button after they press 'Next Battle'

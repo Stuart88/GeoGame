@@ -32,7 +32,13 @@
     <None Remove="Resources\Music\Map\5.mp3" />
     <None Remove="Resources\Sounds\beeBlasterBullet.wav" />
     <None Remove="Resources\Sounds\blasterBullet.wav" />
+    <None Remove="Resources\Sounds\laser.wav" />
     <None Remove="Resources\Sounds\pulse.wav" />
+    <None Remove="Resources\Sounds\shipHit.wav" />
+    <None Remove="Resources\Sounds\theWinnerIs.wav" />
+    <None Remove="Resources\Sounds\wilhelmScream.wav" />
+    <None Remove="Resources\Sounds\winMusic.mp3" />
+    <None Remove="Resources\Sounds\yay.wav" />
     <None Remove="Resources\Sprites\bee.png" />
     <None Remove="Resources\Sprites\btnFastBlaster.png" />
     <None Remove="Resources\Sprites\btnHornetBlaster.png" />
@@ -90,7 +96,13 @@
     <EmbeddedResource Include="Resources\Music\Map\5.mp3" />
     <EmbeddedResource Include="Resources\Sounds\beeBlasterBullet.wav" />
     <EmbeddedResource Include="Resources\Sounds\blasterBullet.wav" />
+    <EmbeddedResource Include="Resources\Sounds\laser.wav" />
     <EmbeddedResource Include="Resources\Sounds\pulse.wav" />
+    <EmbeddedResource Include="Resources\Sounds\shipHit.wav" />
+    <EmbeddedResource Include="Resources\Sounds\theWinnerIs.wav" />
+    <EmbeddedResource Include="Resources\Sounds\wilhelmScream.wav" />
+    <EmbeddedResource Include="Resources\Sounds\winMusic.mp3" />
+    <EmbeddedResource Include="Resources\Sounds\yay.wav" />
     <EmbeddedResource Include="Resources\Sprites\bee.png" />
     <EmbeddedResource Include="Resources\Sprites\btnFastBlaster.png" />
     <EmbeddedResource Include="Resources\Sprites\btnHornetBlaster.png" />

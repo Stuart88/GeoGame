@@ -1,5 +1,6 @@
 ﻿using GeoGame.Extensions;
 using GeoGame.Models.Battles.Weapons;
+using Plugin.SimpleAudioPlayer;
 using SkiaSharp;
 using SkiaSharp.Views.Forms;
 using System;
@@ -18,8 +19,48 @@ namespace GeoGame.Models.Battles
             this.Width = 30f;
             this.Height = 70f;
             this.MainSprite = Sprites.PlayerSpriteCentre;
+            this.HitDamageSound.Load(Helpers.Functions.GetStreamFromFile("Resources.Sounds.shipHit.wav"));
+            this.HitDamageSound.Volume = 0.4;
             this.WeaponsList = new List<WeaponBase>();
         }
+
+        #endregion Constructors
+
+        #region Properties
+
+        public float AccelLeft { get; set; } = 400;
+
+        public float AccelRight { get; set; } = 400;
+
+        public List<BulletBase> ActiveBullets => this.WeaponsList.Where(w => w.Bullets.Any(b => b.Fired)).SelectMany(b => b.Bullets).ToList();
+
+        public float BaseAccelLeft { get; set; } = 400;
+
+        public float BaseAccelRight { get; set; } = 400;
+
+        public SpriteDirection Direction { get; set; } = SpriteDirection.Centre;
+
+        public ISimpleAudioPlayer HitDamageSound { get; set; } = CrossSimpleAudioPlayer.CreateSimpleAudioPlayer();
+
+        public bool MovingLeft { get; set; }
+
+        public bool MovingRight { get; set; }
+
+        public SKBitmap ShipLeft { get; set; } = Sprites.PlayerSpriteLeft;
+
+        public SKBitmap ShipLeftMax { get; set; } = Sprites.PlayerSpriteMaxLeft;
+
+        public SKBitmap ShipRight { get; set; } = Sprites.PlayerSpriteRight;
+
+        public SKBitmap ShipRightMax { get; set; } = Sprites.PlayerSpriteMaxRight;
+
+        public List<WeaponBase> WeaponsList { get; }
+
+        private float Jerk { get; set; } = 500;
+
+        #endregion Properties
+
+        #region Methods
 
         public void AddWeapon(WeaponsEnum w)
         {
@@ -34,29 +75,6 @@ namespace GeoGame.Models.Battles
             this.WeaponsList.Add(toAdd);
         }
 
-        #endregion Constructors
-
-        #region Properties
-
-        public float AccelLeft { get; set; } = 400;
-        public float AccelRight { get; set; } = 400;
-        public List<BulletBase> ActiveBullets => this.WeaponsList.Where(w => w.Bullets.Any(b => b.Fired)).SelectMany(b => b.Bullets).ToList();
-        public float BaseAccelLeft { get; set; } = 400;
-        public float BaseAccelRight { get; set; } = 400;
-        public SpriteDirection Direction { get; set; } = SpriteDirection.Centre;
-        public bool MovingLeft { get; set; }
-        public bool MovingRight { get; set; }
-        public SKBitmap ShipLeft { get; set; } = Sprites.PlayerSpriteLeft;
-        public SKBitmap ShipLeftMax { get; set; } = Sprites.PlayerSpriteMaxLeft;
-        public SKBitmap ShipRight { get; set; } = Sprites.PlayerSpriteRight;
-        public SKBitmap ShipRightMax { get; set; } = Sprites.PlayerSpriteMaxRight;
-        public List<WeaponBase> WeaponsList { get; }
-        private float Jerk { get; set; } = 500;
-
-        #endregion Properties
-
-        #region Methods
-
         public void ChangeWeapon(WeaponsEnum weapon)
         {
             this.Weapon = this.WeaponsList.First(w => w.WeaponNameEnum == weapon);
@@ -64,6 +82,11 @@ namespace GeoGame.Models.Battles
 
         public override void Draw(ref SKCanvas canvas, SKSize canvasSize)
         {
+            if (this.HitByBullet)
+            {
+                this.HitDamageSound.Play();
+                this.HitByBullet = false;
+            }
             SKRect drawRect = new SKRect(this.PosX, canvasSize.GetPlayerPosY() - this.Height, this.PosX + this.Width, canvasSize.GetPlayerPosY());
 
             switch (this.Direction)
