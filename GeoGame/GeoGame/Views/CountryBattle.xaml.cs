@@ -55,6 +55,8 @@ namespace GeoGame.Views
             countryNameLabel.Text = $"Fighting {this.Country.Name}!";
         }
 
+        // test for git..
+
         #endregion Constructors
 
         #region Properties
